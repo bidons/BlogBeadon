@@ -1,5 +1,5 @@
-    {{ assets.outputCss() }}
-    {{ assets.outputJs() }}
+    {{ assets.outputCss('main-css') }}
+    {{ assets.outputJs('main-js') }}
 
     {{ partial('layouts/header') }}
 
@@ -20,7 +20,7 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <img src="" class="imagepreview" style="width: 100%;" >
+                    <div class="imagepreview" style="width: 100%;" >
                 </div>
             </div>
         </div>

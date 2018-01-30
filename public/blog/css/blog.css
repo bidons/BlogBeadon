@@ -1,14 +1,11 @@
-/*
-
-.container_blog{
+body,.bs-callout,.list-group-item,.row,.panel,#home,.even,pre{
     background:
-            url('../img/concrete_seamless.png');
+            url('/main/img/concrete_seamless.png');
     background-repeat: repeat;
     background-position: 0 0;
     background-color: #e2e2de;
 }
 
-!*
 .header-image {
     display: block;
     width: 100%;
@@ -174,10 +171,10 @@ footer {
         margin-left: 0;
     }
 }
- .tab-content {
-     overflow: scroll;
-     height: 700px;
- }
+.tab-content {
+    overflow: scroll;
+    height: 700px;
+}
 
 
 select.btn {
@@ -228,7 +225,7 @@ select.btn-mini + .caret {
     margin: 0px;
     line-height: 35px;
     cursor: pointer;
-    !*
+    /*
       .collapsed{
          .arrow:before{
                    font-family: FontAwesome;
@@ -240,7 +237,7 @@ select.btn-mini + .caret {
                    float:right;
               }
        }
-  *!
+  */
 }
 .nav-side-menu ul :not(collapsed) .arrow:before,
 .nav-side-menu li :not(collapsed) .arrow:before {
@@ -344,6 +341,3 @@ body {
     margin: 0px;
     padding: 0px;
 }
-*!
-*!
-*/

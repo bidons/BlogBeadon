@@ -77,8 +77,8 @@ CREATE TABLE public.paging_columns_prop (
   is_primary BOOLEAN DEFAULT false,
   person_id INTEGER,
   init_obj_id INTEGER,
-  update_time TIMESTAMP WITH TIME ZONE,
-  create_time TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  update_time TIMESTAMPtz ,
+  create_time TIMESTAMPtz DEFAULT now(),
   priority INTEGER
 );
 CREATE UNIQUE INDEX paging_columns_prop_paging_obj_data ON paging_columns_prop USING BTREE (paging_obj, data);

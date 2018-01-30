@@ -17,7 +17,7 @@
                     <a href="/index/about">About</a>
                 </li>
                 <li>
-                    <a href="/blog">Blog</a>
+                    <a href="/blog/index">Blog</a>
                 </li>
                 <li>
                     <a href="/index/contact">Contact</a>

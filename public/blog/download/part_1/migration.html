@@ -1,0 +1,75 @@
+<pre style='color:#000000;'><span style='color:#0000ff; font-weight:bold; '>DROP</span> <span style='color:#0000ff; font-weight:bold; '>FUNCTION</span> <span style='color:#0000ff; font-weight:bold; '>IF</span> <span style='color:#0000ff; font-weight:bold; '>EXISTS</span> paging_objectdb_part_1<span style='color:#0000ff; '>(</span> JSONB <span style='color:#0000ff; '>)</span><span style='color:#0000ff; '>;</span>
+<span style='color:#0000ff; font-weight:bold; '>DROP</span> <span style='color:#0000ff; font-weight:bold; '>TABLE</span> <span style='color:#0000ff; font-weight:bold; '>IF</span> <span style='color:#0000ff; font-weight:bold; '>EXISTS</span> test_p1<span style='color:#0000ff; '>;</span>
+
+<span style='color:#0000ff; font-weight:bold; '>CREATE</span> <span style='color:#0000ff; font-weight:bold; '>TABLE</span> test_p1 <span style='color:#0000ff; font-weight:bold; '>AS</span>
+  <span style='color:#0000ff; '>(</span>
+    <span style='color:#0000ff; font-weight:bold; '>SELECT</span>
+      generate_series<span style='color:#0000ff; '>(</span><span style='color:#800000; '>1</span><span style='color:#0000ff; '>,</span> <span style='color:#800000; '>100000</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; font-weight:bold; '>AS</span> <span style='color:#0000ff; font-weight:bold; '>id</span><span style='color:#0000ff; '>,</span>
+      md5<span style='color:#0000ff; '>(</span><span style='color:#0000ff; font-weight:bold; '>random</span><span style='color:#0000ff; '>(</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>:</span><span style='color:#0000ff; '>:</span> <span style='color:#800080; font-weight:bold; '>TEXT</span><span style='color:#0000ff; '>)</span>      <span style='color:#0000ff; font-weight:bold; '>AS</span> v1<span style='color:#0000ff; '>,</span>
+      md5<span style='color:#0000ff; '>(</span><span style='color:#0000ff; font-weight:bold; '>random</span><span style='color:#0000ff; '>(</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>:</span><span style='color:#0000ff; '>:</span> <span style='color:#800080; font-weight:bold; '>TEXT</span><span style='color:#0000ff; '>)</span>      <span style='color:#0000ff; font-weight:bold; '>AS</span> v2
+  <span style='color:#0000ff; '>)</span><span style='color:#0000ff; '>;</span>
+
+<span style='color:#0000ff; font-weight:bold; '>CREATE</span> <span style='color:#0000ff; font-weight:bold; '>OR</span> <span style='color:#0000ff; font-weight:bold; '>REPLACE</span> <span style='color:#0000ff; font-weight:bold; '>FUNCTION</span> <span style='color:#0000ff; font-weight:bold; '>public</span><span style='color:#0000ff; '>.</span>paging_objectdb_part_1<span style='color:#0000ff; '>(</span>a_js jsonb<span style='color:#0000ff; '>)</span>
+  <span style='color:#0000ff; font-weight:bold; '>RETURNS</span> SETOF jsonb
+<span style='color:#0000ff; font-weight:bold; '>AS</span>
+$<span style='color:#0000ff; font-weight:bold; '>BODY</span>$
+  <span style='color:#0000ff; font-weight:bold; '>DECLARE</span>
+  val_draw    TEXT <span style='color:#0000ff; '>=</span> $<span style='color:#800000; '>1</span> <span style='color:#0000ff; '>-</span><span style='color:#0000ff; '>></span><span style='color:#0000ff; '>></span> <span style='color:#0000e6; '>'draw'</span><span style='color:#0000ff; '>;</span> <span style='color:#008000; '>-- Draw counter</span>
+  val_table   TEXT <span style='color:#0000ff; '>=</span> $<span style='color:#800000; '>1</span> <span style='color:#0000ff; '>-</span><span style='color:#0000ff; '>></span><span style='color:#0000ff; '>></span> <span style='color:#0000e6; '>'objdb'</span><span style='color:#0000ff; '>;</span> <span style='color:#008000; '>-- DB obj name</span>
+  val_offlim  TEXT <span style='color:#0000ff; '>=</span> concat_ws<span style='color:#0000ff; '>(</span><span style='color:#0000e6; '>' '</span><span style='color:#0000ff; '>,</span>
+                               <span style='color:#0000e6; '>'limit '</span><span style='color:#0000ff; '>,</span> $<span style='color:#800000; '>1</span> <span style='color:#0000ff; '>-</span><span style='color:#0000ff; '>></span><span style='color:#0000ff; '>></span> <span style='color:#0000e6; '>'length'</span><span style='color:#0000ff; '>,</span>
+                               <span style='color:#0000e6; '>'offset'</span><span style='color:#0000ff; '>,</span> $<span style='color:#800000; '>1</span> <span style='color:#0000ff; '>-</span><span style='color:#0000ff; '>></span><span style='color:#0000ff; '>></span> <span style='color:#0000e6; '>'start'</span><span style='color:#0000ff; '>)</span><span style='color:#0000ff; '>;</span> <span style='color:#008000; '>-- Limit Offset ;</span>
+
+  val_order   JSONB <span style='color:#0000ff; '>=</span> jsonb_array_elements<span style='color:#0000ff; '>(</span>$<span style='color:#800000; '>1</span> <span style='color:#0000ff; '>-</span><span style='color:#0000ff; '>></span> <span style='color:#0000e6; '>'order'</span><span style='color:#0000ff; '>)</span><span style='color:#0000ff; '>;</span> <span style='color:#008000; '>-- Get order params from json</span>
+
+  val_orderby TEXT <span style='color:#0000ff; '>=</span> concat_ws<span style='color:#0000ff; '>(</span><span style='color:#0000e6; '>' '</span><span style='color:#0000ff; '>,</span>
+                               <span style='color:#0000e6; '>'order by'</span><span style='color:#0000ff; '>,</span>
+                               <span style='color:#0000ff; '>(</span><span style='color:#0000ff; '>(</span>val_order <span style='color:#0000ff; '>-</span><span style='color:#0000ff; '>></span><span style='color:#0000ff; '>></span> <span style='color:#0000e6; '>'column'</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>:</span><span style='color:#0000ff; '>:</span> <span style='color:#800080; font-weight:bold; '>INTEGER</span> <span style='color:#0000ff; '>+</span> <span style='color:#800000; '>1</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>:</span><span style='color:#0000ff; '>:</span> <span style='color:#800080; font-weight:bold; '>TEXT</span><span style='color:#0000ff; '>,</span>
+                               val_order <span style='color:#0000ff; '>-</span><span style='color:#0000ff; '>></span><span style='color:#0000ff; '>></span> <span style='color:#0000e6; '>'dir'</span><span style='color:#0000ff; '>)</span><span style='color:#0000ff; '>;</span> <span style='color:#008000; '>-- Order by condition</span>
+
+  val_data text<span style='color:#0000ff; '>;</span>
+  val_filtered text<span style='color:#0000ff; '>;</span>
+  val_total text<span style='color:#0000ff; '>;</span>
+<span style='color:#0000ff; font-weight:bold; '>BEGIN</span>
+
+  <span style='color:#008000; '>-- Create query: pagination by condition</span>
+  <span style='color:#0000ff; font-weight:bold; '>SELECT</span> concat_ws<span style='color:#0000ff; '>(</span><span style='color:#0000e6; '>' '</span><span style='color:#0000ff; '>,</span> <span style='color:#0000e6; '>'WITH objdb AS</span>
+<span style='color:#0000e6; '>&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;('</span><span style='color:#0000ff; '>,</span><span style='color:#0000e6; '>'SELECT * '</span><span style='color:#0000ff; '>,</span> <span style='color:#0000e6; '>'</span>
+<span style='color:#0000e6; '>&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;FROM'</span><span style='color:#0000ff; '>,</span> val_table<span style='color:#0000ff; '>,</span>val_orderby<span style='color:#0000ff; '>,</span> val_offlim<span style='color:#0000ff; '>,</span> <span style='color:#0000e6; '>')'</span><span style='color:#0000ff; '>,</span>
+                          <span style='color:#0000e6; '>'SELECT '</span><span style='color:#0000ff; '>,</span> <span style='color:#0000e6; '>'json_agg(row_to_json(objdb))</span>
+<span style='color:#0000e6; '>&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;&#xa0;FROM objdb'</span><span style='color:#0000ff; '>)</span>
+  <span style='color:#0000ff; font-weight:bold; '>INTO</span> val_data<span style='color:#0000ff; '>;</span>
+
+  <span style='color:#008000; '>-- Query: count by condition</span>
+  <span style='color:#0000ff; font-weight:bold; '>SELECT</span> concat_ws<span style='color:#0000ff; '>(</span><span style='color:#0000e6; '>' '</span><span style='color:#0000ff; '>,</span> <span style='color:#0000e6; '>'SELECT count(*)'</span><span style='color:#0000ff; '>,</span>
+                   <span style='color:#0000e6; '>'FROM'</span><span style='color:#0000ff; '>,</span> val_table<span style='color:#0000ff; '>)</span>
+  <span style='color:#0000ff; font-weight:bold; '>INTO</span> val_filtered<span style='color:#0000ff; '>;</span>
+
+  <span style='color:#008000; '>-- Query: total count</span>
+
+  <span style='color:#0000ff; font-weight:bold; '>SELECT</span> concat_ws<span style='color:#0000ff; '>(</span><span style='color:#0000e6; '>' '</span><span style='color:#0000ff; '>,</span> <span style='color:#0000e6; '>'SELECT count(*)'</span><span style='color:#0000ff; '>,</span>
+                        <span style='color:#0000e6; '>'FROM'</span><span style='color:#0000ff; '>,</span> val_table<span style='color:#0000ff; '>)</span>
+  <span style='color:#0000ff; font-weight:bold; '>INTO</span> val_total<span style='color:#0000ff; '>;</span>
+
+
+  <span style='color:#008000; '>-- Execute query</span>
+  <span style='color:#0000ff; font-weight:bold; '>EXECUTE</span> val_data
+  <span style='color:#0000ff; font-weight:bold; '>INTO</span> val_data<span style='color:#0000ff; '>;</span>
+
+  <span style='color:#008000; '>-- Execute query</span>
+  <span style='color:#0000ff; font-weight:bold; '>EXECUTE</span> val_total
+  <span style='color:#0000ff; font-weight:bold; '>INTO</span> val_total<span style='color:#0000ff; '>;</span>
+
+  <span style='color:#008000; '>-- Execute query</span>
+  <span style='color:#0000ff; font-weight:bold; '>EXECUTE</span> val_filtered
+  <span style='color:#0000ff; font-weight:bold; '>INTO</span> val_filtered<span style='color:#0000ff; '>;</span>
+
+  <span style='color:#008000; '>-- Json result for datatable</span>
+  <span style='color:#0000ff; font-weight:bold; '>RETURN</span> <span style='color:#0000ff; font-weight:bold; '>QUERY</span>
+  <span style='color:#0000ff; font-weight:bold; '>SELECT</span> jsonb_build_object<span style='color:#0000ff; '>(</span><span style='color:#0000e6; '>'draw'</span><span style='color:#0000ff; '>,</span> val_draw<span style='color:#0000ff; '>,</span>
+                            <span style='color:#0000e6; '>'recordsTotal'</span><span style='color:#0000ff; '>,</span> val_total<span style='color:#0000ff; '>,</span>
+                            <span style='color:#0000e6; '>'recordsFiltered'</span><span style='color:#0000ff; '>,</span> val_filtered<span style='color:#0000ff; '>,</span><span style='color:#0000e6; '>'data'</span><span style='color:#0000ff; '>,</span><span style='color:#0000ff; font-weight:bold; '>coalesce</span><span style='color:#0000ff; '>(</span>val_data<span style='color:#0000ff; '>,</span> <span style='color:#0000e6; '>'[]'</span><span style='color:#0000ff; '>)</span> <span style='color:#0000ff; '>:</span><span style='color:#0000ff; '>:</span> <span style='color:#800080; font-weight:bold; '>JSONB</span><span style='color:#0000ff; '>)</span><span style='color:#0000ff; '>;</span>
+<span style='color:#0000ff; font-weight:bold; '>END</span><span style='color:#0000ff; '>;</span>
+$<span style='color:#0000ff; font-weight:bold; '>BODY</span>$
+<span style='color:#0000ff; font-weight:bold; '>LANGUAGE</span> plpgsql IMMUTABLE<span style='color:#0000ff; '>;</span>
+</pre>

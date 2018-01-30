@@ -1,0 +1,111 @@
+version: '2'
+
+services:
+  application:
+    build: containers/core
+    container_name: phalcon.compose.blog.volume
+    volumes:
+      - .:/var/www/phalcon
+      - ./cache:/var/cache/phalcon
+      - ./logs:/var/log/phalcon
+    tty: true
+
+  postgres:
+    restart: always
+    build: containers/postgres
+    container_name: phalcon.compose.blog.postgres
+    working_dir: /var/www/phalcon
+    ports:
+      - "5435:5432"
+    volumes:
+      - .:/var/www/phalcon
+      - postgres:/var/lib/postgresql/data
+      - ./conf/postgres/log:/var/log/postgresql
+    environment:
+      POSTGRES_PASSWORD: ''
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+  #  memcached:
+  #  restart: always
+  #  image: memcached:1.4
+  #  container_name: phalcon.compose.blog.memcached
+  #  ports:
+  #    - "11211"
+
+ #  redis:
+ #  #restart: always
+ #  image: redis:latest
+ #  container_name: phalcon.compose.blog.redis
+ #  ports:
+ #    - "6379"
+ #  volumes:
+ #    - redis:/data
+
+  #rabbit:
+  #  image: "rabbitmq:3.5-management"
+  #  restart: always
+  #  hostname: "rabbit"
+  #  container_name: phalcon.compose.blog.rebbit
+  #  environment:
+  #    RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+  #    RABBITMQ_DEFAULT_USER: "rabbitmq"
+  #    RABBITMQ_DEFAULT_PASS: "rabbitmq"
+  #    RABBITMQ_DEFAULT_VHOST: "/"
+  #  ports:
+  #    - "15672:15672"
+  #    - "5672"
+  #  labels:
+  #    NAME: "rabbitmq"
+  #  volumes_from:
+  #    - application
+  #  volumes:
+  #    - "./containers/rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins"
+  #    #- "./rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro"
+  #    #- "./autocluster-0.4.1.ez:/usr/lib/rabbitmq/lib/rabbitmq_server-3.5.5/plugins/autocluster-0.4.1.ez"
+
+  php:
+    build: containers/php
+    restart: always
+    container_name: phalcon.compose.blog.php
+    ports:
+      - "9000"
+      - "9001"
+    volumes:
+      - ./conf/php-fpm/monit:/etc/monit/conf.d
+    volumes_from:
+      - application
+   # depends_on:
+   #   - rabbit
+   #   - redis
+   #   - memcached
+   #
+    tty: true
+
+  nginx:
+    restart: always
+    build: containers/nginx
+    #image: phalconphp/nginx:1.10
+    container_name: phalcon.compose.blog.nginx
+    ports:
+      - "82:80"
+      - "444:443"
+    depends_on:
+        - php
+    volumes:
+      - ./conf/nginx/certs:/etc/nginx/certs
+      - ./conf/nginx/conf.d:/etc/nginx/conf.d
+      - ./conf/nginx/vhostDev:/etc/nginx/sites-enabled
+      - ./conf/nginx/htauth:/etc/nginx/htauth
+      - ./conf/nginx/log:/var/log/nginx
+    volumes_from:
+      - application
+    environment:
+      # production | development | staging | testing
+      APPLICATION_ENV: development
+    tty: true
+
+volumes:
+  postgres:
+    driver: local
+  redis:
+    driver: local

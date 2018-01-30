@@ -31,6 +31,8 @@ $di->set(
     },
     true
 );
+$listener = new \Phalcon\Debug();
+$listener->listen();
 
 /**
  * Setting up the view component
@@ -69,34 +71,40 @@ $di->set(
     true
 );
 
-/**
- * Database connection is created based on the parameters defined in the
- * configuration file
- */
+
+
 $di->set(
     'db',
-    function () use ($config) {
-        return new DbAdapter(
-            [
-                "host"     => $config->database->host,
-                "username" => $config->database->username,
-                "password" => $config->database->password,
-                "dbname"   => $config->database->dbname,
-            ]
-        );
+    function () use ($config, $di){
+        $em = $di->getShared('eventsManager');
+
+        if (DEBUG) {
+            $logger = new \Phalcon\Logger\Adapter\File($config->application->logDir."db_log.log");
+
+            $em->attach(
+                "db:beforeQuery",
+                function ($event, $connection) use ($logger) {
+                    $sqlVariables = $connection->getSQLVariables();
+                    $logger->log(
+                        $connection->getSQLStatement()."; PLACEHOLDERS: ".str_replace("\n", " ", var_export($sqlVariables, true)),
+                        \Phalcon\Logger::INFO
+                    );
+                }
+            );
+        }
+
+        $adapter = new \Phalcon\Db\Adapter\Pdo\Postgresql(array(
+            'host'     => $config->database->host,
+            'username' => $config->database->username,
+            'password' => $config->database->password,
+            'dbname'   => $config->database->dbname
+        ));
+
+        $adapter->setEventsManager($em);
+
+        return $adapter;
     }
 );
-
-/**
- * If the configuration specify the use of metadata adapter use it or use memory otherwise
- */
-$di->set(
-    "modelsMetadata",
-    function () use ($config) {
-        return new MetaDataAdapter();
-    }
-);
-
 /**
  * Start the session the first time some component request the session service
  */

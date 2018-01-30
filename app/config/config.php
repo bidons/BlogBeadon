@@ -6,7 +6,7 @@ return new Config(
     [
         "database" => [
             "adapter"     => "postgresql",
-            "host"        => "localhost",
+            "host"        => "phalcon.compose.blog.postgres",
             "username"    => "root",
             "password"    => "root",
             "dbname"      => "blog",
@@ -22,3 +22,5 @@ return new Config(
         ],
     ]
 );
+
+
