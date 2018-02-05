@@ -32,7 +32,6 @@ trait DataTableControllerTraitExt
 
     public function columnDataAction()
     {
-
         $data = json_encode($this -> table_condition);
 
         if(isset($data['visCol']))

@@ -204,7 +204,7 @@ select.btn-mini + .caret {
     background-color: #2b3036;
     position: fixed;
     top: 0px;
-    width: 300px;
+    width: 100%;
     height: 100%;
     color: #e1ffff;
 }
@@ -277,7 +277,7 @@ select.btn-mini + .caret {
 .nav-side-menu ul .sub-menu li:before,
 .nav-side-menu li .sub-menu li:before {
     font-family: FontAwesome;
-    content: "\f105";
+    content: "";
     display: inline-block;
     padding-left: 10px;
     padding-right: 10px;

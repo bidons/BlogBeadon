@@ -48,18 +48,21 @@
         var idSelector = "#" + id;
         var idTableSelector = "#" + idTable;
         var columnsData;
-
+        var select2columnsSelector = 'select-' +  idTable;
         options = options || {};
 
         options.checkboxes = options.checkboxes || false;
         options.dtFilters = options.dtFilters || false;
         options.dtTheadButtons = options.dtTheadButtons || false;
         options.select2Input = options.select2Input || false;
+        options.is_mat = options.is_mat || false;
+        options.displayLength = options.displayLength ? options.displayLength : 20;
 
         var reqOptions = [
             'urlColumnData',
             'urlDataTable',
-            'checkedUrl'
+            'checkedUrl',
+            'urlSelect2'
         ];
 
         for (var i = 0; i < reqOptions.length; i++) {
@@ -69,7 +72,9 @@
         }
 
         var reportObjects = {query: {}, response: {}, request: {}};
+
         var conditionTable = {};
+
         var wrapper;
         var datatable;
 
@@ -78,6 +83,7 @@
         var checkedIds = {};
         var colVis = {};
         var tableObjectName = options.tableDefault;
+
 
         function createTable(col) {
             var result = [];
@@ -182,6 +188,7 @@
                 processing: true,
                 serverSide: true,
                 searching: false,
+                iDisplayLength: options.displayLength,
                 dom: '<"top"flp>rt<"bottom"i><"clear"><"bottom"p>',
                 ajax: {
                     url: options.urlDataTable,
@@ -208,18 +215,15 @@
                             });
                         });
 
+                        if (options.conditionDefault) {
+                            d['columns'] = options.conditionDefault;
+                            options.conditionDefault = null;
+                        }
+
+                        d.is_mat =options.is_mat;
                         d.objdb = tableObjectName;
                         conditionTable = d;
-                        addReportObjects('request', 'table', d);
                     },
-                    complete: function (d) {
-                        addReportObjects('query', 'q2', d.responseJSON.debug.query[0].data);
-                        addReportObjects('query', 'q3', d.responseJSON.debug.query[1].recordsTotal);
-
-                        delete d.responseJSON.debug;
-                        addReportObjects('response', 'r1', d.responseJSON);
-                        counter();
-                    }
                 },
                 columns: result,
                 aoColumnDefs: columnsSettings,
@@ -290,7 +294,10 @@
             var var_total = '';
             var columnsVisibility = '';
 
-            item.forEach(function (item, i, data) {
+            item.forEach(function (item, i, data)
+            {
+                if (item.is_filter)
+                {
                 var filterOop = '';
                 var filterValues = '';
                 if (item.cd) {
@@ -308,22 +315,40 @@
                 var check = item.visible ? 'checked' : '';
 
                 if (item.visible) {
-                    if (options.select2Input && item.type == 'text'){
-                        var_total = var_total + '<th><select multiple class="sSelect2" style="width: 50px;" type="' + item.type + '" placeholder="' + item.title + '" name="input" data-column="'+item.data+'"></select></th>'
+                    if (options.select2Input && item.type == 'text') {
+                        var_total = var_total + '<th><select multiple class="' + select2columnsSelector + '  type="' + item.type + '" placeholder="' + item.title + '" name="input" data-column="' + item.data + '"></select></th>'
                     }
-                    /*$(idTableSelector + ' .input-group').find(":selected").each(function () {*/
-                    else {
+                    else
+                    {
+                        if (item.type == 'timestamptz' || item.type == 'timestamp')
+                        {
+                            var_total = var_total + '<th>' +
+                                '<div class="btn-group">' +
+                                '<div class="input-group-btn">' +
+                                '<select class="btn btn-default btn-sm dropdown-toggle" style="display: none;">' + filterOop + '' +
+                                '</select>' +
+                                ' </div>' +
+                                '<input type="' + item.type + '" class="form-control input-sm" data-column="' + item.data + '" placeholder="' + item.title + '"></div></th>';
+                        }
+                        else
+                        {
                         var_total = var_total + '<th>' +
                             '<div class="input-group">' +
-                            '<div class="input-group-btn">' +
+                            '<div class="input-group-btn"">' +
                             '<select class="btn btn-default btn-sm dropdown-toggle">' + filterOop + '' +
                             '</select>' +
                             ' </div>' +
-                            '<input type="' + item.type + '" style ="width: 70px" class="form-control input-sm" data-column="' + item.data + '" placeholder="' + item.title + '"></div></th>';
+                            '<input type="' + item.type + '" style="width:auto" class="form-control input-sm" data-column="' + item.data + '" placeholder="' + item.title + '"></div></th>';
+                        }
                     }
-                    }
+                }
                 columnsVisibility = columnsVisibility + '<li><a href="#" class="small" data-data="' + item.data + '" tabIndex="-1"><input ' + check + ' type="checkbox"/>&nbsp;' + item.title + '</a></li>';
-            });
+            }
+            else
+                {
+                    var_total = var_total + '<th></th>';
+                }}
+            );
 
             $('[data-type=visible-columns]').html(columnsVisibility);
 
@@ -337,13 +362,21 @@
 
             var theadObject = '';
             if (options.dtTheadButtons) {
-                theadObject = '<th>' +
-                    '<div class="input-group">' +
-                    '<div class="input-group-btn">' +
-                    '<button type="button" class="btn btn-default btn-sm" onclick="wrapper.getDataTable().ajax.reload()">Search</button></div>' +
-                    '<button type="button" class="btn btn-default btn-sm" onclick="wrapper.rebuildTable()">Clear</button></div>' +
-                    ' </th> ';
-            };
+                var quotevariable = "'" +  '#' + id + '-datatable' + "'";
+
+                if(options.clearFilterButton === false) {
+                    theadObject = '<th>' +
+                        '<div class="btn-group">' +
+                        '<div class="input-group-btn">' +
+                        '<button type="button" class="btn btn-default btn-sm" onclick="$(' + quotevariable + ').DataTable().ajax.reload()">Search</button></div>' +
+                        ' </th> ';
+                } else
+                    theadObject = '<th><div class="btn-group">' +
+                        '<div class="input-group-btn">'+
+                    '<button type="button" class="btn btn-default" onclick="$(' + quotevariable + ').DataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter"> </span> </button>'+
+                    '<button type="button" class="btn btn-default" onclick="wrapper.rebuildTable()"> <span class="glyphicon glyphicon-remove-circle"> </span> </button>'+
+                    '</div></div></th>';
+                };
 
             $(idTableSelector).prepend('<thead><tr>' + thCheckboxes + theadObject
                 + var_total + ' </tr></thead>');
@@ -381,17 +414,33 @@
                 });
             });
 
-            $(".sSelect2").select2({
+            $('.' + select2columnsSelector).select2({
                 placeholder: "Поиск",
                 minimumInputLength: 3,
-                width: "15em",
+                width: '100%',
+                dropdownAutoWidth : true,
+                language: {
+                    inputTooShort: function(args) {
+                        // args.minimum is the minimum required length
+                        // args.input is the user-typed text
+                        return "";
+                    },
+                    noResults: function() {
+                        return "Не найдено";
+                    },
+                    searching: function() {
+                        return "Поиск...";
+                    },
+                    errorLoading: function() {
+                        return "";
+                    },
+                },
                 ajax: {
-                    url: "/admin/pg/pg/txtsrch",
+                    url: options.urlSelect2,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
 
                     data: function (srch) {
-
                         return Object.assign({}, srch, {
                             'objdb': tableObjectName,
                             'col': ($(this).attr('data-column'))
@@ -408,7 +457,7 @@
                 }
             });
 
-            $('.sSelect2').on('select2:close', function (evt) {
+            $('.' + select2columnsSelector).on('select2:close', function (evt) {
                 datatable.ajax.reload();
             });
 
@@ -421,12 +470,12 @@
                 locale: {format: 'YYYY.MM.DD'},
                 autoUpdateInput: false,
                 ranges: {
-                    'Today': [moment().format('YYYY.MM.DD'), today],
-                    'Yesterday': [moment().subtract(1, 'days').format('YYYY.MM.DD'), moment().format('YYYY.MM.DD')],
-                    'Last 7 Days': [moment().subtract(6, 'days').format('YYYY.MM.DD'), today],
-                    'Last 30 Days': [moment().subtract(29, 'days'), today],
-                    'This Month': [moment().startOf('month'), moment().endOf('month').add(1, 'days').format('YYYY.MM.DD')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month').add(1, 'days').format('YYYY.MM.DD')]
+                    'Сегодня': [moment().format('YYYY.MM.DD'), today],
+                    'Вчера': [moment().subtract(1, 'days').format('YYYY.MM.DD'), moment().format('YYYY.MM.DD')],
+                    'За последние 7-емь дней': [moment().subtract(6, 'days').format('YYYY.MM.DD'), today],
+                    'За последние 30-ать дней': [moment().subtract(29, 'days'), today],
+                    'Текущий месяц': [moment().startOf('month'), moment().endOf('month').add(1, 'days').format('YYYY.MM.DD')],
+                    'Прошлый месяц': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month').add(1, 'days').format('YYYY.MM.DD')]
                 }
             });
 
@@ -445,12 +494,12 @@
 
             conditionTable['columns'] = [];
 
-            $(idTableSelector + ' .input-group').find(":selected").each(function () {
+            $(idTableSelector + ' .input-group-btn').find(":selected").each(function () {
                 cd.push({cd: this.innerHTML});
             });
+
             var columns = [];
 
-            // Get searching field type and input value
             $(idTableSelector + ' input[data-column]').each(function (data) {
                 var filterCond = cd[data].cd.replace('&lt;', '<').replace('&gt;', '>');
                 var filterValue = ($(this).val());
@@ -471,9 +520,8 @@
                     });
                 }
             });
-            // Get searching field type and input value
 
-            $('.sSelect2').each(function (data) {
+            $('.' + select2columnsSelector).each(function (data) {
 
                 var items = $(this).select2('data');
                 var filterData = $(this).attr('data-column');
@@ -495,7 +543,6 @@
                     });
                 }
             });
-
             conditionTable['columns'] = columns;
 
             return conditionTable;
@@ -543,9 +590,11 @@
             modalForm(url, title);
         }
 
-        function modalForm(url, title, afterLoadForm, afterSuccessful) {
-            var app_id = url;
+        function modalForm(url, title, afterLoadForm, afterSuccessful, extraOptions) {
 
+            extraOptions = extraOptions || {};
+
+            var app_id = url;
             showModal(url, title, function (modal) {
                 var form = modal.find('form');
 
@@ -553,9 +602,13 @@
                     afterLoadForm(form);
                 }
 
-                console.log('Will send to ', url);
                 var formOptions = {
                     url: url,
+                    beforeSubmit: function(arr, $form, options) {
+                        if (extraOptions.beforeSubmit) {
+                            extraOptions.beforeSubmit(arr, $form, options);
+                        }
+                    },
                     success: function (data, statusText, xhr, form) {
                         if (afterSuccessful) {
                             afterSuccessful(data, statusText, xhr, form);
@@ -571,6 +624,11 @@
                                     life: 5000
                                 });
                             });
+                        }
+                    },
+                    complete: function(jqXHR, textStatus) {
+                        if (extraOptions.complete) {
+                            extraOptions.complete(jqXHR, textStatus);
                         }
                     },
                     resetForm: true
@@ -613,27 +671,30 @@
                     var is_checked = data == true ? "checked" : "";
                     return '<input type="checkbox" class="checkbox" ' +
                         is_checked + '  disabled/>';
-                }
+                };
+                moment.lang('ru');
+                var pretty_timestamp =
+                    function (data, type, full, meta) {
+                        var now = moment.parseZone(data);
+                        now = now.format('lll');
+                        
+                    return now == 'Invalid date' ?'':now;
+                };
+
                 if (data.columns) {
-                    for (var i = 0; i < data.columns.length; i++) {
-                        if (data.columns[i]["type"] == "bool") {
-                            data.columns[i].render = simple_checkbox;
-                        }
+                }
+                for (var i = 0; i < data.columns.length; i++) {
+                    if (data.columns[i]["type"] == "bool") {
+                        data.columns[i].render = simple_checkbox;
+                    }
+                    if (data.columns[i]["type"] == "timestamptz" || data.columns[i]["type"] == "timestamp" || data.columns[i]["type"] == "date"){
+                        data.columns[i].render = pretty_timestamp;
                     }
                 }
                 columnsData = data;
 
                 var buttons = [];
-
                 
-            /*    buttons.push([
-                    ' <button type="button" class="btn btn-default" data-type="rebuild">RebuildTable</button>',
-                    ' <button type="button" class="btn btn-default" data-type="export_excel">ExportExcel</button>',
-                    ' <div class="dropdown" style="display: inline-block"><button type="button" id="visible-columns" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span> <span class="caret"></span></button>',
-                    '<ul class="dropdown-menu" data-type="visible-columns" aria-labelledby="visible-columns">',
-                    '</ul></div>'
-                ].join(''));*/
-
                 var htmlElements = [
                     '<div>',
                     buttons.join(''),
@@ -671,7 +732,6 @@
             var state = cell.prop('checked');
             var id = cell.attr('data-id-row');
 
-            console.log(conditionTable);
             if (id == 'checkAll') {
                 conditionTable['fieldIds'] = options.idName;
                 $.get(options.checkedUrl, conditionTable,
@@ -716,34 +776,6 @@
             return checkedIds[id] == true;
         }
 
-        function counter() {
-            rebuildCounter('query', options.queryCounterSelector);
-            rebuildCounter('request', options.requestCounterSelector);
-            rebuildCounter('response', options.responseCounterSelector);
-        }
-
-        function rebuildCounter(objectRep, id) {
-            var obj = reportObjects[objectRep];
-            var count = 0;
-            var time = 0.0;
-            var result = '';
-
-            Object.keys(obj).forEach(function (item1) {
-                if (objectRep == 'query') {
-                    time += obj[item1]['time'];
-                }
-                count++;
-            });
-
-            result = count;
-
-            if (time) {
-                result = count + ' / ' + time.toPrecision(2) + ' sec';
-            }
-
-            $(id).html(result);
-        }
-
         wrapper = {
             nodeCount: function () {
                 return Object.keys(checkedIds).length;
@@ -769,6 +801,9 @@
             },
             exportToExcel: function () {
                 GetCsvDataTable();
+            },
+            exportToExcelFull: function () {
+                GetCsvDataTableExt();
             },
             modalForm: modalForm
         };
@@ -798,15 +833,41 @@
         initTable();
         
         function GetCsvDataTable() {
-            $.get(options.urlColumnData, {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
+            $.post(options.urlColumnData, {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
                 columns = data.columns;
 
-                $.get(options.urlDataTable, {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
+                $.post(options.urlDataTable, {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
                     JSONToCSVConvertor(data.data,'ExportTest',true, columns);
                 });
 
             });
         }
+
+        function GetCsvDataTableExt()
+        {
+            conditionTable['start'] = -1;
+            conditionTable['length'] = -1;
+
+            $.post(options.urlDataTable,conditionTable, function (data) {
+                JSONToCSVConvertor(data.data,'ExportTest',true, columnsData.columns);
+            });
+
+
+          /*  $.post(options.urlColumnData,
+                {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
+                columns = data.columns;*/
+
+            /*$.post(options.urlColumnData, {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
+                columns = data.columns;
+
+                $.post(options.urlDataTable, {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
+                    JSONToCSVConvertor(data.data,'ExportTest',true, columns);
+                });
+
+            });*/
+        };
+
+        var filters = getUrlFIlters();
 
         function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel, Columns) {
             //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
@@ -889,6 +950,24 @@
         return wrapper;
     };
 
+    jQuery.fn.ForceNumericOnly =
+        function () {
+            return this.each(function () {
+                $(this).keyup(function (e) {
+                    var key = e.charCode || e.keyCode || 0;
+                    return (
+                    key == 8 ||
+                    key == 9 ||
+                    key == 13 ||
+                    key == 46 ||
+                    key == 110 ||
+                    key == 190 ||
+                    (key >= 35 && key <= 40) ||
+                    (key >= 48 && key <= 57) ||
+                    (key >= 96 && key <= 105));
+                });
+            });
+        };
 
     function urlParamEncode(src) {
         return encodeURIComponent(Base64.encode(JSON.stringify(src)));
@@ -915,7 +994,7 @@
             json = JSON.stringify(json, undefined, 2);
         }
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
             var cls = 'number';
             if (/^"/.test(match)) {
                 if (/:$/.test(match)) {
@@ -931,9 +1010,6 @@
             return '<span class="' + cls + '">' + match + '</span>';
         });
     }
-
-
-    
 })(jQuery);
 
 

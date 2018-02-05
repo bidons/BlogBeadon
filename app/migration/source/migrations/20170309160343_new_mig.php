@@ -28,6 +28,10 @@ class NewMig extends AbstractMigration
     public function change()
     {
 $query =<<<'EOD'
+
+/*create table temp_table_paging_table as (select * from paging_table);
+create table temp_table_paging_columns_prop as (select * from paging_columns_prop);*/
+
 drop view  if exists vw_paging_columns_prop;
 drop table if exists paging_columns_prop;
 drop table if exists paging_table;
@@ -65,9 +69,9 @@ CREATE TABLE paging_table
 
 CREATE UNIQUE INDEX paging_table_name_paging_table_type_id ON paging_table (name);
 
-INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (1, 'main', 'Вьюхи таблицы (физ. сущности)', null, '2017-03-14 17:54:15.109763', null);
-INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (3, 'marketing', 'Отчёты для маркетинга', null, '2017-03-14 17:54:15.109763', null);
-INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (5, 'Accounting', 'Финансовые отчёты', null, '2017-03-14 17:54:15.109763', null);
+INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (1, 'views', 'Вьюхи таблицы (физ. сущности)', null, '2017-03-14 17:54:15.109763', null);
+INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (3, 'tables', 'Отчёты для маркетинга', null, '2017-03-14 17:54:15.109763', null);
+INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (5, 'dynamic', 'Финансовые отчёты', null, '2017-03-14 17:54:15.109763', null);
 INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (6, 'Analytic', 'Отчёты для аналитиков', null, '2017-03-14 17:54:15.712535', null);
 INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (4, 'Admin', 'Отчёты для разработчиков', null, '2017-03-14 17:54:15.109763', '2017-09-22 10:21:06.085153 +03:00');
 
@@ -135,6 +139,149 @@ BEGIN
       RETURN val_id;
 END;
 $$;
+
+CREATE OR REPLACE FUNCTION public.rebuild_paging_prop(a_vw_view text,a_descr text, a_type_name text,a_is_mat bool)
+ RETURNS text
+AS
+$BODY$
+ DECLARE
+    val_object_deleted integer[];
+    val_object_table_id integer = (select id from paging_table where name =a_vw_view);
+BEGIN
+      with cte as
+        (
+      SELECT pv.tablename, isc.column_name as col, t.typname AS col_type,pgi.id as col_type_id,val_object_table_id as paging_table_id,p.attnum as pr
+        FROM pg_tables AS pv
+        JOIN information_schema.columns AS isc ON pv.tablename = isc.table_name
+        JOIN pg_attribute AS p ON p.attrelid = isc.table_name :: REGCLASS AND isc.column_name = p.attname
+        JOIN pg_type AS t ON p.atttypid = t.oid
+        left join pg_type_item as pgi on pgi.name = t.typname
+        where pv.tablename = a_vw_view and schemaname = 'public'
+    UNION ALL
+        SELECT pv.viewname, isc.column_name as col, t.typname AS col_type,pgi.id as col_type_id,val_object_table_id,p.attnum as pr
+        FROM pg_views AS pv
+        JOIN information_schema.columns AS isc ON pv.viewname = isc.table_name
+        JOIN pg_attribute AS p ON p.attrelid = isc.table_name :: REGCLASS AND isc.column_name = p.attname
+        JOIN pg_type AS t ON p.atttypid = t.oid
+        left join pg_type_item as pgi on pgi.name = t.typname
+        WHERE schemaname = 'public' and pv.viewname = a_vw_view
+        ), del_if_not_exists_in_public_schema as
+        (
+              delete from paging_table
+              where id = val_object_table_id and not exists (select 1 from cte limit 1)
+              RETURNING id
+        ),get_set_table_id_by_name as
+        (
+            select get_set_paging_table_object as id
+            from get_set_paging_table_object((select tablename from cte limit 1),a_descr,a_type_name,a_is_mat)
+            where exists(select 1 from cte)
+        ), update_diff_type as
+        (
+                update  paging_columns_prop
+                set pg_type_item_id = r.col_type_id
+              from (select pcp.id,cte.col_type_id
+                    from cte
+                    join paging_columns_prop   as pcp on pcp.name = cte.col and pcp.pg_type_item_id = cte.col_type_id
+                    where pcp.paging_table_id = (select id from get_set_table_id_by_name)) as r
+                where r.id = paging_columns_prop.id
+                RETURNING paging_columns_prop.id
+
+        ), ins_if_not_exists as
+        (
+           insert into paging_columns_prop(paging_table_id,pg_type_item_id, name,priority)
+             select tbl.id,col_type_id,col,pr
+             from cte
+             join get_set_table_id_by_name as tbl on true
+             left join paging_columns_prop as ppc on ppc.id not in (select r.id from update_diff_type as r) and ppc.name =cte.col
+             returning paging_columns_prop.id
+        ), del_garbage as
+        (
+            delete  from paging_columns_prop
+            where paging_table_id = (select id from get_set_table_id_by_name)
+              and id not in (select r.id from ins_if_not_exists as r
+                             UNION ALL
+                             select r.id from update_diff_type as r)
+              RETURNING paging_columns_prop.id
+        /*), materialize_paging as
+        (
+            update paging_table
+              set m_prop_column_full = full_data,
+                  m_prop_column_small = small_data
+            from (SELECT jsonb_build_object('columns',
+                          jsonb_agg(jsonb_build_object(
+                                                 'data',p.name,
+                                                 'visible',coalesce(p.is_visible,false),
+                                                 'primary', coalesce(is_primary,true),
+                                                 'title',   coalesce(p.title,p.name),
+                                                 'type', pt.name,
+                                                 'cd',coalesce(p.condition,pt.cond_default),
+                                                 'cdi', p.item_condition) ORDER by p.priority)) as full_data,
+              jsonb_build_object('columns',
+                          jsonb_agg(jsonb_build_object(
+                                                 'data',p.name ,
+                                                 'visible',coalesce(p.is_visible,false),
+                                                 'primary',coalesce(is_primary,true),
+                                                 'title',  coalesce(p.title,p.name),
+                                                 'type', pt.name) ORDER by priority)) as small_data,
+                p.paging_table_id
+            from paging_columns_prop as p
+            join pg_type_item as pt on p.pg_type_item_id = pt.id
+              where p.paging_table_id = (select id from get_set_table_id_by_name)
+            GROUP BY  p.paging_table_id ) as rs
+              where rs.paging_table_id = paging_table.id
+            RETURNING paging_table.id
+        )*/), get_all as
+        (
+              select *
+                from del_if_not_exists_in_public_schema
+              UNION ALL
+                select *
+                from get_set_table_id_by_name
+              UNION ALL
+                select *
+                from update_diff_type
+              UNION ALL
+                select *
+                from ins_if_not_exists
+              UNION ALL
+                select *
+                from del_garbage
+          )
+        select array_agg(id)
+        from get_all
+        into val_object_deleted;
+
+
+            update paging_table
+              set m_prop_column_full = full_data,
+                  m_prop_column_small = small_data
+            from (SELECT jsonb_build_object('columns',
+                          jsonb_agg(jsonb_build_object(
+                                                 'data',p.name,
+                                                 'visible',coalesce(p.is_visible,false),
+                                                 'primary', coalesce(is_primary,true),
+                                                 'title',   coalesce(p.title,p.name),
+                                                 'type', pt.name,
+                                                 'cd',coalesce(p.condition,pt.cond_default),
+                                                 'cdi', p.item_condition) ORDER by p.priority)) as full_data,
+              jsonb_build_object('columns',
+                          jsonb_agg(jsonb_build_object(
+                                                 'data',p.name ,
+                                                 'visible',coalesce(p.is_visible,false),
+                                                 'primary',coalesce(is_primary,true),
+                                                 'title',  coalesce(p.title,p.name),
+                                                 'type', pt.name) ORDER by priority)) as small_data,
+                p.paging_table_id
+            from paging_columns_prop as p
+            join pg_type_item as pt on p.pg_type_item_id = pt.id
+              where p.paging_table_id = (select id from paging_table where name =a_vw_view)
+            GROUP BY  p.paging_table_id ) as rs
+              where rs.paging_table_id = paging_table.id;
+
+    RETURN '';
+END;
+$BODY$
+LANGUAGE plpgsql VOLATILE;
 
   create or replace  function paging_dbnamespace_cond(a_argg jsonb) returns text
 IMMUTABLE
@@ -211,6 +358,14 @@ BEGIN
             JOIN pg_type AS t ON p.atttypid = t.oid
             left join pg_type_item as pgi on pgi.name = t.typname
         WHERE schemaname = 'public' and pv.viewname = a_vw_view
+       union all  
+       SELECT pv.tablename as tablename, isc.column_name as col, t.typname AS col_type,pgi.id as col_type_id,p.attnum as pr
+          FROM pg_tables AS pv
+        JOIN information_schema.columns AS isc ON pv.tablename = isc.table_name
+       JOIN pg_attribute AS p ON p.attrelid = isc.table_name :: REGCLASS AND isc.column_name = p.attname
+       JOIN pg_type AS t ON p.atttypid = t.oid
+       left join pg_type_item as pgi on pgi.name = t.typname
+       where pv.schemaname = 'public' and pv.tablename = a_vw_view
       );
 
             --- delete if table not exists
@@ -301,8 +456,6 @@ SELECT  pcp.id,
    join paging_table as pt on pcp.paging_table_id = pt.id
    left join paging_table_type as ptt on ptt.id = pt.paging_table_type_id;
 
-/*select rebuild_paging_prop('vw_paging_columns_prop',null,'main',false);*/
-
 create or replace function paging_create_field(a_object text) returns text
 IMMUTABLE
 LANGUAGE SQL
@@ -311,12 +464,14 @@ SELECT m_column
 from paging_table where name = $1
 $$;
 
-select rebuild_paging_prop(p.name,p.descr,pt.name,p.is_materialyze)
+/*select rebuild_paging_prop(p.name,p.descr,pt.name,p.is_materialyze)
 from paging_table as p
 join paging_table_type as pt on pt.id = p.paging_table_type_id;
+*/
 
-
-/*select rebuild_paging_prop('vw_application_monitor',null,'main',false);
+/*
+select rebuild_paging_prop('vw_application_monitor',null,'main',false);
+select rebuild_paging_prop('vw_collection',null,'main',false);
 select rebuild_paging_prop('vw_bki_contact',null,'main',false);
 select rebuild_paging_prop('vw_application_state_change',null,'main',false);*/
 
@@ -402,6 +557,11 @@ RETURN NEW;
 END;
 $$;
 
+CREATE TRIGGER paging_columns_prop_before_update_paging_table_mat_trg
+  after UPDATE
+  ON public.paging_columns_prop
+  FOR EACH ROW
+  EXECUTE PROCEDURE public.paging_columns_prop_before_update_paging_table_mat_trg();
 
 create or replace function paging_counter_up (text) returns void
 VOLATILE
@@ -429,7 +589,7 @@ DECLARE
   val_ids       TEXT = 'and ' || val_fieldID || ' in (' || (a_js ->> 'ids') || ')';
 
   -- Draw counter
-  val_draw      TEXT = coalesce($1 ->> 'draw', 0 :: TEXT);
+  val_draw      integer  = coalesce(($1 ->> 'draw')::integer, 0 :: integer);
 
   -- Database objects name (table, view, materialize view, file_fdw, postgres_fdw, dblink)
   val_table     TEXT = $1 ->> 'objdb';
@@ -465,23 +625,23 @@ DECLARE
 
   val_m_count_total integer;
   val_m_columns text;
+  val_m_prop_column jsonb;
 BEGIN
 
-    SELECT m_column,m_count
+    SELECT m_column,m_count,case when val_draw = 1 then m_prop_column_full  else '{}'end
     from paging_table where name = val_table
-    into val_m_columns, val_m_count_total;
+    into val_m_columns, val_m_count_total,val_m_prop_column;
 
   IF ((a_js ->> 'columns') IS NOT NULL)
   THEN
     val_condition = paging_dbnamespace_cond(jsonb_build_object('objdb', val_table, 'columns', a_js -> 'columns'));
   END IF;
 
-  val_table = case when val_mat_mode then replace(val_table,'vw','mv') else val_table end;
+  val_table = case when val_mat_mode then  replace(val_table,'vw','mv') else val_table end;
 
   SELECT concat_ws(' ', 'with objdb as (', 'select',val_m_columns,'from', val_table, val_condition, a_ext, val_order, val_offlim
   , ')', 'SELECT ', 'json_agg(row_to_json(objdb)) from objdb')
   INTO val_qdata;
-
 
   IF (val_ids IS NOT NULL)
   THEN
@@ -578,9 +738,9 @@ BEGIN
 
   -- Json result for datatable
   RETURN QUERY
-  SELECT (jsonb_build_object('draw', val_draw, 'recordsTotal', val_total, 'recordsFiltered', val_filtered,
+  SELECT ((jsonb_build_object('draw', val_draw, 'recordsTotal', val_total, 'recordsFiltered', val_filtered,
                              'data', coalesce(val_data, '[]') :: JSONB, 'debug',
-                             jsonb_build_object('query', val_query))) :: TEXT;
+                             jsonb_build_object('query', val_query))) || val_m_prop_column)::text ;
 END;
 $$;
 
@@ -722,7 +882,6 @@ BEGIN
     select * from insert_data
     into val_m_count,val_m_time,val_exec_time,val_result;
 
-
   else
     select m_count,m_time,m_exec_time,m_chart_json_data
     from paging_table
@@ -749,8 +908,8 @@ BEGIN
                                                  'visible',  coalesce(p.is_visible,false),
                                                  'primary',  coalesce(is_primary,false),
                                                  'title',    coalesce(p.title,p.name),
-                                                 'orderable',Coalesce(p.is_orderable,true),
-                                                 'is_filter',Coalesce(p.is_filter,true),
+                                                 'orderable',Coalesce(p.is_orderable,false),
+                                                 'is_filter',Coalesce(p.is_filter,false),
                                                  'type', pt.name,
                                                  'cd',coalesce(p.condition,cond_default),
                                                  'cdi', p.item_condition) ORDER by p.priority)) as full_data,
@@ -759,7 +918,7 @@ BEGIN
                                                  'data',p.name ,
                                                  'visible',coalesce(p.is_visible,false),
                                                  'primary',coalesce(is_primary,false),
-                                                 'orderable',Coalesce(p.is_orderable,true),
+                                                 'orderable',Coalesce(p.is_orderable,false),
                                                  'title',  coalesce(p.title,p.name),
                                                  'type', pt.name) ORDER by priority)) as small_data,
               string_agg(p.name,',' ORDER BY priority) FILTER (WHERE p.is_visible is true or p.is_primary is true) as cols,

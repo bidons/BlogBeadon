@@ -159,15 +159,7 @@
 
                         <div id="container" class="panel">
 
-                            <div id="db_object_tree">
-                                <ul>
-                                    <li>Root node 1
-                                        <ul>
-                                            <li>Child node 1</li>
-                                            <li><a href="#">Child node 2</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
+                            <div id="jstree_demo">
                             </div>
 
                            {# <select class="js-example-data-array">
@@ -221,20 +213,39 @@
 </div>
 
 
-
-
 <script>
     var wrapper;
     $(document).ready(function () {
 
-        $('#db_object_tree').jstree({ 'core' : {
-            'data' : [
-                { "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-                { "id" : "ajson2", "parent" : "#", "text" : "Root node 2" },
-                { "id" : "ajson3", "parent" : "ajson2", "text" : "Child 1" },
-                { "id" : "ajson4", "parent" : "ajson2", "text" : "Child 2" },
-            ]
-        }});
+        var reportName = '';
+        var ReportTree = $('#jstree_demo').jstree({
+            'core': {
+                'data':{{ js_tree_data }}
+            }, plugins: ["search","state","types"],
+            "types" : {
+                "default" : {
+                    "icon" : "glyphicon glyphicon-asterisk"
+                },
+                "file" : {
+                    "icon" : "glyphicon glyphicon-asterisk",
+                    "valid_children" : []
+                }
+            },
+        });
+
+        $(".search-input").keyup(function () {
+            var searchString = $(this).val();
+            ReportTree.jstree('search', searchString);
+        });
+
+        ReportTree.bind(
+                "select_node.jstree", function (evt, data) {
+                    RebuldReport(data.node.original.view_name);
+                });
+
+        function RebuldReport(v){
+            $("#wrapper_report").load("/admin/report/report/wrapper/" + v)
+        }
 
 
 /*

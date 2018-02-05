@@ -23,7 +23,7 @@ class ControllerBase extends Controller
             ->addCss("main/css/business-casual.css");
 
         $mainJs -> addJs("main/js/jquery.js")
-                ->addJs("main/js/bootstrap.min.js")
+                -> addJs("main/js/bootstrap.min.js")
         ;
     }
 
@@ -32,11 +32,10 @@ class ControllerBase extends Controller
 
         $blogCss = $this->assets->collection("blog-css");
         $blogJs =  $this->assets->collection("blog-js");
-
-
+        
         $blogCss
-            ->addCss("main/css/bootstrap.css")
-            ->addCss("blog/css/blog.css")
+            ->addCss("main/css/bootstrap4.css")
+            /*->addCss("blog/css/blog.css")*/
             ->addCss("plugins/datatables/jquery.dataTables.min.css")
             ->addCss("plugins/select2/select2.css")
             ->addCss("plugins/daterangepicker/daterangepicker-bs3.css")
@@ -44,8 +43,11 @@ class ControllerBase extends Controller
 
         $blogJs -> addJs("main/js/jquery.js")
             ->addJs("main/js/bootstrap.min.js")
+            ->addJs("main/js/bootstrap.bundle.min.js")
             ->addJs("plugins/datatables/jquery.dataTables.min.js")
             ->addJs("main/js/DataTableWrapperExt.js")
+            ->addJs("https://code.highcharts.com/highcharts.js")
+            ->addJs("https://code.highcharts.com/modules/wordcloud.js")
             ->addJs("plugins/select2/select2.min.js")
             ->addJs("plugins/daterangepicker/moment.js")
             ->addJs("plugins/daterangepicker/daterangepicker.js")
