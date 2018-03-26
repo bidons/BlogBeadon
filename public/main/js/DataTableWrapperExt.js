@@ -1,40 +1,5 @@
 (function ($) {
-    /**
-     * @param options
-     *
-     * Options list:
-     *
-     * urlColumnData             - required,
-     * urlDataTable              - required,
-     * checkedUrl                - required,
-     * checkedCounterSelector    - selector to object with number of checked rows,
-     * counterSelector           - selector to object with time of query (s) ,
-     * deleteUrl                 - url for delete row,
-     * idName                    - Name of primary key (id or obj_id)
-     * checkboxes                - Checkboxes. Def: false
-     * extRowMenu: [{            - Массив с дополнительными пунктами меню записи
-     *     title,                - Тайтл меню
-     *     cb(id)                - Callback on click
-     *     conditionShow         - Condition show
-     * }]
-     * editForm:{                - optional. Params of edit row
-     *     url,                  - url to form
-     *     title,                - title of form
-     *     type                  - can be 'modal' or 'page'. Default: 'modal'
-     * }
-     * createForm:{              - optional. Params of create row
-     *     url,                  - url to form
-     *     title,                - title of form
-     *     type                  - can be 'modal' or 'page'. Default: 'modal'
-     * }
-     * detailForm:{              - optional. Params of create row
-     *     url,                  - url to form
-     *     title,                - title of form
-     *     type                  - can be 'modal' or 'page'. Default: 'modal'
-     * }
-     *
-     * @constructor
-     */
+
     $.fn.DataTableWrapperExt = function (options) {
         var element = this;
 
@@ -45,10 +10,12 @@
             element.attr('id', id);
         }
         var idTable = id + '-datatable';
-        var idSelector = "#" + id;
+        /*var idSelector = "#" + id;*/
         var idTableSelector = "#" + idTable;
         var columnsData;
-        var select2columnsSelector = 'select-' +  idTable;
+        var select2columnsSelector = 'select-' + idTable;
+        var tableObjectName = options.tableDefault;
+
         options = options || {};
 
         options.checkboxes = options.checkboxes || false;
@@ -58,55 +25,22 @@
         options.is_mat = options.is_mat || false;
         options.displayLength = options.displayLength ? options.displayLength : 20;
 
-        var reqOptions = [
-            'urlColumnData',
-            'urlDataTable',
-            'checkedUrl',
-            'urlSelect2'
-        ];
-
-        for (var i = 0; i < reqOptions.length; i++) {
-            if (typeof options[reqOptions[i]] == 'undefined') {
-                console.error(reqOptions[i] + " option is required");
-            }
-        }
-
-        var reportObjects = {query: {}, response: {}, request: {}};
-
+        var objectInfo = {objdb: tableObjectName,'dtObj':{},'s2obj':{}};
         var conditionTable = {};
-
         var wrapper;
         var datatable;
-
         var sortObject = options.sortDefault;
 
         var checkedIds = {};
         var colVis = {};
-        var tableObjectName = options.tableDefault;
-
 
         function createTable(col) {
             var result = [];
             var columnsSettings = [];
 
-            if (options.checkboxes) {
-                result.push({
-                    data: null,
-                    defaultContent: '<input class="check-item" name="select-row" type="checkbox">',
-                    orderable: false
-                });
-                columnsSettings.push({
-                    aTargets: [0],
-                    sTitle: '<input class="data_table_check_item" name="select-row" data-id-row="checkAll" type="checkbox">',
-                    mRender: function (data, type, full) {
-                        return '<input type=\"checkbox\" class ="data_table_check_item" name="select-row" ' + (checkNode(full[options.idName]) ? 'checked' : '') + ' value="true" data-id-row=' + full[options.idName] + '>';
-                    }
-                });
-            }
-
             result.push({
                 data: null,
-                visible: options.dtTheadButtons,
+                visible: false,
                 defaultContent: '',
                 orderable: false
             });
@@ -122,72 +56,15 @@
 
             columnsSettings.push({
                 aTargets: [parseInt(options.checkboxes + 0)],
-                mRender: function (data, type, full) {
-                    var buttons = [];
-                    var url;
-                    if (data[options.idName]) {
-                        if (options.editForm) {
-                            url = options.editForm.url.replace(':id', data[options.idName]);
-                            var typeUrl = options.editForm.type || 'modal';
-                            buttons.push(['<li>',
-                                '<a href="' + url + '" data-btn-type="edit-' + typeUrl + '">Изменить</a>',
-                                '</li>'
-                            ].join(''));
-                        }
-                        if (options.extRowMenu) {
-                            $.each(options.extRowMenu, function (key, menu) {
-                                if (menu.conditionShow) {
-                                    var cond = eval(menu.conditionShow);
-                                    if (!cond) {
-                                        return true;
-                                    }
-                                }
-
-                                if (menu.renderRow) {
-                                    buttons.push(menu.renderRow(data));
-                                } else {
-                                    buttons.push(['<li>',
-                                        '<a href="javascript:;" data-btn-type="ext-menu-row" data-number="' + key + '" data-id="' + data[options.idName] + '">' + menu.title + '</a>',
-                                        '</li>'
-                                    ].join(''));
-                                }
-                            })
-                        }
-
-                        if (options.detailForm) {
-                            $.each(options.detailForm, function (key, menu) {
-
-                                buttons.push(['<li>',
-                                    '<a href="javascript:;" data-btn-type="ext-menu-row" data-number="' + key + '" data-id="' + data[options.idName] + '">' + menu.title + '</a>',
-                                    '</li>'
-                                ].join(''));
-                            })
-                        }
-
-                        if (options.deleteUrl) {
-                            url = options.deleteUrl.replace(':id', data[options.idName]);
-                            buttons.push(['<li>',
-                                '<a href="' + url + '" data-btn-type="delete">Удалить</a>',
-                                '</li>'
-                            ].join(''));
-                        }
-                    }
-                    if (buttons.length == 0) {
-                        return '';
-                    }
-                    return [
-                        '<div class="btn-group"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">',
-                        '<span class="fa fa-gear"></span>',
-                        '<span class="sr-only">Toggle Dropdown</span>',
-                        '</button>',
-                        '<ul data-id="list" class="dropdown-menu" role="menu">' + buttons.join('') + '</ul></div>'
-                    ].join('');
-                }
             });
+
             datatable = $(idTableSelector).DataTable({
                 processing: true,
                 serverSide: true,
                 searching: false,
+                bFilter : false,
+                bLengthChange: false,
+                pageLength: 5,
                 iDisplayLength: options.displayLength,
                 dom: '<"top"flp>rt<"bottom"i><"clear"><"bottom"p>',
                 ajax: {
@@ -197,30 +74,12 @@
                         d['columns'] = prepareCondition(d).columns;
                         var filters = getUrlFIlters();
 
-                        $.each(filters, function (key, val) {
-                            for (var i in d['columns']) {
-                                if (d['columns'][i]['dataCol'] == key) {
-                                    d['columns'][i]['filterValue'] = val;
-                                    d['columns'][i]['filterCond'] = '=';
-                                    d['columns'][i]['filterType'] = 'int4';
-                                    return;
-                                }
-                            }
-
-                            d['columns'].push({
-                                dataCol: key,
-                                filterValue: val,
-                                filterCond: '=',
-                                filterType: 'int4'
-                            });
-                        });
-
                         if (options.conditionDefault) {
                             d['columns'] = options.conditionDefault;
                             options.conditionDefault = null;
                         }
 
-                        d.is_mat =options.is_mat;
+                        d.is_mat = options.is_mat;
                         d.objdb = tableObjectName;
                         conditionTable = d;
                     },
@@ -228,29 +87,18 @@
                 columns: result,
                 aoColumnDefs: columnsSettings,
                 drawCallback: function (settings) {
-                    var last = null;
+                    objectInfo['dtObj'] =  {o:this.api().data().ajax.json(),i:this.api().data().ajax.params()};
 
-                    $(idTableSelector).find('td input[name=select-row]').on('click', checkedChange);
-                    $(idTableSelector + ' a[data-btn-type=edit-modal]').on('click', startEdit);
+                    $('#datatable-data').text('Data:'+ objectInfo.dtObj.o.debug.query[0].data.time);
 
-                    $(idTableSelector + ' a[data-btn-type=delete]').on('click', deleteRow);
-                    $(idTableSelector + ' a[data-btn-type=ext-menu-row]').on('click', function (e) {
-                        var id = $(this).attr('data-id');
-                        var num = $(this).attr('data-number');
-                        options.extRowMenu[parseInt(num)].cb(id);
-                    });
+                    $('#datatable-f-ttl').text('TotalFiltered:' +objectInfo.dtObj.o.debug.query[1].recordsFiltered.time);
+                    $('#datatable-ttl').text('Total:' + objectInfo.dtObj.o.debug.query[2].recordsTotal.time);
                 },
                 initComplete: function (settings, json) {
-                    $(idTableSelector).find('th input[data-id-row=checkAll]').on('click', checkedChange);
-
-                    $(idSelector + ' button[data-btn-type=refresh]').on('click', function () {
-                        datatable.ajax.reload();
-                    });
-                    $(idSelector + ' a[data-btn-type=create-modal]').on('click', startCreate);
-
                     if (options.dtFilters) {
-                        $(idTableSelector).prepend(addFilter(col));
+                        addFilter(col);
                     }
+
                     $(idTableSelector + ' thead th.sorting').click(function () {
                         sortObject = [];
 
@@ -291,118 +139,55 @@
 
         function addFilter(col) {
             var item = col.columns;
-            var var_total = '';
-            var columnsVisibility = '';
+            html ='';
+        /**/
 
-            item.forEach(function (item, i, data)
-            {
-                if (item.is_filter)
-                {
-                var filterOop = '';
-                var filterValues = '';
-                if (item.cd) {
-                    item.cd.forEach(function (item, i, data) {
-                        filterOop = filterOop + '<option>' + item + '</option>';
-                    });
-                }
-                if (item.cdi) {
-                    item.cdi.forEach(function (item2, i, data) {
-                        filterValues = filterValues + '<option>' + item2 + '</option>';
-                    });
-                }
+            item.forEach(function (item, i, data) {
+                v= '';
+                if(item.visible) {
+                    v = '<th></th>';
 
-                colVis[item.data] = item.visible;
-                var check = item.visible ? 'checked' : '';
-
-                if (item.visible) {
-                    if (options.select2Input && item.type == 'text') {
-                        var_total = var_total + '<th><select multiple class="' + select2columnsSelector + '  type="' + item.type + '" placeholder="' + item.title + '" name="input" data-column="' + item.data + '"></select></th>'
-                    }
-                    else
-                    {
-                        if (item.type == 'timestamptz' || item.type == 'timestamp')
-                        {
-                            var_total = var_total + '<th>' +
-                                '<div class="btn-group">' +
-                                '<div class="input-group-btn">' +
-                                '<select class="btn btn-default btn-sm dropdown-toggle" style="display: none;">' + filterOop + '' +
-                                '</select>' +
-                                ' </div>' +
-                                '<input type="' + item.type + '" class="form-control input-sm" data-column="' + item.data + '" placeholder="' + item.title + '"></div></th>';
+                    if (item.is_filter) {
+                        if (item.cd[0] == 'select2dynamic') {
+                            v = '<th><select multiple class="' + select2columnsSelector + '"  type="' + item.type + '" placeholder="' + item.title + '" name="input" data-column="' + item.data + '"></select></th>';
                         }
-                        else
-                        {
-                        var_total = var_total + '<th>' +
-                            '<div class="input-group">' +
-                            '<div class="input-group-btn"">' +
-                            '<select class="btn btn-default btn-sm dropdown-toggle">' + filterOop + '' +
-                            '</select>' +
-                            ' </div>' +
-                            '<input type="' + item.type + '" style="width:auto" class="form-control input-sm" data-column="' + item.data + '" placeholder="' + item.title + '"></div></th>';
+                        else if (item.type == 'timestamptz') {
+                            v = '<th><input type="' + item.type + '" class="form-control input-sm" data-column="' + item.data + '" placeholder="' + item.title + '"></div></th>';
+                        }
+                        else if (item.cd) {
+                            var option = '';
+
+                            (item.cd).forEach(function(element) {
+                                option = option + '<option>'+element+'</option>';
+                            });
+
+                          var v = '<th><div class="input-group">'+
+                            '<div class="input-group-btn">'+
+                            '<select class="btn btn-default">'+ option +
+                            '</select>'+
+                            '</div>'+
+                            '<input type="' + item.type + '" filter-cond="=" class="form-control input-sm" data-column="'+ item.data +'" placeholder="'+ item.title +'">'+
+                            '</div></th>';
+                           /*v = '<th><div class="input-group"><div class="input-group-btn"><select class="btn btn-default btn-sm dropdown-toggle"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select> </div><input type="int4" style="width: 70px" class="form-control input-sm" data-column="id" placeholder="id"></div></th>';*/
                         }
                     }
                 }
-                columnsVisibility = columnsVisibility + '<li><a href="#" class="small" data-data="' + item.data + '" tabIndex="-1"><input ' + check + ' type="checkbox"/>&nbsp;' + item.title + '</a></li>';
-            }
-            else
-                {
-                    var_total = var_total + '<th></th>';
-                }}
-            );
+                html = html + v;
+            });
 
-            $('[data-type=visible-columns]').html(columnsVisibility);
+            $(idTableSelector).prepend('<thead><tr>"' + html + '"</tr></thead>');
 
-            var thCheckboxes = '';
+            $('th .input-group').each(function() {
+                $(this).change(function() {
+                    var cond;
+                    $(this).find(":selected").each(function (d) {
+                        cond  = this.innerHTML;
+                    });
 
-            if (options.checkboxes) {
-                thCheckboxes = '<th>' +
-                    '<button type="button" id = "checked_counter" disabled class="btn btn-default">0' +
-                    '</button></th>';
-            }
-
-            var theadObject = '';
-            if (options.dtTheadButtons) {
-                var quotevariable = "'" +  '#' + id + '-datatable' + "'";
-
-                if(options.clearFilterButton === false) {
-                    theadObject = '<th>' +
-                        '<div class="btn-group">' +
-                        '<div class="input-group-btn">' +
-                        '<button type="button" class="btn btn-default btn-sm" onclick="$(' + quotevariable + ').DataTable().ajax.reload()">Search</button></div>' +
-                        ' </th> ';
-                } else
-                    theadObject = '<th><div class="btn-group">' +
-                        '<div class="input-group-btn">'+
-                    '<button type="button" class="btn btn-default" onclick="$(' + quotevariable + ').DataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter"> </span> </button>'+
-                    '<button type="button" class="btn btn-default" onclick="wrapper.rebuildTable()"> <span class="glyphicon glyphicon-remove-circle"> </span> </button>'+
-                    '</div></div></th>';
-                };
-
-            $(idTableSelector).prepend('<thead><tr>' + thCheckboxes + theadObject
-                + var_total + ' </tr></thead>');
-
-            $('[data-type=visible-columns] a').on('click', function (event) {
-
-                var $target = $(event.currentTarget),
-                    val = $target.attr('data-data'),
-                    inp = $target.find('input');
-
-                if (colVis[val] == true) {
-                    colVis[val] = false;
-
-                    setTimeout(function () {
-                        inp.prop('checked', false)
-                    }, 0);
-                } else {
-                    colVis[val] = true;
-                    setTimeout(function () {
-                        inp.prop('checked', true)
-                    }, 0);
-                }
-
-                $(event.target).blur();
-
-                return false;
+                    $(this).find("[filter-cond]").each(function (d) {
+                        $(this).attr('filter-cond',cond);
+                    });
+                });
             });
 
             $(idTableSelector + ' th input[type=int4]').each(function (data) {
@@ -414,139 +199,137 @@
                 });
             });
 
-            $('.' + select2columnsSelector).select2({
-                placeholder: "Поиск",
-                minimumInputLength: 3,
-                width: '100%',
-                dropdownAutoWidth : true,
-                language: {
-                    inputTooShort: function(args) {
-                        // args.minimum is the minimum required length
-                        // args.input is the user-typed text
-                        return "";
-                    },
-                    noResults: function() {
-                        return "Не найдено";
-                    },
-                    searching: function() {
-                        return "Поиск...";
-                    },
-                    errorLoading: function() {
-                        return "";
-                    },
-                },
-                ajax: {
-                    url: options.urlSelect2,
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
+            $('.' + select2columnsSelector).each(function (data) {
+                var col = ($(this).attr('data-column'));
+                var type = $(this).attr('type')
 
-                    data: function (srch) {
-                        return Object.assign({}, srch, {
-                            'objdb': tableObjectName,
-                            'col': ($(this).attr('data-column'))
-                        });
+                $(this).select2({
+                    placeholder: "",
+                    minimumInputLength: type == 'int4' ? 1 : 3,
+                    width: '100%',
+                    dropdownAutoWidth: true,
+                    language: {
+                        inputTooShort: function (args) {
+                            return "";
+                        },
+                        noResults: function () {
+                            return "Не найдено";
+                        },
+                        searching: function () {
+                            return "Поиск...";
+                        },
+                        errorLoading: function () {
+                            return "";
+                        },
                     },
-                    processResults: function (data, page) {
-                        var ob = [];
+                    ajax: {
+                        url: options.urlSelect2,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: function (srch) {
+                            return Object.assign({}, srch, {
+                                'objdb': tableObjectName,
+                                'col': col,
+                                'type': type
+                            });
+                        },
+                        processResults: function (data, page) {
+                            var ob = [];
 
-                        $.each(data, function (key, value) {
-                            ob.push({'id': value, 'text': value});
-                        });
-                        return {results: ob};
+                            objectInfo['s2obj']= {o:data,i:{'objdb': tableObjectName, 'col': col, 'type': type}};
+
+                            if(objectInfo.s2obj['o'])
+                                $('#select2-query').text('Select2:' + objectInfo.s2obj.o.time);
+                            else
+                                $('#select2-query').text('');
+
+                            if(ob.push) {
+                                $.each(data.rs, function (key, value) {
+                                    ob.push({'id': value, 'text': value});
+                                });
+                            }
+                            return {results: ob};
+                        }
                     }
-                }
+                });
             });
 
             $('.' + select2columnsSelector).on('select2:close', function (evt) {
                 datatable.ajax.reload();
             });
 
-            var today = moment().add(1, 'days').format('YYYY.MM.DD');
-
             var selectColStamp = idTableSelector + ' th input[type=timestamp],' + idTableSelector + ' th input[type=timestamptz],' + idTableSelector + ' th input[type=date]';
+
+            var start = moment().subtract(29, 'days');
+            var end = moment();
+
             $(selectColStamp).daterangepicker({
-                startDate: moment().subtract(29, 'days'),
-                endDate: moment(),
-                locale: {format: 'YYYY.MM.DD'},
-                autoUpdateInput: false,
+                startDate: start,
+                endDate: end,
                 ranges: {
-                    'Сегодня': [moment().format('YYYY.MM.DD'), today],
-                    'Вчера': [moment().subtract(1, 'days').format('YYYY.MM.DD'), moment().format('YYYY.MM.DD')],
-                    'За последние 7-емь дней': [moment().subtract(6, 'days').format('YYYY.MM.DD'), today],
-                    'За последние 30-ать дней': [moment().subtract(29, 'days'), today],
-                    'Текущий месяц': [moment().startOf('month'), moment().endOf('month').add(1, 'days').format('YYYY.MM.DD')],
-                    'Прошлый месяц': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month').add(1, 'days').format('YYYY.MM.DD')]
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
                 }
             });
 
             $(selectColStamp).on('apply.daterangepicker', function(ev, picker) {
                 $(this).val(picker.startDate.format('YYYY.MM.DD') + ' - ' + picker.endDate.format('YYYY.MM.DD'));
+                datatable.ajax.reload();
             });
 
             $(selectColStamp).on('cancel.daterangepicker', function(ev, picker) {
                 $(this).val('');
+                datatable.ajax.reload();
             });
         }
 
         function prepareCondition(d) {
-            var cd = [];
             d.order = sortObject;
-
             conditionTable['columns'] = [];
-
-            $(idTableSelector + ' .input-group-btn').find(":selected").each(function () {
-                cd.push({cd: this.innerHTML});
-            });
 
             var columns = [];
 
-            $(idTableSelector + ' input[data-column]').each(function (data) {
-                var filterCond = cd[data].cd.replace('&lt;', '<').replace('&gt;', '>');
-                var filterValue = ($(this).val());
-                var filterType;
-                var filterData;
-
-                if (filterCond != 'X' && filterValue != '') {
-                    filterType = $(this).attr('type');
-                    filterData = $(this).attr('data-column');
-                    filterValue = ($(this).val());
-                    filterCond = cd[data].cd.replace('&lt;', '<').replace('&gt;', '>');
-
-                    columns.push({
-                        dataCol: filterData,
-                        filterType: filterType,
-                        filterValue: filterValue,
-                        filterCond: filterCond
-                    });
-                }
-            });
-
-            $('.' + select2columnsSelector).each(function (data) {
-
-                var items = $(this).select2('data');
+            $(idTableSelector + ' [data-column],th input[type=timestamp],' + idTableSelector + ' th input[type=timestamptz],' + idTableSelector + ' th input[type=date]').each(function (data) {
+                var val = $(this).val();
                 var filterData = $(this).attr('data-column');
-                var filterValue = [];
+                var filterType = $(this).attr('type');
+                var filterCond = $(this).attr('filter-cond');
 
-                items.forEach(function (item) {
-                    if (item.text) {
-                        filterValue.push(item.text);
+                if (val) {
+                    if (Array.isArray(val)) {
+                        columns.push({
+                            dataCol: filterData,
+                            filterType: filterType,
+                            filterValue: val.join(),
+                            filterCond: 'in'
+                        });
                     }
-                });
-
-                if (filterValue.length > 0) {
-
-                    columns.push({
-                        dataCol: filterData,
-                        filterType: 'text',
-                        filterValue: filterValue.join(),
-                        filterCond: 'in'
-                    });
+                    else if(filterCond) {
+                        columns.push({
+                            dataCol: filterData,
+                            filterType: filterType,
+                            filterValue: val,
+                            filterCond: (filterCond.replace('&lt;', '<')).replace('&gt;', '>')
+                        });
+                    }
+                    else {
+                        columns.push({
+                            dataCol: filterData,
+                            filterType: filterType,
+                            filterValue: val,
+                            filterCond: 'between'
+                        });
+                    }
                 }
             });
-            conditionTable['columns'] = columns;
 
+            conditionTable['columns'] = columns;
             return conditionTable;
-        }
+        };
 
         function deleteRow(e) {
             e.preventDefault();
@@ -555,25 +338,6 @@
             button.attr('data-url', url);
 
             $('.modal-delete').modal('show');
-        }
-
-        function makeDelete(e) {
-            e.preventDefault();
-
-            var button = $('.modal-delete button[data-btn-type=make-delete]');
-            var url = button.attr('data-url');
-
-            $.ajax({
-                url: url,
-                type: 'DELETE',
-                success: function (result) {
-                    datatable.ajax.reload();
-                },
-                complete: function () {
-                    button.attr('data-url', '');
-                    $('.modal-delete').modal('hide');
-                }
-            });
         }
 
         function startEdit(e) {
@@ -590,140 +354,72 @@
             modalForm(url, title);
         }
 
-        function modalForm(url, title, afterLoadForm, afterSuccessful, extraOptions) {
-
-            extraOptions = extraOptions || {};
-
-            var app_id = url;
-            showModal(url, title, function (modal) {
-                var form = modal.find('form');
-
-                if (afterLoadForm) {
-                    afterLoadForm(form);
-                }
-
-                var formOptions = {
-                    url: url,
-                    beforeSubmit: function(arr, $form, options) {
-                        if (extraOptions.beforeSubmit) {
-                            extraOptions.beforeSubmit(arr, $form, options);
-                        }
-                    },
-                    success: function (data, statusText, xhr, form) {
-                        if (afterSuccessful) {
-                            afterSuccessful(data, statusText, xhr, form);
-                        }
-                        modal.modal('hide');
-                    },
-                    error: function (xhr) {
-                        if (xhr.responseJSON.errors) {
-                            $.each(xhr.responseJSON.errors, function (key, msg) {
-                                $.jGrowl(msg, {
-                                    header: 'Ошибка',
-                                    theme: 'alert-danger',
-                                    life: 5000
-                                });
-                            });
-                        }
-                    },
-                    complete: function(jqXHR, textStatus) {
-                        if (extraOptions.complete) {
-                            extraOptions.complete(jqXHR, textStatus);
-                        }
-                    },
-                    resetForm: true
-                };
-                $(form).ajaxForm(formOptions);
-            });
-        }
-
-        function showModal(url, title, fn) {
-            var modalFormContainer = $('#modal-form-container');
-            if (!modalFormContainer.length) {
-                modalFormContainer = $("<div id='modal-form-container'></div>");
-                $('body').append(modalFormContainer);
-            }
-            modalFormContainer.empty();
-
-            modalFormContainer.load(url, function () {
-                var modalForm = modalFormContainer.find('.modal-form');
-                modalForm.find('.modal-title').html(title);
-                modalForm.modal('show');
-
-                if (fn) {
-                    fn(modalForm);
-                }
-            });
-        }
-
         function initTable(visCol) {
-            return $.ajax({
-                method: "GET",
-                url: options.urlColumnData,
-                data: {
-                    visCol: visCol,
-                    objdb: tableObjectName
-                }
-            }).done(function (data) {
-                element.html('');
-
-                var simple_checkbox = function (data, type, full, meta) {
-                    var is_checked = data == true ? "checked" : "";
-                    return '<input type="checkbox" class="checkbox" ' +
-                        is_checked + '  disabled/>';
-                };
-                moment.lang('ru');
-                var pretty_timestamp =
-                    function (data, type, full, meta) {
-                        var now = moment.parseZone(data);
-                        now = now.format('lll');
-                        
-                    return now == 'Invalid date' ?'':now;
-                };
-
-                if (data.columns) {
-                }
-                for (var i = 0; i < data.columns.length; i++) {
-                    if (data.columns[i]["type"] == "bool") {
-                        data.columns[i].render = simple_checkbox;
+            if (!options.columns) {
+                return $.ajax({
+                    method: "GET",
+                    url: options.urlColumnData,
+                    data: {
+                        visCol: visCol,
+                        objdb: tableObjectName
                     }
-                    if (data.columns[i]["type"] == "timestamptz" || data.columns[i]["type"] == "timestamp" || data.columns[i]["type"] == "date"){
-                        data.columns[i].render = pretty_timestamp;
-                    }
-                }
-                columnsData = data;
-
-                var buttons = [];
-                
-                var htmlElements = [
-                    '<div>',
-                    buttons.join(''),
-                    '</div>',
-                    '<table id="' + idTable + '" class="table table-striped table-bordered" cellspacing="0" width="100%">' +
-                    ' </table>'
-                ];
-                
-                element.prepend(htmlElements.join(''));
-
-                addReportObjects('query', 'q1', data.createColumns);
-
-                createTable(data);
-
-                $('[data-type=rebuild]').click(function () {
-                    wrapper.rebuildTable();
+                }).done(function (data) {
+                    CollRender(data);
                 });
+            }
+            else {
+                CollRender(options.columns);
+            }
+        }
 
-                $('[data-type=export_excel]').click(function () {
-                    if (Object.keys(checkedIds).length > 0) {
-                        GetCsvDataTable();
-                    }
-                });
+        function CollRender(data) {
+            data = JSON.parse(data);
 
-                if (options.deleteUrl) {
-                    $('body').append(confirmDeleteModal);
-                    $('.modal-delete button[data-btn-type=make-delete]').on('click', makeDelete);
+            element.html('');
+
+            var simple_checkbox = function (data, type, full, meta) {
+                var is_checked = data == true ? "checked" : "";
+                return '<input type="checkbox" class="checkbox" ' +
+                    is_checked + '  disabled/>';
+            };
+            moment.lang('ru');
+            var pretty_timestamp =
+                function (data, type, full, meta) {
+                    var now = moment.parseZone(data);
+                    now = now.format('lll');
+
+                    return now == 'Invalid date' ? '' : now;
+                };
+
+            if (data.columns) {
+            }
+            for (var i = 0; i < data.columns.length; i++) {
+                if (data.columns[i]["type"] == "bool") {
+                    data.columns[i].render = simple_checkbox;
                 }
-            })
+                if (data.columns[i]["type"] == "timestamptz" || data.columns[i]["type"] == "timestamp" || data.columns[i]["type"] == "date") {
+                    data.columns[i].render = pretty_timestamp;
+                }
+            }
+            columnsData = data;
+
+            var buttons = [];
+
+            var htmlElements = [
+                '<div>',
+                buttons.join(''),
+                '</div>',
+                '<table id="' + idTable + '" class="table table-striped table-bordered" cellspacing="0" width="100%">' +
+                ' </table>'
+            ];
+
+            element.prepend(htmlElements.join(''));
+
+            createTable(data);
+
+            $('[data-type=rebuild]').click(function () {
+                wrapper.rebuildTable();
+            });
         }
 
         function checkedChange(e) {
@@ -768,9 +464,6 @@
             }
         }
 
-        function addReportObjects(type, key, object) {
-            reportObjects[type][key] = object;
-        }
 
         function checkNode(id) {
             return checkedIds[id] == true;
@@ -779,9 +472,6 @@
         wrapper = {
             nodeCount: function () {
                 return Object.keys(checkedIds).length;
-            },
-            getReportObjects: function () {
-                return reportObjects;
             },
             getIdDataTableSelector: function () {
                 return idTableSelector;
@@ -795,221 +485,54 @@
             rebuildTable: function () {
                 return initTable(colVis);
             },
+            getJsonInfo: function () {
+                return objectInfo;
+            },
+            clearFilter: function () {
+
+                $(idTableSelector + ' [data-column]').each(function (data) {
+                    if ($(this).attr('multiple')){
+                        $(this).select2("val", "");
+                    }
+                    var val = $(this).val();
+                    $(this).val('')
+                });
+                wrapper.getDataTable().ajax.reload()
+            },
             rebuildS2Columns: function (data) {
                 tableObjectName = data;
                 initTable();
             },
-            exportToExcel: function () {
-                GetCsvDataTable();
-            },
-            exportToExcelFull: function () {
-                GetCsvDataTableExt();
-            },
-            modalForm: modalForm
         };
-
-        var confirmDeleteModal = [
-            '<div class="modal modal-danger modal-delete fade">',
-            '<div class="modal-dialog">',
-            '<div class="modal-content">',
-            '<div class="modal-header">',
-            '<button type="button" class="close" data-dismiss="modal" aria-label="Close">',
-            '<span aria-hidden="true">×</span></button>',
-            '<h4 class="modal-title">ВНИМАНИЕ!!!</h4>',
-            '</div>',
-            '<div class="modal-body">',
-            '<p>Вы уверены что хотите удалить эту запись?</p>',
-            '</div>',
-            '<div class="modal-footer">',
-            '<button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Отмена</button>',
-            '<button type="button" class="btn btn-outline" data-btn-type="make-delete">Удалить</button>',
-            '</div>',
-            '</div>',
-            '</div>',
-            '</div>'
-        ];
-        confirmDeleteModal = confirmDeleteModal.join('');
 
         initTable();
-        
-        function GetCsvDataTable() {
-            $.post(options.urlColumnData, {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
-                columns = data.columns;
-
-                $.post(options.urlDataTable, {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
-                    JSONToCSVConvertor(data.data,'ExportTest',true, columns);
-                });
-
-            });
-        }
-
-        function GetCsvDataTableExt()
-        {
-            conditionTable['start'] = -1;
-            conditionTable['length'] = -1;
-
-            $.post(options.urlDataTable,conditionTable, function (data) {
-                JSONToCSVConvertor(data.data,'ExportTest',true, columnsData.columns);
-            });
-
-
-          /*  $.post(options.urlColumnData,
-                {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
-                columns = data.columns;*/
-
-            /*$.post(options.urlColumnData, {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
-                columns = data.columns;
-
-                $.post(options.urlDataTable, {fieldIds: options.idName,"ids":Object.keys(checkedIds).join(','),objdb:tableObjectName}, function (data) {
-                    JSONToCSVConvertor(data.data,'ExportTest',true, columns);
-                });
-
-            });*/
-        };
 
         var filters = getUrlFIlters();
-
-        function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel, Columns) {
-            //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
-            var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
-
-            var CSV = '';
-            //Set Report title in first row or line
-
-            // CSV += ReportTitle + '\r\n\n';
-
-            var title = {};
-            Object.keys(Columns).forEach(function(key) {
-                title[Columns[key].data] = Columns[key].title;
-            });
-
-
-            //This condition will generate the Label/Header
-            if (ShowLabel) {
-                var row = "";
-
-                //This loop will extract the label from 1st index of on array
-                for (var index in arrData[0]) {
-                    //Now convert each value to string and comma-seprated
-                    row += title[index] + ',';
-                }
-
-                row = row.slice(0, -1);
-
-                //append Label row with line break
-                CSV += row + '\r\n';
-            }
-
-
-            //1st loop is to extract each row
-            for (var i = 0; i < arrData.length; i++) {
-                var row = "";
-                //2nd loop will extract each column and convert it in string comma-seprated
-                for (var index in arrData[i]) {
-                    row += '"' + arrData[i][index] + '",';
-                }
-
-                row.slice(0, row.length - 1);
-
-                //add a line break after each row
-                CSV += row + '\r\n';
-            }
-
-            if (CSV == '') {
-                alert("Invalid data");
-                return;
-            }
-
-            //Generate a file name
-            var fileName = "MyReport_";
-            //this will remove the blank-spaces from the title and replace it with an underscore
-            fileName += ReportTitle.replace(/ /g,"_");
-
-            //Initialize file format you want csv or xls
-            var uri = 'data:text/csv;charset=utf-8,' + encodeURI(CSV);
-
-            // Now the little tricky part.
-            // you can use either>> window.open(uri);
-            // but this will not work in some browsers
-            // or you will not get the correct file extension
-
-            //this trick will generate a temp <a /> tag
-            var link = document.createElement("a");
-            link.href = uri;
-
-            //set the visibility hidden so it will not effect on your web-layout
-            link.style = "visibility:hidden";
-            link.download = fileName + ".csv";
-
-            //this part will append the anchor tag and remove it after automatic click
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
         return wrapper;
-    };
 
-    jQuery.fn.ForceNumericOnly =
-        function () {
-            return this.each(function () {
-                $(this).keyup(function (e) {
-                    var key = e.charCode || e.keyCode || 0;
-                    return (
-                    key == 8 ||
-                    key == 9 ||
-                    key == 13 ||
-                    key == 46 ||
-                    key == 110 ||
-                    key == 190 ||
-                    (key >= 35 && key <= 40) ||
-                    (key >= 48 && key <= 57) ||
-                    (key >= 96 && key <= 105));
-                });
-            });
-        };
 
-    function urlParamEncode(src) {
-        return encodeURIComponent(Base64.encode(JSON.stringify(src)));
-    }
-
-    function urlParamDecode(src) {
-        return JSON.parse(Base64.decode(decodeURIComponent(src)));
-    }
-
-    function getQueryVariable(variable) {
-        var query = window.location.search.substring(1);
-        var vars = query.split("&");
-        for (var i = 0; i < vars.length; i++) {
-            var pair = vars[i].split("=");
-            if (pair[0] == variable) {
-                return pair[1];
-            }
+        function urlParamDecode(src) {
+            return JSON.parse(Base64.decode(decodeURIComponent(src)));
         }
-        return (false);
-    }
 
-    function syntaxHighlight(json) {
-        if (typeof json != 'string') {
-            json = JSON.stringify(json, undefined, 2);
-        }
-        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-            var cls = 'number';
-            if (/^"/.test(match)) {
-                if (/:$/.test(match)) {
-                    cls = 'key';
-                } else {
-                    cls = 'string';
+        function getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) {
+                    return pair[1];
                 }
-            } else if (/true|false/.test(match)) {
-                cls = 'boolean';
-            } else if (/null/.test(match)) {
-                cls = 'null';
             }
-            return '<span class="' + cls + '">' + match + '</span>';
-        });
+            return (false);
+        }
     }
+
+
+    
+
 })(jQuery);
+
+
 
 

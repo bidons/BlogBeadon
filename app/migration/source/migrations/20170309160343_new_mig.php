@@ -69,11 +69,11 @@ CREATE TABLE paging_table
 
 CREATE UNIQUE INDEX paging_table_name_paging_table_type_id ON paging_table (name);
 
-INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (1, 'views', 'Вьюхи таблицы (физ. сущности)', null, '2017-03-14 17:54:15.109763', null);
-INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (3, 'tables', 'Отчёты для маркетинга', null, '2017-03-14 17:54:15.109763', null);
-INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (5, 'dynamic', 'Финансовые отчёты', null, '2017-03-14 17:54:15.109763', null);
-INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (6, 'Analytic', 'Отчёты для аналитиков', null, '2017-03-14 17:54:15.712535', null);
-INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (4, 'Admin', 'Отчёты для разработчиков', null, '2017-03-14 17:54:15.109763', '2017-09-22 10:21:06.085153 +03:00');
+INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (1, 'public', 'Таблички (public)', null, '2017-03-14 17:54:15.109763', null);
+INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (2, 'view', 'Вьюхи', null, '2017-03-14 17:54:15.109763', null);
+INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (3, 'view_materialize', 'Материализованные вьюшки', null, '2017-03-14 17:54:15.109763', null);
+INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (4, 'view_useful', 'Обвёртки (полезные запросы)', null, '2017-03-14 17:54:15.712535', null);
+/*INSERT INTO public.paging_table_type (id, name, descr, init_obj_id, create_time, update_time) VALUES (5, 'Admin', 'Отчёты для разработчиков', null, '2017-03-14 17:54:15.109763', '2017-09-22 10:21:06.085153 +03:00');*/
 
 CREATE TABLE pg_type_item
 (
@@ -893,7 +893,6 @@ BEGIN
 END
 $$;
 
-
 CREATE OR REPLACE FUNCTION public.paging_columns_prop_before_update_paging_table_mat_trg()
   RETURNS trigger LANGUAGE plpgsql AS
 $$
@@ -931,6 +930,125 @@ BEGIN
 RETURN NEW;
 END;
 $$;
+
+
+create view vw_rep_omonym as 
+select id,entry_name
+from omonym;
+
+
+create view vw_rep_multilexem as
+select *
+from multilexem;
+
+select rebuild_paging_prop('vw_rep_omonym','Омонимы','public',false);
+select rebuild_paging_prop('vw_rep_multilexem','Лексемы','public',false);
+
+
+
+
+drop view if EXISTS vw_noun ;
+create view vw_noun as
+select id,name,uname,freq
+from sg_entry as sg
+where sg.id_class = 7 ;
+select rebuild_paging_prop('vw_noun','Cуществительные','public',false);
+
+drop view if EXISTS vw_pronoun;
+create view vw_pronoun as
+select id,name,uname,freq
+from sg_entry as sg
+where sg.id_class = 8;
+select rebuild_paging_prop('vw_pronoun','Местоимение','public',false);
+
+drop view if EXISTS vw_infinitive;
+create view vw_infinitive as
+select id,name,uname,freq
+from sg_entry as sg
+where sg.id_class = 12;
+select rebuild_paging_prop('vw_infinitive','Прилагательные','public',false);
+
+drop view if EXISTS vw_verb;
+create view vw_verb as
+select id,name,uname,freq
+from sg_entry as sg
+where sg.id_class = 13;
+select rebuild_paging_prop('vw_verb','Глаголы','public',false);
+
+drop view if EXISTS vw_participle;
+create view vw_participle as
+select id,name,uname,freq
+from sg_entry as sg
+where sg.id_class = 14;
+select rebuild_paging_prop('vw_participle','Деепричастие','public',false);
+
+drop view if EXISTS vw_pretext;
+create view vw_pretext as
+select id,name,uname,freq
+from sg_entry as sg
+where sg.id_class = 15;
+select rebuild_paging_prop('vw_pretext','Предлог','public',false);
+
+create view vw_impersonal_verb as
+select id,name,uname,freq
+from sg_entry as sg
+where sg.id_class = 16;
+select rebuild_paging_prop('vw_impersonal_verb','Безлич. глагол','public',false);
+
+create view vw_particle as
+select id,name,uname,freq
+from sg_entry as sg
+where sg.id_class = 19;
+select rebuild_paging_prop('vw_impersonal_verb','Частица','public',false);
+
+create view vw_conjunction as
+select id,name,uname,freq
+from sg_entry as sg
+where sg.id_class = 20;
+select rebuild_paging_prop('vw_conjunction','Союз','public',false);
+
+create view vw_adverb as
+select id,name,uname,freq
+from sg_entry as sg
+where sg.id_class = 21;
+select rebuild_paging_prop('vw_adverb','Наречие','public',false);
+
+create view vw_introductory as
+select id,name,uname,freq
+from sg_entry as sg
+where sg.id_class = 24;
+select rebuild_paging_prop('vw_introductory','Вводное','public',false);
+
+
+CREATE OR REPLACE VIEW public.vw_rep_sys_size_ddl AS
+  SELECT
+    (a.table_name)::text AS table_name,
+    (a.row_estimate)::text AS row_estimate,
+    pg_size_pretty(a.total_bytes) AS total_size,
+    pg_size_pretty(a.index_bytes) AS index_size,
+    pg_size_pretty(a.toast_bytes) AS toast_size,
+    pg_size_pretty(a.table_bytes) AS table_size
+   FROM ( SELECT a_1.oid,
+            a_1.table_schema,
+            a_1.table_name,
+            a_1.row_estimate,
+            a_1.total_bytes,
+            a_1.index_bytes,
+            a_1.toast_bytes,
+            ((a_1.total_bytes - a_1.index_bytes) - COALESCE(a_1.toast_bytes, (0)::bigint)) AS table_bytes
+           FROM ( SELECT c.oid,
+                    n.nspname                                           AS table_schema,
+                    c.relname                                           AS table_name,
+                    c.reltuples                                         AS row_estimate,
+                    pg_total_relation_size((c.oid)::regclass)           AS total_bytes,
+                    pg_indexes_size((c.oid)::regclass)                  AS index_bytes,
+                    pg_total_relation_size((c.reltoastrelid)::regclass) AS toast_bytes
+                   FROM (pg_class c
+                     LEFT JOIN pg_namespace n ON ((n.oid = c.relnamespace)))
+                  WHERE (c.relkind = 'r'::"char")) a_1) as a
+              where table_schema = 'public' order by total_bytes desc;
+
+select rebuild_paging_prop('vw_rep_sys_size_ddl','Размеры объектов в бд.','view',false);
 
 EOD;
         $this->execute($query);

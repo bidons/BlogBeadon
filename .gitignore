@@ -12,6 +12,7 @@ public/components
 public/bower_components
 node_modules
 public/static
+public/db_log.log
 app/migration/phinx.yml
 scripts_rev
 app/migration/dump/dump_latest.dump

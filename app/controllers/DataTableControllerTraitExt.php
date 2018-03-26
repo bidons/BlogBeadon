@@ -18,7 +18,7 @@ trait DataTableControllerTraitExt
         return $this->responseJson($result);
     }
 
-    public function idsDataAction()
+  /*  public function idsDataAction()
     {
         $data = json_encode($this -> table_condition);
 
@@ -29,6 +29,7 @@ trait DataTableControllerTraitExt
 
         return $this->responseJson($result);
     }
+  */
 
     public function columnDataAction()
     {
@@ -48,10 +49,18 @@ trait DataTableControllerTraitExt
 
         $result =  $this->getDi()->getShared("db")->fetchOne($query);
 
-
         $result = json_decode($result['paging_dbnamespace_column_prop'],true);
         $result += ['createColumns' => ['query' => $query,'time' => (microtime() - $time)]];
 
         return $this->responseJson($result);
     }
+
+    public function txtSrchAction()
+    {
+        $data = json_encode($this->request->get());
+        $result =  $this->getDi()->getShared("db")->fetchOne("select paging_object_db_srch('$data')");
+        return $result['paging_object_db_srch'];
+    }
+
+
 }
