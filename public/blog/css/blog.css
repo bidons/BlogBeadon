@@ -18,3 +18,18 @@ body {
     text-align: center;
 }
 
+.post-series-content {
+    margin: 0 0 26px;
+    padding: 20px;
+    /* background-color: #f5f7f8;*/
+}
+.entry-content {
+    font-family: verdana;
+    font-size: 18px;
+    font-weight: normal;
+    color: #000000;
+}
+
+.entry-content {
+    line-height: 1.63;
+}

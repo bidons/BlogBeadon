@@ -12,7 +12,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/index/blog/part_1">Конструкторы</a>
+                    <a class="nav-link" href="/objectdb/index">Конструкторы</a>
                 </li>
             </ul>
         </div>

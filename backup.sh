@@ -6,7 +6,7 @@
 set -e
 
 echo -n 'Create database dump ... '
-pg_dump -h localhost -U root -Fc \
+pg_dump -h localhost -U root -p 5435  -Fc \
     --exclude-table-data=report_* \
     --exclude-table-data=mv_rep* \
     --exclude-table-data=temp_* \

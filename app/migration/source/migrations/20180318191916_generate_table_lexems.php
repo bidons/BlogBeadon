@@ -30,6 +30,8 @@ class GenerateTableLexems extends AbstractMigration
 $query =<<<'EOD'
 set ENABLE_SEQSCAN =false;
 
+
+
 insert into sg_generate_grek(id,gen_text)
 select generate_series(1,100000 -1,1), concat_ws(' ',
                  random_int_btw(1,9),      --МЕСТОИМ_СУЩ
@@ -48,6 +50,7 @@ select generate_series(100000,200000 -1,1), concat_ws(' ',
                  random_int_btw(1,17),     -- ВОСКЛ_ГЛАГОЛ 1
                  random_int_btw(44,11),    --ЧИСЛИТЕЛЬНОЕ	ЧИСЛИТЕЛЬНОЕ
                   random_int_btw(8385,7)); --СУЩЕСТВИТЕЛЬНОЕ
+
 
 
 EOD;

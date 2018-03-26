@@ -34,6 +34,12 @@ start() {
     docker-compose ps
 }
 
+cu() {
+	message "Install composer requirements"
+    docker-compose exec php composer install
+    docker-compose exec php chmod -R 777 /var/www/phalcon
+}
+
 stop() {
     docker-compose stop
     docker-compose ps

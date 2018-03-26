@@ -35,6 +35,6 @@
     "mpdf/mpdf": "^6.1",
     "ramsey/uuid": "^3.5",
     "iio/libmergepdf": "~3.0",
-    "aws/aws-sdk-php": "^3.20",
+    "aws/aws-sdk-php": "^3.20"
   }
 }
