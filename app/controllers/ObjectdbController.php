@@ -17,7 +17,7 @@ class ObjectdbController extends ControllerBase
 
     public function indexAction()
     {
-        $result_js = $this->getDI()->getShared("db")->fetchAll("
+        /*$result_js = $this->getDI()->getShared("db")->fetchAll("
         select ptt.id as id ,  '#'::text  as parent,Concat(coalesce(descr,name),' (',(select sum(m_count) from paging_table where paging_table_type_id = ptt.id),')') as text,ptt.name as view_name,null::jsonb as col,'unknown' as icon,null::text as view
         from paging_table_type as ptt
         where ptt.id in (1,2,4)
@@ -27,7 +27,8 @@ class ObjectdbController extends ControllerBase
         join pg_views as p on p.schemaname = 'public' and p.viewname = pt.name
         join paging_table_type as ptt on ptt.id = pt.paging_table_type_id and ptt.id in (1,2,4);");
 
-        $this->view->setVar('js_tree_data', json_encode($result_js));
+        
+        $this->view->setVar('js_tree_data', json_encode($result_js));*/
     }
 
     public function part1Action()
@@ -48,4 +49,5 @@ class ObjectdbController extends ControllerBase
         /*$this->view->setVar('js_tree_data', json_encode($result_js));*/
         /*$this->view->setRenderLevel(\Phalcon\Mvc\View::LEVEL_ACTION_VIEW);*/
     }
+
 }

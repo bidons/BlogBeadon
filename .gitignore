@@ -15,5 +15,5 @@ public/static
 public/db_log.log
 app/migration/phinx.yml
 scripts_rev
-app/migration/dump/dump.dump
+app/migration/dump/*.*
 composer.phar

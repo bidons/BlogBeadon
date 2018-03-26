@@ -14,14 +14,14 @@
        {# <p>This post is first part of a series called <strong>Getting Started with Datatable 1.10 </strong>.</p>#}
         <ol>
             <li><a class="wrapper-blog" href="/objectdb/index" title="Введение (зачем, почему, дерево проекта)" >Введение (зачем, почему, дерево проекта) </a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part1" title="Возможности (фильтра, управление видмость и тд.)" >Возможности (фильтра, управление видмость и тд.)</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part1" title="О пагинации">О пагинации</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part2" title="Особенности при работе с лимитированным множеством " >Особенности при работе с лимитированным множеством </a></li>
             <li><a class="wrapper-blog" href="/objectdb/part3" title="Материализация (Materialize View)">Материализация (Materialize View)</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part4" title="Исходники (стурктура таблиц, механизмы качалки)" >Исходники (стурктура таблиц, механизмы качалки)</a></li>
         </ol>
     </div>
 </div>
-
+<hr>
 
 <div class="well">
         <ul>
@@ -83,9 +83,17 @@
             <br>
 
             <li>
-                Имея типы объектов мы можем запихнуть туды свой объект и далее управлять поведением и визуальной частью полей полей:
+                Так выглядит общая струкутура:
                 <div class="row">
                 <img src = "/main/img/paging_table_1.png">
+                </div>
+
+                <div class="col-md-12 center-wrap">
+
+                    <label class="radio-inline"><input type="radio" name="paging-table-first">paging_table</label>
+                    <label class="radio-inline"><input type="radio" name="paging-table-first">paging_column_type</label>
+                    <label class="radio-inline"><input type="radio" name="paging-table-first">paging_column</label>
+
                     <div class="data-tbl"> </div>
                 </div>
 
@@ -128,9 +136,14 @@
             </li>
         </ul>
     </div>
-<script>
-        RebuildReport(null);
+<pre>
 
+    </pre>
+<script>
+
+
+        RebuildReport(null);
+        console.log(nodeObjects);
     function RebuildReport(node){
         $('#select2-query').text('');
         var gridParams = {
@@ -145,7 +158,7 @@
             select2Input: true,
             tableDefault: 'vw_infinitive',
             checkboxes: false,
-            dtFilters: true,
+            dtFilters: false,
             dtTheadButtons: false};
 
         wrapper = $('.data-tbl').DataTableWrapperExt(gridParams);

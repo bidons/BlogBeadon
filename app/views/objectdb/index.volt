@@ -16,14 +16,14 @@
         {#<p>This post is first part of a series called #}{#<strong>Getting Started with Datatable 1.10</strong>.</p>#}
         <ol>
             <li><a class="wrapper-blog" href="/objectdb/index" title="Введение (зачем, почему, дерево проекта)" >Введение (зачем, почему, дерево проекта) </a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part1" title="Как это всё устроено" >Как это всё устроено</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part1" title="О пагинации">О пагинации </a></li>
             <li><a class="wrapper-blog" href="/objectdb/part2" title="Особенности при работе с лимитированным множеством " >Особенности при работе с лимитированным множеством </a></li>
             <li><a class="wrapper-blog" href="/objectdb/part3" title="Материализация (Materialize View)">Материализация (Materialize View)</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part4" title="Исходники (стурктура таблиц, механизмы качалки)" >Исходники (стурктура таблиц, механизмы качалки)</a></li>
         </ol>
     </div>
 </div>
-
+<hr>
 <div class="modal fade" id="modalDynamicInfo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -57,9 +57,9 @@
             <br>
                  <li>
                      <p> Cмысл заключает вот в чём: </p>
-                      Если обвернуть во вьюху запрос и обращатся к нему как к обычной таблице, то мы можем получить очень неплохие вкусняхи
-                      К примеру можно использовать вкусняхи-расширения, и по полной юзать возможности PostgreSql
-                        "ltree,dblink,postgres_fdw,file_fdw,Windows function, join lateral, piviot extension etc.".
+                      Если обвернуть во вьюху запрос и обращатся к нему как к обычной таблице, то мы можем получить очень неплохие вкусняхи,
+                      к примеру можно использовать вкусняхи-расширения, и по полной юзать возможности PostgreSql
+                        "ltree,dblink,postgres_fdw,file_fdw,Windows function, join lateral, pivot extension etc".
                  </li>
             <br>
             <br>
@@ -72,7 +72,7 @@
         </span>
         </div>
     </div>
-
+    <hr>
     <div class="row">
         <div class="col-md-4">
             <input class="search-input form-control" placeholder="Поиск">
@@ -100,20 +100,18 @@
         </div>
     </div>
 
-    <div class="col-md-12">
-        {#<img src = "/main/part1/paging_table.png" >#}
-    </div>
 </div>
 
 
-
+<hr>
 <script>
     var wrapper;
     var definitionSql ='';
+
     $(document).ready(function () {
         var ReportTree = $('#db_object_tree').jstree({
             'core': {
-                'data':{{ js_tree_data }}
+                'data':nodeObjects
             }, plugins: ["search","types"],
             "types" : {
                 "default" : {
@@ -145,8 +143,6 @@
             $(this).jstree('open_all');
             $(this).jstree(true).select_node(100004);
             node = ($(this).jstree(true).get_node('100004')).original;
-
-            console.log(node);
             definitionSql  = node.view;
             RebuildReport(node)
         });
