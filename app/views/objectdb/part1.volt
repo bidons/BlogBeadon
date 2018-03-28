@@ -14,10 +14,11 @@
        {# <p>This post is first part of a series called <strong>Getting Started with Datatable 1.10 </strong>.</p>#}
         <ol>
             <li><a class="wrapper-blog" href="/objectdb/index" title="Введение (зачем, почему, дерево проекта)" >Введение (зачем, почему, дерево проекта) </a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part1" title="О пагинации">О пагинации</a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part2" title="Особенности при работе с лимитированным множеством " >Особенности при работе с лимитированным множеством </a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part3" title="Материализация (Materialize View)">Материализация (Materialize View)</a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part4" title="Исходники (стурктура таблиц, механизмы качалки)" >Исходники (стурктура таблиц, механизмы качалки)</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part1" title="Реляционное связывание (обвёртки-таблицы)">Общие механизмы</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part2" title="Работа с фильтрами">Фильтра, чекалки, експорт</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part3" title="Материализация (Materialize View + преагрегация конструкторов в JSON)">Материализация (Materialize View)</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part4" title="Особенности работы  (планировщика запросов) PosgreSQL" >Особенности работы (планировщика запросов) PosgreSQL</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part5" title="Исходники">Исходники</a></li>
         </ol>
     </div>
 </div>
@@ -25,14 +26,6 @@
 
 <div class="well">
         <ul>
-            <li>
-                <p>Для построения пагинации и работе со множетсвом нужно учитывать три момента:
-                    <br> 1) Получаение общего количества
-                    <br> 2) Получения количества по условию
-                    <br> 3) И собственно лимитированое количество
-                </p>
-            </li>
-
             <li>
                 <p>Все объекты будучи созданы в PostgreSQL cуществуют в общем пространстве имён и реляционно
                     находятся здесь (порядок, тип, имя и принадлежность к сущности).
@@ -83,23 +76,26 @@
             <br>
 
             <li>
-                Так выглядит общая струкутура:
+                Имея данные мы можем реляционно создать наш объект (будт-то таблиц или обвёртка "вьюха")
                 <div class="row">
                 <img src = "/main/img/paging_table_1.png">
                 </div>
 
                 <div class="col-md-12 center-wrap">
-
-                    <label class="radio-inline"><input type="radio" name="paging-table-first">paging_table</label>
-                    <label class="radio-inline"><input type="radio" name="paging-table-first">paging_column_type</label>
-                    <label class="radio-inline"><input type="radio" name="paging-table-first">paging_column</label>
+                    <div style="margin-bottom:16px">
+                        <span class="badge badge-secondary" id="datatable-data" data-toggle="modal"  data-target="#modalDynamicInfo"></span>
+                        <span class="badge badge-secondary" id="datatable-f-ttl"data-toggle="modal"  data-target="#modalDynamicInfo"></span>
+                        <span class="badge badge-secondary" id="datatable-ttl"data-toggle="modal"  data-target="#modalDynamicInfo"></span>
+                        <span class="badge badge-secondary" id="select2-query"data-toggle="modal"  data-target="#modalDynamicInfo"></span>
+                        <span class="badge badge-secondary" id="response-json"data-toggle="modal"  data-target="#modalDynamicInfo">Response:1</span>
+                        <span class="badge badge-secondary" id="request-json"data-toggle="modal"  data-target="#modalDynamicInfo">Request:1</span>
+                    </div>
+                    <label class="radio-inline"><input type="radio" view-name ="paging_table" checked name="paging-table-first">paging_table</label>
+                    <label class="radio-inline"><input type="radio" view-name ="paging_column_type" name="paging-table-first">paging_column_type</label>
+                    <label class="radio-inline"><input type="radio" view-name ="paging_column" name="paging-table-first">paging_column</label>
 
                     <div class="data-tbl"> </div>
                 </div>
-
-
-
-
             </li>
 
 
@@ -141,9 +137,14 @@
     </pre>
 <script>
 
+    $('[name=paging-table-first]').click(function () {
+        var v = $(this).attr('view-name');
 
-        RebuildReport(null);
-        console.log(nodeObjects);
+        RebuildReport(getPagingViewObject(v))
+    });
+
+    RebuildReport(getPagingViewObject('paging_table'))
+
     function RebuildReport(node){
         $('#select2-query').text('');
         var gridParams = {
@@ -151,17 +152,16 @@
             checkedUrl:    '/objectdb/idsdata',
             urlSelect2:    '/objectdb/txtsrch',
             idName: 'id',
-            columns: '{"columns":[{"cd": ["select2dynamic"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "name", "type": "varchar", "title": "name", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "uname", "type": "varchar", "title": "uname", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "freq", "type": "int4", "title": "freq", "primary": false, "visible": true, "is_filter": true, "orderable": true}]}',
+            columns: node.col,
             is_mat: false,
             lengthMenu: [[5,10],[5,10]],
             displayLength: 5,
             select2Input: true,
-            tableDefault: 'vw_infinitive',
+            tableDefault: node.view_name,
             checkboxes: false,
             dtFilters: false,
             dtTheadButtons: false};
 
         wrapper = $('.data-tbl').DataTableWrapperExt(gridParams);
-
     }
 </script>
