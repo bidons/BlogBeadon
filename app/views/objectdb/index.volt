@@ -1,9 +1,7 @@
 
-
 <h2 class="center-wrap">Конструкторы
     (<strong>Пагинаторы</strong>)
 </h2>
-
 
 <div class="row">
     <div class="col-md-4">
@@ -16,8 +14,8 @@
         {#<p>This post is first part of a series called #}{#<strong>Getting Started with Datatable 1.10</strong>.</p>#}
         <ol>
             <li><a class="wrapper-blog" href="/objectdb/index" title="Введение (зачем, почему, дерево проекта)" >Введение (зачем, почему, дерево проекта) </a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part1" title="Реляционное связывание (обвёртки-таблицы)">Общие механизмы</a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part2" title="Работа с фильтрами">Фильтра, чекалки, експорт</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part1" title="Реляционное связывание (таблиц и колонок)">Реляционное связывание таблиц и колонок</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part2" title="Работы с фильтрами-условиями (предикативная логика)">Работы с фильтрами-условиями (предикативная логика)</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part3" title="Материализация (Materialize View + преагрегация конструкторов в JSON)">Материализация (Materialize View)</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part4" title="Особенности работы  (планировщика запросов) PosgreSQL" >Особенности работы (планировщика запросов) PosgreSQL</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part5" title="Исходники">Исходники</a></li>
@@ -77,15 +75,14 @@
                             <button type="button" class="btn btn-default" onclick="wrapper.getDataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter">Поиск</span> </button>
                             <button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>
                             <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">View-Sql</span></button>
-                        </div></div>
+                        </div>
+                    </div>
                 </th>
             </div>
             <div class="data-tbl"> </div>
         </div>
     </div>
-
 </div>
-
 
 <hr>
 <script>
@@ -151,9 +148,10 @@
                 dtTheadButtons: false};
 
             wrapper = $('.data-tbl').DataTableWrapperExt(gridParams);
-
         }
     });
 
 </script>
+
+
 

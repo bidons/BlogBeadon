@@ -14,8 +14,8 @@
         {# <p>This post is first part of a series called <strong>Getting Started with Datatable 1.10 </strong>.</p>#}
         <ol>
             <li><a class="wrapper-blog" href="/objectdb/index" title="Введение (зачем, почему, дерево проекта)" >Введение (зачем, почему, дерево проекта) </a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part1" title="Реляционное связывание (обвёртки-таблицы)">Общие механизмы</a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part2" title="Работа с фильтрами">Фильтра, чекалки, експорт</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part1" title="Реляционное связывание (таблиц и колонок)">Реляционное связывание таблиц и колонок</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part2" title="Работы с фильтрами-условиями (предикативная логика)">Работы с фильтрами-условиями (предикативная логика)</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part3" title="Материализация (Materialize View + преагрегация конструкторов в JSON)">Материализация (Materialize View)</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part4" title="Особенности работы  (планировщика запросов) PosgreSQL" >Особенности работы (планировщика запросов) PosgreSQL</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part5" title="Исходники">Исходники</a></li>
@@ -27,114 +27,121 @@
 <div class="well">
     <ul>
         <li>
-            <p>Все объекты будучи созданы в PostgreSQL cуществуют в общем пространстве имён и реляционно
-                находятся здесь (порядок, тип, имя и принадлежность к сущности).
-            </p>
+            <p>
+                Условия 'WHERE' имеет исключительно предикативную функцию, имея зарание подготовленый коструктор (обвёртку),
+                логика предитактов и условий теперь имеет более простую форму, выглядит это так - "дай мне что-то из таблицы по условию"
+                с минимальным количеством взаимосключающих переменных. Тобишь
+                всё что нельзя просто достать с простым условием, заставляет нас переделывать сам конструктор что собственно намного облегчает работу.
 
-            <pre><span style="color: rgb(106,135,89);">Вьюхи <br></span></pre>
-                <pre><span style="color: rgb(204,120,50);">SELECT </span>pv.viewname<span
-                            style="color: rgb(204,120,50);">,<br></span><span style="color: rgb(204,120,50);">       </span>isc.column_name<span
-                            style="color: rgb(204,120,50);">,<br></span><span style="color: rgb(204,120,50);">       </span>t.typname<span
-                            style="color: rgb(204,120,50);">,<br></span><span style="color: rgb(204,120,50);">       </span>p.attnum <span
-                            style="color: rgb(204,120,50);">as </span>priority<br>  <span style="color: rgb(204,120,50);">FROM </span>pg_views <span
-                            style="color: rgb(204,120,50);">AS </span>pv<br>    <span
-                            style="color: rgb(204,120,50);">JOIN </span>information_schema.columns <span
-                            style="color: rgb(204,120,50);">AS </span>isc <span style="color: rgb(204,120,50);">ON </span>pv.viewname = isc.table_name<br>    <span
-                            style="color: rgb(204,120,50);">JOIN </span>pg_attribute <span style="color: rgb(204,120,50);">AS </span>p <span
-                            style="color: rgb(204,120,50);">ON </span>p.attrelid = isc.table_name :: <span
-                            style="color: rgb(255,198,109);">REGCLASS </span><span
-                            style="color: rgb(204,120,50);">AND </span>isc.column_name = p.attname<br>    <span
-                            style="color: rgb(204,120,50);">JOIN </span>pg_type <span
-                            style="color: rgb(204,120,50);">AS </span>t <span style="color: rgb(204,120,50);">ON </span>p.atttypid = t.<span
-                            style="color: rgb(255,198,109);">oid<br></span><span
-                            style="color: rgb(255,198,109);">    </span><span style="color: rgb(204,120,50);">where </span>pv.schemaname = <span
-                            style="color: rgb(106,135,89);">'public'</span><span
-                            style="color: rgb(204,120,50);">;<br></span></pre>
+            <p>Для начала нужно понять как оптимизатор-планировщик PostgreSQL в зависимости от конструкции формирует план запроса и выдаёт результат</p>
 
+            <p> И так есть таблица client и связана с client_phone, создадим обвёртку вьюху</p>
 
-            <pre><span style="color: rgb(106,135,89);">Таблицы<br></span></pre>
-                <pre><span style="color: rgb(204,120,50);">SELECT </span>tablename<span
-                            style="color: rgb(204,120,50);">,</span><span style="color: rgb(204,120,50);">column_name</span><span
-                            style="color: rgb(204,120,50);">, </span>t.typname<span
-                            style="color: rgb(204,120,50);">, </span>p.attnum <span
-                            style="color: rgb(204,120,50);">as </span>priority<br>  <span style="color: rgb(204,120,50);">FROM </span>pg_tables <span
-                            style="color: rgb(204,120,50);">AS </span>pv<br>    <span
-                            style="color: rgb(204,120,50);">JOIN </span>information_schema.columns <span
-                            style="color: rgb(204,120,50);">AS </span>isc <span style="color: rgb(204,120,50);">ON </span>pv.tablename = isc.table_name<br>    <span
-                            style="color: rgb(204,120,50);">JOIN </span>pg_attribute <span style="color: rgb(204,120,50);">AS </span>p <span
-                            style="color: rgb(204,120,50);">ON </span>p.attrelid = isc.table_name :: <span
-                            style="color: rgb(255,198,109);">REGCLASS </span><span
-                            style="color: rgb(204,120,50);">AND </span>isc.column_name = p.attname<br>    <span
-                            style="color: rgb(204,120,50);">JOIN </span>pg_type <span
-                            style="color: rgb(204,120,50);">AS </span>t <span style="color: rgb(204,120,50);">ON </span>p.atttypid = t.<span
-                            style="color: rgb(255,198,109);">oid<br></span><span
-                            style="color: rgb(255,198,109);">    </span><span style="color: rgb(204,120,50);">where </span>pv.schemaname = <span
-                            style="color: rgb(106,135,89);">'public'</span><span
-                            style="color: rgb(204,120,50);">;</span>
-            </pre>
-        </li>
-        <br>
-
-        <li>
-            Имея данные мы можем реляционно создать наш объект (будт-то таблиц или обвёртка "вьюха")
-            <div class="row">
-                <img src = "/main/img/paging_table_1.png">
-            </div>
-
-            <div class="col-md-12 center-wrap">
-                <div style="margin-bottom:16px">
-                    <span class="badge badge-secondary" id="datatable-data" data-toggle="modal"  data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="datatable-f-ttl"data-toggle="modal"  data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="datatable-ttl"data-toggle="modal"  data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="select2-query"data-toggle="modal"  data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="response-json"data-toggle="modal"  data-target="#modalDynamicInfo">Response:1</span>
-                    <span class="badge badge-secondary" id="request-json"data-toggle="modal"  data-target="#modalDynamicInfo">Request:1</span>
-                </div>
-                <label class="radio-inline"><input type="radio" view-name ="paging_table" checked name="paging-table-first">paging_table</label>
-                <label class="radio-inline"><input type="radio" view-name ="paging_column_type" name="paging-table-first">paging_column_type</label>
-                <label class="radio-inline"><input type="radio" view-name ="paging_column" name="paging-table-first">paging_column</label>
-
-                <div class="data-tbl"> </div>
-            </div>
-        </li>
-
-
-
-        <p>
-            При создании вьюхи синтаксический анализатор поможет с семантикой и верностью запроса. На сервер
-            не нужно пересылать здоровенный запрос, мы не привязаны к фреймворку и их особенностям
-            (не нужно получать схему таблиц, нет дополнительных итераций).
-            Вьюха это просто обвёртка (корявый запрос долго работает, хороший быстро).
-        </p>
-
-        Имея реляционно все типы, и сам конструктор, мы можем с удобством управлять как конструкцией запроса, так и поведением полей:
-        <br>
-        <li>
-            Видимость полей
-        </li>
-        <li>
-            Переводы полей
-        </li>
-        <li>
-            Управление фильтрами и сортировками
-        </li>
-        <li>
-            В зависимости от прав пользователя показывать скрывать поля
-        </li>
-        <li>
-            Управление количеством (использование счётчиков при долгих операций seq-scan при подсчёте строк на большом моножестве)
-        </li>
-        <li>
-            Любой запрос может быть переписан и SQL среде и полноценно протестирован
-        </li>
-        <li>
-            Вьюха может быть материализована и проиндексирована
-        </li>
-    </ul>
-</div>
-<pre>
-
+            <pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
+    <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span>
+    <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
+    <span style="color: #008800; font-weight: bold">LEFT</span> <span style="color: #008800; font-weight: bold">JOIN</span> client_phone <span style="color: #008800; font-weight: bold">AS</span> cp <span style="color: #008800; font-weight: bold">ON</span> c<span style="color: #6600EE; font-weight: bold">.</span>phone_id  <span style="color: #333333">=</span>cp<span style="color: #6600EE; font-weight: bold">.</span>id
+    );
     </pre>
+
+        <li>Пнём с лимитом (как видно индекс был заюзан ровно столько строк сколько и лимита)
+           <pre>
+               <span style="color: #008800; font-weight: bold">EXPLAIN ANALYSE</span>
+                    <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span> <span style="color: #008800; font-weight: bold">FROM</span> vw_client <span style="color: #008800; font-weight: bold">limit</span> <span style="color: #6600EE; font-weight: bold">10</span>;
+
+<table border="1" style="border-collapse:collapse">
+<tr><th>QUERY PLAN</th></tr>
+<tr><td>Limit  (cost=0.42..6.33 rows=10 width=391) (actual time=0.016..0.055 rows=10 loops=1)</td></tr>
+<tr><td>  -&gt;  Nested Loop Left Join  (cost=0.42..102433.00 rows=173450 width=391) (actual time=0.015..0.051 rows=10 loops=1)</td></tr>
+<tr><td>        -&gt;  Seq Scan on client c  (cost=0.00..6536.50 rows=173450 width=182) (actual time=0.005..0.008 rows=10 loops=1)</td></tr>
+<tr><td>        -&gt;  Index Scan using client_phone_pkey on client_phone cp  (cost=0.42..0.54 rows=1 width=209) (actual time=0.002..0.003 rows=1 loops=10)</td></tr>
+<tr><td>              Index Cond: (c.phone_id = id)</td></tr>
+<tr><td>Planning time: 0.211 ms</td></tr>
+<tr><td>Execution time: 0.092 ms</td></tr>
+</table>
+           </pre>
+
+            <li>Теперь количество (таблица с джойном была проигнорирована)</li>
+        <pre>
+               <span style="color: #008800; font-weight: bold">EXPLAIN ANALYSE</span>
+                    <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span> <span style="color: #008800; font-weight: bold">FROM</span> vw_client <span style="color: #008800; font-weight: bold">limit</span> <span style="color: #6600EE; font-weight: bold">10</span>;
+
+            <table border="1" style="border-collapse:collapse">
+                <tr><th>QUERY PLAN</th></tr>
+                <tr><td>Aggregate  (cost=6970.12..6970.14 rows=1 width=8) (actual time=78.669..78.670 rows=1 loops=1)</td></tr>
+                <tr><td>  -&gt;  Seq Scan on client c  (cost=0.00..6536.50 rows=173450 width=0) (actual time=0.007..43.830 rows=173813 loops=1)</td></tr>
+                <tr><td>Planning time: 0.085 ms</td></tr>
+                <tr><td>Execution time: 78.714 ms</td></tr>
+            </table>
+        </pre>
+
+        <li>Теперь c условием (опять же 10-строк с индексом)</li>
+
+              <pre style="margin: 0; line-height: 125%">      <span style="color: #008800; font-weight: bold">EXPLAIN</span> <span style="color: #008800; font-weight: bold">ANALYSE</span>
+      <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span>
+      <span style="color: #008800; font-weight: bold">FROM</span> vw_client
+      <span style="color: #008800; font-weight: bold">WHERE</span> email <span style="color: #333333">~</span><span style="background-color: #fff0f0">&#39;@gmail.com&#39;</span>
+      <span style="color: #008800; font-weight: bold">LIMIT</span> <span style="color: #6600EE; font-weight: bold">10</span>;
+
+<table border="1" style="border-collapse:collapse">
+<tr><th>QUERY PLAN</th></tr>
+<tr><td>Limit  (cost=0.42..8.07 rows=10 width=391) (actual time=0.023..0.113 rows=10 loops=1)</td></tr>
+<tr><td>  -&gt;  Nested Loop Left Join  (cost=0.42..60296.58 rows=78841 width=391) (actual time=0.022..0.107 rows=10 loops=1)</td></tr>
+<tr><td>        -&gt;  Seq Scan on client c  (cost=0.00..6970.12 rows=78841 width=182) (actual time=0.012..0.061 rows=10 loops=1)</td></tr>
+<tr><td>              Filter: (email ~ &#39;@gmail.com&#39;::text)</td></tr>
+<tr><td>              Rows Removed by Filter: 18</td></tr>
+<tr><td>        -&gt;  Index Scan using client_phone_pkey on client_phone cp  (cost=0.42..0.67 rows=1 width=209) (actual time=0.003..0.003 rows=1 loops=10)</td></tr>
+<tr><td>              Index Cond: (c.phone_id = id)</td></tr>
+<tr><td>Planning time: 0.425 ms</td></tr>
+<tr><td>Execution time: 0.157 ms</td></tr>
+</table>
+
+
+        </pre>
+
+
+
+        <li>Что из этого следует:
+            В не зависимости от количество джойнов и обращений, планировщик будет терзучить только то множество которое будет в результате,
+            и то множество которое будет в условии или при сортировке.
+
+            <pre style="margin: 0; line-height: 125%">  <span style="color: #888888">-- Плохой запрос (для пагинации, джойн так себе затея)</span>
+            <span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
+            <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span>
+            <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
+            <span style="color: #008800; font-weight: bold">JOIN</span> client_phone <span style="color: #008800; font-weight: bold">AS</span> cp <span style="color: #008800; font-weight: bold">ON</span> c<span style="color: #6600EE; font-weight: bold">.</span>phone_id  <span style="color: #333333">=</span>cp<span style="color: #6600EE; font-weight: bold">.</span>id
+            );
+            </pre>
+
+            <pre style="margin: 0; line-height: 125%"> <span style="color: #888888">-- Плохой запрос (агрегат )</span>
+            <span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
+            <span style="color: #008800; font-weight: bold">SELECT</span> c<span style="color: #6600EE; font-weight: bold">.</span>id,count(<span style="color: #333333">*</span>),<span style="color: #008800; font-weight: bold">first</span>(cp<span style="color: #6600EE; font-weight: bold">.</span>phone_main)
+            <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
+            <span style="color: #008800; font-weight: bold">JOIN</span> client_phone <span style="color: #008800; font-weight: bold">AS</span> cp <span style="color: #008800; font-weight: bold">ON</span> c<span style="color: #6600EE; font-weight: bold">.</span>phone_id  <span style="color: #333333">=</span>cp<span style="color: #6600EE; font-weight: bold">.</span>id
+            <span style="color: #008800; font-weight: bold">GROUP</span> <span style="color: #008800; font-weight: bold">by</span> c<span style="color: #6600EE; font-weight: bold">.</span>id
+            );
+            </pre>
+
+            <pre style="margin: 0; line-height: 125%"><span style="color: #888888">-- Ничего так запрос (но обращатся к полю region как к условию так и к сортировке плохо)</span>
+            <span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
+            <span style="color: #008800; font-weight: bold">SELECT</span> ip2location(c<span style="color: #6600EE; font-weight: bold">.</span>ip)<span style="color: #6600EE; font-weight: bold">.</span>region,<span style="color: #333333">*</span>
+            <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
+            <span style="color: #008800; font-weight: bold">left</span> <span style="color: #008800; font-weight: bold">JOIN</span> client_phone <span style="color: #008800; font-weight: bold">AS</span> cp <span style="color: #008800; font-weight: bold">ON</span> c<span style="color: #6600EE; font-weight: bold">.</span>phone_id  <span style="color: #333333">=</span>cp<span style="color: #6600EE; font-weight: bold">.</span>id
+            );
+            </pre>
+
+            <pre style="margin: 0; line-height: 125%">   <span style="color: #888888">-- Ничего так (но обращатся к полям из &quot;позднего джойна&quot; как к условию так и к сортировке плохо)</span>
+            <span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
+            <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span>
+            <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
+            <span style="color: #008800; font-weight: bold">LEFT</span> <span style="color: #008800; font-weight: bold">JOIN</span> lateral (<span style="color: #008800; font-weight: bold">select</span> <span style="color: #333333">*</span> <span style="color: #008800; font-weight: bold">from</span> client_phone <span style="color: #008800; font-weight: bold">as</span> cp <span style="color: #008800; font-weight: bold">where</span> c<span style="color: #6600EE; font-weight: bold">.</span>id <span style="color: #333333">=</span> c<span style="color: #6600EE; font-weight: bold">.</span>id) <span style="color: #008800; font-weight: bold">as</span> cp <span style="color: #008800; font-weight: bold">on</span> <span style="color: #008800; font-weight: bold">true</span>
+            );
+            </pre>
+
+            Но собственно все правила можно отбросить если использовать материализацию
+        </li>
+
+
 <script>
 
     $('[name=paging-table-first]').click(function () {
@@ -142,6 +149,13 @@
 
         RebuildReport(getPagingViewObject(v))
     });
+
+    var condPredicate = [{"name":"bool","cond_default":["="]},
+        {"name":"text","cond_default":["=", "~", "!=", "in"]},
+        {"name":"int4","cond_default":["=", "!=", "<", ">", "<=", ">=", "in"]},
+        {"name":"timestamp","cond_default":["between", "not between", "in"]}];
+
+    $('#cond-predicate').html('<pre><code class="json">' + syntaxHighlight(condPredicate) + '</code> </pre>');
 
     RebuildReport(getPagingViewObject('paging_table'))
 

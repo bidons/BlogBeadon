@@ -23,6 +23,27 @@ nodeObjects = [{"id":4,"parent":"#","text":"Обвёртки (полезные �
     {"id":100016,"parent":"5","text":"paging_table_type ()","view_name":"paging_column_type","col":{"columns": [{"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "name", "type": "text", "title": "name", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["->>"], "cdi": null, "data": "cond_default", "type": "jsonb", "title": "cond_default", "primary": false, "visible": false, "is_filter": false, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "init_obj_id", "type": "int4", "title": "init_obj_id", "primary": false, "visible": false, "is_filter": false, "orderable": true}, {"cd": ["between", "not between", "in"], "cdi": null, "data": "create_time", "type": "timestamptz", "title": "create_time", "primary": false, "visible": false, "is_filter": false, "orderable": true}, {"cd": ["between", "not between", "in"], "cdi": null, "data": "update_time", "type": "timestamptz", "title": "update_time", "primary": false, "visible": false, "is_filter": false, "orderable": true}]},"icon":"unknown","view":null},
     {"id":100017,"parent":"5","text":"paging_column ()","view_name":"paging_column","col":{"columns": [{"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "paging_table_id", "type": "int4", "title": "paging_table_id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "paging_column_type_id", "type": "int4", "title": "paging_column_type_id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "name", "type": "text", "title": "name", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "title", "type": "text", "title": "title", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["->>"], "cdi": null, "data": "condition", "type": "jsonb", "title": "condition", "primary": false, "visible": false, "is_filter": false, "orderable": true}, {"cd": ["->>"], "cdi": null, "data": "item_condition", "type": "jsonb", "title": "item_condition", "primary": false, "visible": false, "is_filter": false, "orderable": true}, {"cd": ["="], "cdi": null, "data": "is_filter", "type": "bool", "title": "is_filter", "primary": false, "visible": false, "is_filter": false, "orderable": true}, {"cd": ["="], "cdi": null, "data": "is_visible", "type": "bool", "title": "is_visible", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["="], "cdi": null, "data": "is_orderable", "type": "bool", "title": "is_orderable", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["="], "cdi": null, "data": "is_primary", "type": "bool", "title": "is_primary", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "init_obj_id", "type": "int4", "title": "init_obj_id", "primary": false, "visible": false, "is_filter": false, "orderable": true}, {"cd": ["between", "not between", "in"], "cdi": null, "data": "update_time", "type": "timestamptz", "title": "update_time", "primary": false, "visible": false, "is_filter": false, "orderable": true}, {"cd": ["between", "not between", "in"], "cdi": null, "data": "create_time", "type": "timestamptz", "title": "create_time", "primary": false, "visible": false, "is_filter": false, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "priority", "type": "int4", "title": "priority", "primary": false, "visible": false, "is_filter": false, "orderable": true}]},"icon":"unknown","view":null}];
 
+function syntaxHighlight(json) {
+    if (typeof json != 'string') {
+        json = JSON.stringify(json, undefined, 2);
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
 
 function getPagingViewObject (view_name) 
 {
@@ -561,9 +582,6 @@ function getPagingViewObject (view_name)
             return (false);
         }
     }
-
-
-    
 
 })(jQuery);
 
