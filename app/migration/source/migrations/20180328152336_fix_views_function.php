@@ -79,7 +79,7 @@ BEGIN
     THEN concat_ws(' ',
                        f_data,
                        f_cd,
-                       quote_literal(f_value)) end,' and')
+                       quote_literal(f_value)) end,' and ')
   FROM normalize AS n
   INTO val_result;
 
