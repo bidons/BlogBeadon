@@ -16,11 +16,11 @@ class ControllerBase extends Controller
        $mainCss = $this->assets->collection("main-css");
         $mainJs =  $this->assets->collection("main-js");
 
-        $mainCss
+        /*$mainCss
             ->addCss("plugins/bootstrap/dist/css/bootstrap.css")
             ->addCss("blog/css/blog.css");
         $mainJs -> addJs("main/js/jquery.js")
-                ->addJs("plugins/bootstrap/dist/js/bootstrap.js");
+                ->addJs("plugins/bootstrap/dist/js/bootstrap.js");*/
     }
 
     protected function addAssetsBlog()
@@ -33,6 +33,9 @@ class ControllerBase extends Controller
         
         $blogCss
             ->addCss("plugins/bootstrap/dist/css/bootstrap.css")
+            /*->addCss("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/css/bootstrap.css")*/
+            /*->addCss("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css")*/
+            /*->addCss("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css")*/
             /*->addCss("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css")*/
             ->addCss("plugins/datatables/jquery.dataTables.min.css")
             ->addCss("blog/css/blog.css")
@@ -40,9 +43,15 @@ class ControllerBase extends Controller
             ->addCss("plugins/daterangepicker/daterangepicker-bs3.css")
             ->addCss("plugins/vakata/dist/themes/default/style.min.css");
 
+        /*https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js*/
         $blogJs -> addJs("main/js/jquery.js")
+            /*-> addJs("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js")*/
             /*->addJs("plugins/bootstrap/dist/js/bootstrap.bundle.min.js")*/
+            /*->addJs("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.js")*/
+            /*->addJs("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js")*/
+            ->addJs("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/js/bootstrap.js")
             ->addJs("plugins/bootstrap/dist/js/bootstrap.js")
+
             /*->addJs("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.4/js/bootstrap.min.js")*/
             ->addJs("plugins/datatables/jquery.dataTables.min.js")
             ->addJs("main/js/DataTableWrapperExt.js")

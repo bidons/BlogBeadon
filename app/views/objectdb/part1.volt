@@ -248,13 +248,14 @@
     RebuildReport(getPagingViewObject('paging_table'))
 
     function RebuildReport(node) {
+        console.log(node.col);
         $('#select2-query').text('');
         var gridParams = {
             urlDataTable: '/objectdb/showdata',
             checkedUrl: '/objectdb/idsdata',
             urlSelect2: '/objectdb/txtsrch',
             idName: 'id',
-            columns: node.col,
+            columns: JSON.parse(node.col),
             is_mat: false,
             lengthMenu: [[5, 10], [5, 10]],
             displayLength: 5,

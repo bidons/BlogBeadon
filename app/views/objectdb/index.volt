@@ -1,4 +1,3 @@
-
 <h2 class="center-wrap">Конструкторы
     (<strong>Пагинаторы</strong>)
 </h2>
@@ -70,15 +69,14 @@
                     <span class="badge badge-secondary" id="response-json"data-toggle="modal"  data-target="#modalDynamicInfo">Response:1</span>
                     <span class="badge badge-secondary" id="request-json"data-toggle="modal"  data-target="#modalDynamicInfo">Request:1</span>
                 </div>
-                <th><div class="btn-group">
+                <div class="btn-group">
                         <div class="input-group-btn">
-                            <button type="button" class="btn btn-default" onclick="wrapper.getDataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter">Поиск</span> </button>
+                            <button class="btn btn-default" onclick="wrapper.getDataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter">Поиск</span> </button>
                             <button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>
                             <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">View-Sql</span></button>
                         </div>
-                    </div>
-                </th>
-            </div>
+                </div>
+
             <div class="data-tbl"> </div>
         </div>
     </div>
@@ -124,8 +122,8 @@
 
         ReportTree.bind('ready.jstree', function(e, data) {
             $(this).jstree('open_all');
-            $(this).jstree(true).select_node(100004);
-            node = ($(this).jstree(true).get_node('100004')).original;
+            $(this).jstree(true).select_node(100019);
+            node = ($(this).jstree(true).get_node('100019')).original;
             definitionSql  = node.view;
             RebuildReport(node)
         });
@@ -145,6 +143,7 @@
                 tableDefault: node.view_name,
                 checkboxes: false,
                 dtFilters: true,
+                dtFiltersPanel: '',
                 dtTheadButtons: false};
 
             wrapper = $('.data-tbl').DataTableWrapperExt(gridParams);

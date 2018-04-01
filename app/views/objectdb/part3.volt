@@ -2,7 +2,6 @@
     (<strong>Пагинаторы</strong>)
 </h2>
 
-
 <div class="row">
     <div class="col-md-4">
         <div class="text-center">.
@@ -28,47 +27,83 @@
     <ul>
         <li>
             <p>
-                Условия 'WHERE' имеет исключительно предикативную функцию
-                Логика предикатов-условий (логических операторов) теперь имеет более простую форму, выглядит это так - "дай мне что-то из таблицы по условию"
-                с минимальным количеством взаимосключающих переменных. Тобишь
-                всё что нельзя просто достать с простым условием, заставляет нас переделывать сам конструктор что собственно намного облегчает работу.
+                При использовании обвёрток, мы используем простое условие 'WHERE'.
+                Логика предикатов-условий (логических операторов) теперь имеет более простую форму,
+                выглядит это так - "дай мне что-то из таблицы по условию, где это и это "true""
+                с минимальным количеством взаимоисключающих переменных.
+                Всё что нельзя просто достать с простым условием, заставляет нас переделывать сам конструктор что собственно намного облегчает работу
+                с множеством в реляицонной среде.
                 </p>
             </li>
         </ul>
+
+    <li> Cоздадим простую обвёртку (части речи + тип языка+ тип речи)
+
+       <p><pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">CREATE</span> <span style="color: #993333; font-weight: bold;">VIEW</span> vw_word_with_prop <span style="color: #993333; font-weight: bold;">AS</span>
+<span style="color: #993333; font-weight: bold;">SELECT</span> sg<span style="color: #66cc66;">.</span>name <span style="color: #993333; font-weight: bold;">AS</span> word<span style="color: #66cc66;">,</span>
+       freq<span style="color: #66cc66;">,</span>
+       sgc<span style="color: #66cc66;">.</span>name <span style="color: #993333; font-weight: bold;">AS</span> class_name<span style="color: #66cc66;">,</span>
+       sgl<span style="color: #66cc66;">.</span>name <span style="color: #993333; font-weight: bold;">AS</span> <span style="color: #993333; font-weight: bold;">LANGUAGE</span>
+<span style="color: #993333; font-weight: bold;">FROM</span> sg_entry sg
+<span style="color: #993333; font-weight: bold;">LEFT</span> <span style="color: #993333; font-weight: bold;">JOIN</span> sg_class <span style="color: #993333; font-weight: bold;">AS</span> sgc <span style="color: #993333; font-weight: bold;">ON</span> sgc<span style="color: #66cc66;">.</span>id <span style="color: #66cc66;">=</span> sg<span style="color: #66cc66;">.</span>id_class
+<span style="color: #993333; font-weight: bold;">LEFT</span> <span style="color: #993333; font-weight: bold;">JOIN</span> sg_language <span style="color: #993333; font-weight: bold;">AS</span> sgl <span style="color: #993333; font-weight: bold;">ON</span> sgl<span style="color: #66cc66;">.</span>id <span style="color: #66cc66;">=</span> sgc<span style="color: #66cc66;">.</span>id_lang;</pre>
+        </p>
+
+
+        <div class="col-md-12 center-wrap">
+            <div style="margin-bottom:16px">
+            <span class="badge badge-secondary" id="datatable-data" data-toggle="modal"
+                  data-target="#modalDynamicInfo"></span>
+                    <span class="badge badge-secondary" id="datatable-f-ttl" data-toggle="modal"
+                          data-target="#modalDynamicInfo"></span>
+                    <span class="badge badge-secondary" id="datatable-ttl" data-toggle="modal"
+                          data-target="#modalDynamicInfo"></span>
+                    <span class="badge badge-secondary" id="select2-query" data-toggle="modal"
+                          data-target="#modalDynamicInfo"></span>
+                    <span class="badge badge-secondary" id="response-json" data-toggle="modal"
+                          data-target="#modalDynamicInfo">Response:1</span>
+                    <span class="badge badge-secondary" id="request-json" data-toggle="modal"
+                          data-target="#modalDynamicInfo">Request:1</span>
+            </div>
+            <div class="btn-group">
+                <div class="input-group-btn">
+                    <button class="btn btn-default" onclick="wrapper.getDataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter">Поиск</span> </button>
+                    <button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>
+                    <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">View-Sql</span></button>
+                </div>
+            </div>
+
+            <div class="data-tbl"></div>
+        </div>
+    </li>
 </div>
 
 <script>
-    $('[name=paging-table-first]').click(function () {
-        var v = $(this).attr('view-name');
 
-        RebuildReport(getPagingViewObject(v))
-    });
+    nodeObjects = {{ js_tree_data }}
 
-    var condPredicate = [{"name":"bool","cond_default":["="]},
-        {"name":"text","cond_default":["=", "~", "!=", "in"]},
-        {"name":"int4","cond_default":["=", "!=", "<", ">", "<=", ">=", "in"]},
-        {"name":"timestamp","cond_default":["between", "not between", "in"]}];
+            console.log(nodeObjects);
 
-    $('#cond-predicate').html('<pre><code class="json">' + syntaxHighlight(condPredicate) + '</code> </pre>');
+    RebuildReport(getPagingViewObject('vw_word_with_prop'))
 
-    RebuildReport(getPagingViewObject('paging_table'))
+    function RebuildReport(node) {
+        definitionSql  = node.view;
 
-    function RebuildReport(node){
-        $('#select2-query').text('');
         var gridParams = {
-            urlDataTable:  '/objectdb/showdata',
-            checkedUrl:    '/objectdb/idsdata',
-            urlSelect2:    '/objectdb/txtsrch',
+            urlDataTable: '/objectdb/showdata',
+            checkedUrl: '/objectdb/idsdata',
+            urlSelect2: '/objectdb/txtsrch',
             idName: 'id',
-            columns: node.col,
+            columns: JSON.parse(node.col),
             is_mat: false,
-            lengthMenu: [[5,10],[5,10]],
+            lengthMenu: [[5, 10], [5, 10]],
             displayLength: 5,
             select2Input: true,
             tableDefault: node.view_name,
             checkboxes: false,
-            dtFilters: false,
-            dtTheadButtons: false};
+            dtFilters: true,
+            dtTheadButtons: false
+        };
 
         wrapper = $('.data-tbl').DataTableWrapperExt(gridParams);
     }
