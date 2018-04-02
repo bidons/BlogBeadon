@@ -37,7 +37,7 @@
             </li>
 
 
-    <li> Cоздадим простую обвёртку (части речи + тип языка+ тип речи + исключим "ПУНКТУТОР")
+    <li> Cоздадим простую обвёртку (части речи + тип языка+ тип речи + исключим "ПУНКТУАТОРЫ")
 
         <pre class="prettyprint lang-sql">CREATE VIEW vw_word_with_prop AS
         SELECT sg.name AS word,
@@ -53,7 +53,7 @@
 
         <li>
             <p>
-                В а теперь вот оно наше условие
+                Вот оно наше условие (как пример из таблицы):
             </p>
             <pre class="prettyprint lang-sql">
 
@@ -62,14 +62,13 @@
                             WHERE true
                                 AND word in ('явствовать')
                                 AND class_name in ('ГЛАГОЛ')
-                                AND language in ('RUSSIAN')
                             ORDER BY class_name ASC LIMIT 5 OFFSET 0 )
             SELECT  json_agg(row_to_json(objdb))
             FROM    objdb
             </pre>
         </li>
 
-        </ul>
+
         <div class="col-md-12 center-wrap">
             <div style="margin-bottom:16px">
             <span class="badge badge-secondary" id="datatable-data" data-toggle="modal"

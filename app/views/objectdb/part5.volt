@@ -17,7 +17,7 @@
             <li><a class="wrapper-blog" href="/objectdb/part2" title="Особенности работы  (планировщика запросов) PosgreSQL">Особенности работы  (планировщика запросов) PosgreSQL</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part3" title="Работы с фильтрами-условиями (предикативная логика)">Работы с фильтрами-условиями (предикативная логика)</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part4" title="Материализация (Materialize View)" >Материализация (Materialize View)</a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part5" title="Исходники">Исходники</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part5" title="Как это работает в деталях (Исходники)">Исходники</a></li>
         </ol>
     </div>
 </div>

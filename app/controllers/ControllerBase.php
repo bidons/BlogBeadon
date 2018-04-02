@@ -37,16 +37,18 @@ class ControllerBase extends Controller
             ->addCss("plugins/vakata/dist/themes/default/style.min.css");
 
         $blogJs -> addJs("main/js/jquery.js")
-            ->addJs("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/js/bootstrap.js")
             ->addJs("plugins/bootstrap/dist/js/bootstrap.js")
             ->addJs("https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql")
             ->addJs("plugins/datatables/jquery.dataTables.min.js")
+            ->addJs("https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js")
             ->addJs("main/js/DataTableWrapperExt.js")
             ->addJs("plugins/select2/select2.min.js")
             ->addJs("plugins/daterangepicker/moment.js")
             ->addJs("plugins/daterangepicker/daterangepicker.js")
             ->addJs("plugins/vakata/dist/jstree.min.js")
             ->addJs("plugins/highcharts/highstock.js");
+            /*->addJs("https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js");*/
+
     }
 
     public function responseJson($data, $code = 200)

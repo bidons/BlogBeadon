@@ -127,8 +127,8 @@ BEGIN
 END
 $$;
    
-
 drop view if exists vw_gen_materialize cascade;
+
 create or replace view vw_gen_materialize as
 with cte as
 (
@@ -141,7 +141,6 @@ with cte as
   select id,md5,series,action_date
   from cte
   order by action_date;
-
 
 select rebuild_paging_prop('vw_gen_materialize','Материализация (сущ.)','view_materialize',true);
 select materialize_worker('recreate','vw_gen_materialize');
