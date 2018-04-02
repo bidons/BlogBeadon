@@ -10,7 +10,6 @@
     </div>
     <div class="entry-content"></div>
     <div class="post-series-content">
-        {#<p>This post is first part of a series called #}{#<strong>Getting Started with Datatable 1.10</strong>.</p>#}
         <ol>
             <li><a class="wrapper-blog" href="/objectdb/index" title="Введение (зачем, почему, дерево проекта)" >Введение (зачем, почему, дерево проекта) </a></li>
             <li><a class="wrapper-blog" href="/objectdb/part1" title="Реляционное связывание (таблиц и полей)">Реляционное связывание таблиц и колонок</a></li>
@@ -125,7 +124,7 @@
             $(this).jstree(true).select_node(100019);
             node = ($(this).jstree(true).get_node('100019')).original;
             definitionSql  = node.view;
-            RebuildReport(node)
+            RebuildReport(node);
         });
 
         function RebuildReport(node){

@@ -51,7 +51,7 @@ class ControllerBase extends Controller
             /*->addJs("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js")*/
             ->addJs("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/js/bootstrap.js")
             ->addJs("plugins/bootstrap/dist/js/bootstrap.js")
-
+            ->addJs("https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql")
             /*->addJs("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.4/js/bootstrap.min.js")*/
             ->addJs("plugins/datatables/jquery.dataTables.min.js")
             ->addJs("main/js/DataTableWrapperExt.js")
@@ -62,7 +62,8 @@ class ControllerBase extends Controller
             ->addJs("plugins/select2/select2.min.js")
             ->addJs("plugins/daterangepicker/moment.js")
             ->addJs("plugins/daterangepicker/daterangepicker.js")
-            ->addJs("plugins/vakata/dist/jstree.min.js");
+            ->addJs("plugins/vakata/dist/jstree.min.js")
+            ->addJs("plugins/highcharts/highstock.js");
     }
 
     public function responseJson($data, $code = 200)

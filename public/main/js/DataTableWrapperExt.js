@@ -199,7 +199,6 @@ function getPagingViewObject (view_name)
                             '</div>'+
                             '<input type="' + item.type + '" filter-cond="=" class="form-control input-sm" data-column="'+ item.data +'" placeholder="'+ item.title +'">'+
                             '</div></th>';
-                           /*v = '<th><div class="input-group"><div class="input-group-btn"><select class="btn btn-default btn-sm dropdown-toggle"><option>=</option><option>!=</option><option>&lt;</option><option>&gt;</option><option>&lt;=</option><option>&gt;=</option></select> </div><input type="int4" style="width: 70px" class="form-control input-sm" data-column="id" placeholder="id"></div></th>';*/
                         }
                     }
                 }
@@ -236,7 +235,7 @@ function getPagingViewObject (view_name)
 
                 $(this).select2({
                     placeholder: "",
-                    minimumInputLength: type == 'int4' ? 1 : 3,
+                    minimumInputLength: type == 'int4' ? 1 : 1,
                     width: '100%',
                     dropdownAutoWidth: true,
                     language: {

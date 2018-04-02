@@ -29,7 +29,7 @@
             <p>
                 При использовании обвёрток, мы используем простое условие 'WHERE'.
                 Логика предикатов-условий (логических операторов) теперь имеет более простую форму,
-                выглядит это так - "дай мне что-то из таблицы по условию, где это и это "true""
+                выглядит это так - "дай мне что-то из таблицы по условию, где это и это true
                 с минимальным количеством взаимоисключающих переменных.
                 Всё что нельзя просто достать с простым условием, заставляет нас переделывать сам конструктор что собственно намного облегчает работу
                 с множеством в реляицонной среде.
@@ -37,23 +37,36 @@
             </li>
 
 
-    <li> Cоздадим простую обвёртку (части речи + тип языка+ тип речи)
+    <li> Cоздадим простую обвёртку (части речи + тип языка+ тип речи + исключим "ПУНКТУТОР")
 
-       <p><pre class="sql" style="font-family:monospace;"><span style="color: #993333; font-weight: bold;">CREATE</span> <span style="color: #993333; font-weight: bold;">VIEW</span> vw_word_with_prop <span style="color: #993333; font-weight: bold;">AS</span>
-<span style="color: #993333; font-weight: bold;">SELECT</span> sg<span style="color: #66cc66;">.</span>name <span style="color: #993333; font-weight: bold;">AS</span> word<span style="color: #66cc66;">,</span>
-       freq<span style="color: #66cc66;">,</span>
-       sgc<span style="color: #66cc66;">.</span>name <span style="color: #993333; font-weight: bold;">AS</span> class_name<span style="color: #66cc66;">,</span>
-       sgl<span style="color: #66cc66;">.</span>name <span style="color: #993333; font-weight: bold;">AS</span> <span style="color: #993333; font-weight: bold;">LANGUAGE</span>
-<span style="color: #993333; font-weight: bold;">FROM</span> sg_entry sg
-<span style="color: #993333; font-weight: bold;">LEFT</span> <span style="color: #993333; font-weight: bold;">JOIN</span> sg_class <span style="color: #993333; font-weight: bold;">AS</span> sgc <span style="color: #993333; font-weight: bold;">ON</span> sgc<span style="color: #66cc66;">.</span>id <span style="color: #66cc66;">=</span> sg<span style="color: #66cc66;">.</span>id_class
-<span style="color: #993333; font-weight: bold;">LEFT</span> <span style="color: #993333; font-weight: bold;">JOIN</span> sg_language <span style="color: #993333; font-weight: bold;">AS</span> sgl <span style="color: #993333; font-weight: bold;">ON</span> sgl<span style="color: #66cc66;">.</span>id <span style="color: #66cc66;">=</span> sgc<span style="color: #66cc66;">.</span>id_lang;</pre>
+        <pre class="prettyprint lang-sql">CREATE VIEW vw_word_with_prop AS
+        SELECT sg.name AS word,
+        freq,
+        sgc.name AS class_name,
+        sgl.name AS LANGUAGE
+        FROM sg_entry sg
+        LEFT JOIN sg_class AS sgc ON sgc.id = sg.id_class
+        LEFT JOIN sg_language AS sgl ON sgl.id = sgc.id_lang
+        WHERE sg.id_class != 22;
+        </pre>
         </p>
 
         <li>
             <p>
-
+                В а теперь вот оно наше условие
             </p>
-            with objdb as ( select word,freq,class_name,language from vw_word_with_prop where true and word in ('явствовать') and class_name in ('ГЛАГОЛ') and language in ('RUSSIAN') order by class_name asc  limit 5 offset 0 ) SELECT  json_agg(row_to_json(objdb)) from objdb
+            <pre class="prettyprint lang-sql">
+
+            WITH objdb AS ( SELECT word, freq, class_name, language
+                            FROM vw_word_with_prop
+                            WHERE true
+                                AND word in ('явствовать')
+                                AND class_name in ('ГЛАГОЛ')
+                                AND language in ('RUSSIAN')
+                            ORDER BY class_name ASC LIMIT 5 OFFSET 0 )
+            SELECT  json_agg(row_to_json(objdb))
+            FROM    objdb
+            </pre>
         </li>
 
         </ul>

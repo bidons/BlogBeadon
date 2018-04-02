@@ -35,7 +35,8 @@ create view vw_word_with_prop as
 select sg.name as word,freq,sgc.name as class_name,sgl.name as language
 from sg_entry sg
 left join sg_class as sgc on sgc.id = sg.id_class
-left join sg_language as sgl on sgl.id = sgc.id_lang;
+left join sg_language as sgl on sgl.id = sgc.id_lang
+where sg.id_class != 22;
 
 select rebuild_paging_prop('vw_word_with_prop','Части речи и типы','part_of_speech',FALSE);
 
@@ -106,6 +107,52 @@ BEGIN
 END;
 $BODY$
 LANGUAGE plpgsql IMMUTABLE;
+
+update paging_column
+set title = 'Часть речи'
+where id = (select id from paging_column
+where paging_table_id in
+      (select id
+from paging_table as p
+where name = 'vw_word_with_prop')
+and name ='word');
+
+update paging_column
+set title = 'Тип речи'
+where id = (select id from paging_column
+where paging_table_id in
+      (select id
+from paging_table as p
+where name = 'vw_word_with_prop')
+and name ='name');
+
+update paging_column
+set title = 'Язык',is_filter =false,is_orderable = false
+where id = (select id from paging_column
+where paging_table_id in
+      (select id
+from paging_table as p
+where name = 'vw_word_with_prop')
+and name ='language');
+
+update paging_column
+set title = 'Частота использования'
+where id = (select id from paging_column
+where paging_table_id in
+      (select id
+from paging_table as p
+where name = 'vw_word_with_prop')
+and name ='freq');
+
+update paging_column
+set title = 'Тип речи'
+where id = (select id from paging_column
+where paging_table_id in
+      (select id
+from paging_table as p
+where name = 'vw_word_with_prop')
+and name ='class_name');
+
 
 EOD;
         $this->execute($query);
