@@ -35,7 +35,7 @@
                 с множеством в реляицонной среде.
                 </p>
             </li>
-        </ul>
+
 
     <li> Cоздадим простую обвёртку (части речи + тип языка+ тип речи)
 
@@ -49,7 +49,14 @@
 <span style="color: #993333; font-weight: bold;">LEFT</span> <span style="color: #993333; font-weight: bold;">JOIN</span> sg_language <span style="color: #993333; font-weight: bold;">AS</span> sgl <span style="color: #993333; font-weight: bold;">ON</span> sgl<span style="color: #66cc66;">.</span>id <span style="color: #66cc66;">=</span> sgc<span style="color: #66cc66;">.</span>id_lang;</pre>
         </p>
 
+        <li>
+            <p>
 
+            </p>
+            with objdb as ( select word,freq,class_name,language from vw_word_with_prop where true and word in ('явствовать') and class_name in ('ГЛАГОЛ') and language in ('RUSSIAN') order by class_name asc  limit 5 offset 0 ) SELECT  json_agg(row_to_json(objdb)) from objdb
+        </li>
+
+        </ul>
         <div class="col-md-12 center-wrap">
             <div style="margin-bottom:16px">
             <span class="badge badge-secondary" id="datatable-data" data-toggle="modal"
@@ -81,8 +88,6 @@
 <script>
 
     nodeObjects = {{ js_tree_data }}
-
-            console.log(nodeObjects);
 
     RebuildReport(getPagingViewObject('vw_word_with_prop'))
 
