@@ -25,40 +25,23 @@ class ControllerBase extends Controller
 
     protected function addAssetsBlog()
     {
-        /*<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" />
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.4/js/bootstrap.min.js"></script>*/
-
         $blogCss = $this->assets->collection("blog-css");
         $blogJs =  $this->assets->collection("blog-js");
         
         $blogCss
             ->addCss("plugins/bootstrap/dist/css/bootstrap.css")
-            /*->addCss("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/css/bootstrap.css")*/
-            /*->addCss("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css")*/
-            /*->addCss("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css")*/
-            /*->addCss("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css")*/
             ->addCss("plugins/datatables/jquery.dataTables.min.css")
             ->addCss("blog/css/blog.css")
             ->addCss("plugins/select2/select2.css")
             ->addCss("plugins/daterangepicker/daterangepicker-bs3.css")
             ->addCss("plugins/vakata/dist/themes/default/style.min.css");
 
-        /*https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js*/
         $blogJs -> addJs("main/js/jquery.js")
-            /*-> addJs("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js")*/
-            /*->addJs("plugins/bootstrap/dist/js/bootstrap.bundle.min.js")*/
-            /*->addJs("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.js")*/
-            /*->addJs("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js")*/
             ->addJs("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/js/bootstrap.js")
             ->addJs("plugins/bootstrap/dist/js/bootstrap.js")
             ->addJs("https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql")
-            /*->addJs("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.4/js/bootstrap.min.js")*/
             ->addJs("plugins/datatables/jquery.dataTables.min.js")
             ->addJs("main/js/DataTableWrapperExt.js")
-            /*->addJs("https://code.highcharts.com/highcharts.js")
-            ->addJs("https://code.highcharts.com/modules/wordcloud.js")*/
-            /*->addJs("plugins/highcharts/highcharts.js")
-            ->addJs("plugins/highcharts/modules/wordcloud.js")*/
             ->addJs("plugins/select2/select2.min.js")
             ->addJs("plugins/daterangepicker/moment.js")
             ->addJs("plugins/daterangepicker/daterangepicker.js")
