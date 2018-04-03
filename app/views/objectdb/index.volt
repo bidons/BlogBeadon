@@ -1,3 +1,4 @@
+<div class="container">
 <h2 class="center-wrap">Конструкторы
     (<strong>Пагинаторы</strong>)
 </h2>
@@ -22,7 +23,7 @@
 </div>
 <hr>
 
-<div class="container">
+
     <br>
     <div class="row">
         <div class="col-md-12">

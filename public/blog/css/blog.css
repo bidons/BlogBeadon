@@ -1,6 +1,5 @@
 body,input,.modal-content{
-    background:
-            url('/main/img/concrete_seamless.png');
+    background: url('/main/img/concrete_seamless.png');
     background-repeat: repeat;
     background-position: 0 0;
     background-color: #e2e2de;
@@ -21,7 +20,6 @@ body {
 .post-series-content {
     margin: 0 0 26px;
     padding: 20px;
-    /* background-color: #f5f7f8;*/
 }
 .entry-content {
     font-family: verdana;

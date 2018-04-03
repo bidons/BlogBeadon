@@ -9,12 +9,11 @@
 {{ partial('layouts/nav') }}
 {#<body>#}
 
-    <div class="container">
+    <div class="container-fluid">
             {{ content() }}
     </div>
 {#</body>#}
-{{ partial('layouts/footer') }}
-
+{#{{ partial('layouts/footer') }}#}
 
     <div class="modal fade" id="modalDynamicInfo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">

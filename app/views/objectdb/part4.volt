@@ -1,7 +1,10 @@
+
+
 {#
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
 #}
 
+<div class="container">
 <h2 class="center-wrap">Конструкторы
     (<strong>Пагинаторы</strong>)
 </h2>
@@ -82,7 +85,7 @@ WITH cte AS (
         </li>
     </ul>
 </div>
-
+</div>
 
 <div class="col-md-12 center-wrap">
     <div style="margin-bottom:16px">
@@ -121,14 +124,14 @@ WITH cte AS (
 
 
     nodeObjects = {{ js_tree_data }};
-    console.log(nodeObjects);
+    /*console.log(nodeObjects);*/
     RebuildReport(getPagingViewObject('vw_gen_materialize'))
 
     renderStockChart(data[0],'stock-chart');
     renderPiePercent(data[1],'pie-chart-2');
 
     function renderPiePercent(data,selector) {
-        console.log(data);
+        /*console.log(data);*/
         var total = 0, percentage,convertArray = [];
         $.each(data.chart, function() {
             total+=this.y;

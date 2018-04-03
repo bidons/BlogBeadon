@@ -14,6 +14,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/objectdb/index">Конструкторы</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/parall/index">Паралелльные координаты</a>
+                </li>
             </ul>
         </div>
     </div>

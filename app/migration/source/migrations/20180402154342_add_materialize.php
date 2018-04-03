@@ -138,21 +138,23 @@ with cte as
       ('{Дятел,Братство,Духовность,Мебель,Любовник,Аристократ,Ковер,Портос,Трещина,Зубки,Бес,Лень,Благоговенье}' :: TEXT []) [random() * 12] AS series,
       date((current_date - '2 years' :: INTERVAL) + trunc(random() * 365) * '1 day' :: INTERVAL + trunc(random() * 1) * '1 year' :: INTERVAL) AS action_date
 )
-  select id,md5,series,action_date
+  select id,md5,series,action_date::timestamptz as action_date
   from cte
   order by action_date;
 
 select rebuild_paging_prop('vw_gen_materialize','Материализация (сущ.)','view_materialize',true);
 select materialize_worker('recreate','vw_gen_materialize');
 
-with cte as
+
+update paging_table
+    set m_query  = 'with cte as
 (
-    SELECT generate_series(min(action_date::timestamp), max(action_date::timestamp),'1 day')::Date as date
+    SELECT generate_series(min(action_date::timestamp), max(action_date::timestamp),''1 day'')::Date as date
     FROM mv_gen_materialize as m
 ),get_aggreagate as
 (
     SELECT
-      date_part('epoch'::text, date_trunc('day'::text, c.date::date))::bigint * 1000 as date,
+      date_part(''epoch''::text, date_trunc(''day''::text, c.date::date))::bigint * 1000 as date,
       series,
       count(mgm.action_date) as cn
     FROM cte AS c
@@ -168,9 +170,19 @@ with cte as
     FROM get_aggreagate AS g
       where series is not null
     GROUP BY g.series
+),get_pie_data as
+(
+  select series as name,count(*) as y
+  from mv_gen_materialize
+  where series is not null
+  GROUP BY series
 )
-select json_build_object('title','Хуета всякая','type','stock','chart',json_agg(json_build_object('type','area','name',series,'data',rs))) from get_data;
-
+select json_build_array(
+(select json_build_object(''title'',''Генерация (сток)'',''type'',''stock'',''chart'',json_agg(json_build_object(''type'',''area'',''name'',series,''data'',rs)))
+from get_data),
+  json_build_object(''title'',''Генерация (пирог)'',''type'',''pie'',''chart'',(select json_agg(get_pie_data) from get_pie_data))
+);'
+where name = 'vw_gen_materialize';
 EOD;
         $this->execute($query);
     }

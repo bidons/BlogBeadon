@@ -172,6 +172,8 @@ function getPagingViewObject (view_name)
             var item = col.columns;
             html ='';
 
+
+            console.log(col);
             item.forEach(function (item, i, data) {
                 v= '';
                 if(item.visible) {
@@ -181,7 +183,7 @@ function getPagingViewObject (view_name)
                         if (item.cd[0] == 'select2dynamic') {
                             v = '<th><select multiple class="' + select2columnsSelector + '"  type="' + item.type + '" placeholder="' + item.title + '" name="input" data-column="' + item.data + '"></select></th>';
                         }
-                        else if (item.type == 'timestamptz') {
+                        else if (item.type == 'timestamptz' || item.type == 'date') {
                             v = '<th><input type="' + item.type + '" class="form-control input-sm" data-column="' + item.data + '" placeholder="' + item.title + '"></div></th>';
                         }
                         else if (item.cd) {
@@ -290,12 +292,14 @@ function getPagingViewObject (view_name)
 
             var selectColStamp = idTableSelector + ' th input[type=timestamp],' + idTableSelector + ' th input[type=timestamptz],' + idTableSelector + ' th input[type=date]';
 
-            var start = moment().subtract(29, 'days');
-            var end = moment();
+            var start = moment().subtract(29, 'days').format('YYYY.MM.DD');
+            var end = moment().format('YYYY.MM.DD');
 
             $(selectColStamp).daterangepicker({
-                startDate: start,
-                endDate: end,
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment(),
+                locale: {format: 'YYYY.MM.DD'},
+                autoUpdateInput: false,
                 ranges: {
                     'Today': [moment(), moment()],
                     'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
@@ -307,6 +311,7 @@ function getPagingViewObject (view_name)
             });
 
             $(selectColStamp).on('apply.daterangepicker', function(ev, picker) {
+                console.log(($(this).val()));
                 $(this).val(picker.startDate.format('YYYY.MM.DD') + ' - ' + picker.endDate.format('YYYY.MM.DD'));
                 datatable.ajax.reload();
             });
