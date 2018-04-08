@@ -11,4 +11,9 @@ class ParallController extends ControllerBase
     {
 
     }
+
+    public function part1Action()
+    {
+
+    }
 }

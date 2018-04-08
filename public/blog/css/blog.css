@@ -1,4 +1,4 @@
-body,input,.modal-content{
+body,input,.modal-content,.highcharts-background{
     background: url('/main/img/concrete_seamless.png');
     background-repeat: repeat;
     background-position: 0 0;
