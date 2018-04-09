@@ -1,4 +1,4 @@
-html, parall {
+parall {
     margin: 0;
     width: 100%;
     height: 100%;
@@ -14,9 +14,7 @@ parall {
 parall a {
     text-decoration: none;
 }
-parall .dark a {
-    color: #5ae;
-}
+
 parall #wrap {
     padding: 0 3.5%;
 }
@@ -102,11 +100,8 @@ parall button[disabled=disabled] {
 parall .settings button[disabled=disabled] {
     display: none;
 }
-parall .dark button[disabled=disabled] {
-    opacity: 0.2;
-}
-parall button#keep-data,
-parall button#exclude-data {
+
+parall button#keep-data, parall button#exclude-data {
     font-weight:bold
 }
 parall button#keep-data:hover {
@@ -115,18 +110,18 @@ parall button#keep-data:hover {
 parall button #exclude-data:hover {
     color: #900;
 }
-parall #food-list {
+parall #item-list {
     width: 100%;
     height: 460px;
     overflow-x: auto;
     overflow-y: auto;
     white-space: nowrap;
 }
-/*parall #legend {
+parall #legend {
     text-align: left;
     overflow-y: auto;
     border-left: 1px solid rgba(140,140,140,0.5);
-}*/
+}
 parall .row {
     cursor: pointer;
 }
@@ -137,12 +132,7 @@ parall .row:hover {
 parall .off {
     color: #999;
 }
-parall .dark .off {
-    color: #555;
-}
-parall .dark #legend {
-    border-left: 1px solid #777;
-}
+
 parall .color-block, .color-bar {
     display: inline-block;
     height: 8px;

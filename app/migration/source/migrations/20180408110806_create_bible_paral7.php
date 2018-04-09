@@ -2,7 +2,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class CreateBibleParal6 extends AbstractMigration
+class CreateBibleParal7 extends AbstractMigration
 {
     /**
      * Change Method.
@@ -28,12 +28,13 @@ class CreateBibleParal6 extends AbstractMigration
     public function change()
     {
 $query =<<<'EOD'
+
 update bible_parall
-set "30000_35000_new" = (
+set "35000_38546_new" = (
                 select count(*)
                 from (select b.page_ts_vector
                 from bible as b
-                order by id limit 5000 OFFSET 5000 *6) as r
+                order by id limit 5000 OFFSET 5000 *7) as r
                 where r.page_ts_vector @@ bible_parall.ts_query_name);
 EOD;
         $this->execute($query);

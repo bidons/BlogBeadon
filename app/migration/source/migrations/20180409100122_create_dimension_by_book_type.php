@@ -2,7 +2,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class CreateParallByBibleType extends AbstractMigration
+class CreateDimensionByBookType extends AbstractMigration
 {
     /**
      * Change Method.
@@ -28,8 +28,7 @@ class CreateParallByBibleType extends AbstractMigration
     public function change()
     {
 $query =<<<'EOD'
-create index bible_book_id_idx on bible(book_id);
-create table bible_parall_by_type as  
+create table bible_dim_book_type as
 with cte as
 (
     SELECT
@@ -50,9 +49,10 @@ with cte as
 ), parall_data as
 (
     SELECT
-      row_number() over (ORDER BY null)  as id,
+      row_number() over (ORDER BY null) as id,
       bp.name as name,
-      case when bo.is_new then 'Новый завет' else 'Старый завет' end as group,
+      first(bo.is_new) as bible_section,
+      bo.id as book_id,
       count(*) as total_word,
       count(*) filter (where s.class_name = 'ЧАСТИЦА') as "ЧАСТИЦА",
       count(*) filter (where s.class_name = 'МЕСТОИМ_СУЩ') as "МЕСТОИМ_СУЩ",
@@ -73,7 +73,7 @@ with cte as
     join bible_parall as bp on s.name  =bp.name
     JOIN bible AS b ON b.page_ts_vector @@ bp.ts_query_name
     join book as bo on b.book_id = bo.id
-    GROUP BY bo.is_new,bp.name
+    GROUP BY bo.id,bp.name
 )
 select *
 from parall_data;

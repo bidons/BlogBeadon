@@ -65,6 +65,12 @@ LANGUAGE plpgsql volatile;
 
 select normalize_bible_data();
 
+update bible
+set page = replace(page,row,'');
+
+update bible
+set page_ts_vector = to_tsvector(page);
+
 create table bible_parall as
 with cte as
 (
@@ -79,7 +85,6 @@ with cte as
 ),prepare_data as
 (
     SELECT
-      first(c.id) as id,
       lower(replace(c.form_name,' ','')) as name,
       first(class_name) as class_name
     FROM cte AS c
@@ -87,7 +92,7 @@ with cte as
 ) , prepare_parall as
 (
     SELECT
-      first(s.id) as id,
+       row_number() over (ORDER BY null) as id,
       s.name,
       s.name::tsquery as ts_query_name,
       first(s.class_name) as "group",

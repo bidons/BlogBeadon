@@ -1,10 +1,6 @@
-// Parallel Coordinates
-// Copyright (c) 2012, Kai Chang
-// Released under the BSD License: http://opensource.org/licenses/BSD-3-Clause
-
 function initParallel(path_csv,colors) {
     var width = document.body.clientWidth,
-        height = 500;/*d3.max([document.body.clientHeight-540, 240])*/
+        height = 400;/*d3.max([document.body.clientHeight-540, 240])*/
 
 
     var m = [60, 0, 10, 0],
@@ -269,7 +265,7 @@ function initParallel(path_csv,colors) {
             return a[col] < b[col] ? -1 : 1;
         });
 
-        var table = d3.select("#food-list")
+        var table = d3.select("#item-list")
             .html("")
             .selectAll(".row")
             .data(sample)
@@ -508,7 +504,7 @@ function initParallel(path_csv,colors) {
 
         shuffled_data = _.shuffle(selected);
 
-        data_table(shuffled_data.slice(0, 25));
+        data_table(shuffled_data.slice(0, 10));
 
         ctx.clearRect(0, 0, w + 1, h + 1);
 
