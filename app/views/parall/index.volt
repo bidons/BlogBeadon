@@ -55,18 +55,14 @@
 </parall>
 
 <br>
-<div class="col-md-12">
+<div class="row">
     {#<hr>#}
     <div class="col-md-4">
         <input class="search-input form-control" placeholder="Поиск">
         <div id = "bible-tree"></div>
     </div>
     <div class="col-md-8">
-        <div class="center-wrap">
             <div id="container-chart">
-            <div class="chart_class"> </div>
-            <div class="chart_class"> </div>
-            </div>
         </div>
     </div>
 </div>
@@ -77,89 +73,112 @@
 
 <script>
 
+    var v = {"pie_part_of_speech": {"data": [{"y": 19039, "name": "НАРЕЧИЕ"}, {"y": 44645, "name": "ПРЕДЛОГ"}, {"y": 32479, "name": "ЧАСТИЦА"}, {"y": 69163, "name": "ПРИЛАГАТЕЛЬНОЕ"}, {"y": 9792, "name": "ИНФИНИТИВ"}, {"y": 12666, "name": "МЕСТОИМ_СУЩ"}, {"y": 572, "name": "БЕЗЛИЧ_ГЛАГОЛ"}, {"y": 5386, "name": "ЧИСЛИТЕЛЬНОЕ"}, {"y": 138929, "name": "СУЩЕСТВИТЕЛЬНОЕ"}, {"y": 4515, "name": "ДЕЕПРИЧАСТИЕ"}, {"y": 256, "name": "ПОСЛЕЛОГ"}, {"y": 73970, "name": "ГЛАГОЛ"}, {"y": 709, "name": "ВВОДНОЕ"}, {"y": 47591, "name": "СОЮЗ"}, {"y": 51451, "name": "МЕСТОИМЕНИЕ"}], "title": "Доля частей речий", "subtitle": "Библия"}, "pie_word_by_part_of_speech": [{"data": [{"y": 2366, "name": "когда"}, {"y": 1653, "name": "вот"}, {"y": 1090, "name": "тогда"}, {"y": 807, "name": "против"}, {"y": 674, "name": "там"}, {"y": 596, "name": "пусть"}, {"y": 516, "name": "только"}, {"y": 511, "name": "дома"}, {"y": 407, "name": "где"}, {"y": 372, "name": "ныне"}], "title": "НАРЕЧИЕ", "subtitle": "Библия"}, {"data": [{"y": 12118, "name": "в"}, {"y": 4516, "name": "с"}, {"y": 4204, "name": "от"}, {"y": 3870, "name": "из"}, {"y": 3681, "name": "к"}, {"y": 2596, "name": "по"}, {"y": 2336, "name": "у"}, {"y": 1960, "name": "для"}, {"y": 1470, "name": "пред"}, {"y": 1219, "name": "до"}], "title": "ПРЕДЛОГ", "subtitle": "Библия"}, {"data": [{"y": 8674, "name": "не"}, {"y": 7114, "name": "на"}, {"y": 3724, "name": "как"}, {"y": 2712, "name": "же"}, {"y": 2101, "name": "за"}, {"y": 2046, "name": "так"}, {"y": 1913, "name": "во"}, {"y": 1814, "name": "о"}, {"y": 785, "name": "бы"}, {"y": 694, "name": "ни"}], "title": "ЧАСТИЦА", "subtitle": "Библия"}, {"data": [{"y": 2533, "name": "то"}, {"y": 1755, "name": "это"}, {"y": 1386, "name": "которые"}, {"y": 1214, "name": "который"}, {"y": 1208, "name": "всех"}, {"y": 916, "name": "своего"}, {"y": 850, "name": "тот"}, {"y": 763, "name": "того"}, {"y": 758, "name": "твоего"}, {"y": 732, "name": "твой"}], "title": "ПРИЛАГАТЕЛЬНОЕ", "subtitle": "Библия"}, {"data": [{"y": 949, "name": "есть"}, {"y": 452, "name": "быть"}, {"y": 293, "name": "говорить"}, {"y": 222, "name": "жить"}, {"y": 205, "name": "делать"}, {"y": 177, "name": "сказать"}, {"y": 160, "name": "идти"}, {"y": 153, "name": "сделать"}, {"y": 142, "name": "служить"}, {"y": 136, "name": "пить"}], "title": "ИНФИНИТИВ", "subtitle": "Библия"}, {"data": [{"y": 5506, "name": "что"}, {"y": 1851, "name": "все"}, {"y": 1328, "name": "кто"}, {"y": 674, "name": "себя"}, {"y": 663, "name": "себе"}, {"y": 467, "name": "всем"}, {"y": 299, "name": "никто"}, {"y": 287, "name": "чего"}, {"y": 238, "name": "ничего"}, {"y": 229, "name": "собою"}], "title": "МЕСТОИМ_СУЩ", "subtitle": "Библия"}, {"data": [{"y": 278, "name": "грех"}, {"y": 74, "name": "можно"}, {"y": 58, "name": "надлежало"}, {"y": 42, "name": "надо"}, {"y": 40, "name": "нельзя"}, {"y": 29, "name": "надлежит"}, {"y": 19, "name": "следует"}, {"y": 14, "name": "следовало"}, {"y": 4, "name": "пришлось"}, {"y": 3, "name": "жаль"}], "title": "БЕЗЛИЧ_ГЛАГОЛ", "subtitle": "Библия"}, {"data": [{"y": 314, "name": "семь"}, {"y": 307, "name": "одного"}, {"y": 306, "name": "три"}, {"y": 291, "name": "два"}, {"y": 264, "name": "двадцать"}, {"y": 221, "name": "сто"}, {"y": 209, "name": "пять"}, {"y": 179, "name": "четыре"}, {"y": 176, "name": "двух"}, {"y": 161, "name": "десять"}], "title": "ЧИСЛИТЕЛЬНОЕ", "subtitle": "Библия"}, {"data": [{"y": 3358, "name": "господь"}, {"y": 1662, "name": "бог"}, {"y": 1522, "name": "господа"}, {"y": 1164, "name": "один"}, {"y": 1162, "name": "народ"}, {"y": 1157, "name": "сын"}, {"y": 1113, "name": "царь"}, {"y": 1046, "name": "бога"}, {"y": 874, "name": "земли"}, {"y": 865, "name": "земле"}], "title": "СУЩЕСТВИТЕЛЬНОЕ", "subtitle": "Библия"}, {"data": [{"y": 810, "name": "царя"}, {"y": 506, "name": "говоря"}, {"y": 374, "name": "моя"}, {"y": 144, "name": "увидев"}, {"y": 134, "name": "услышав"}, {"y": 134, "name": "моря"}, {"y": 131, "name": "сказав"}, {"y": 103, "name": "будучи"}, {"y": 101, "name": "взяв"}, {"y": 97, "name": "придя"}], "title": "ДЕЕПРИЧАСТИЕ", "subtitle": "Библия"}, {"data": [{"y": 192, "name": "ради"}, {"y": 62, "name": "вслед"}, {"y": 2, "name": "кверху"}], "title": "ПОСЛЕЛОГ", "subtitle": "Библия"}, {"data": [{"y": 3491, "name": "сказал"}, {"y": 2165, "name": "будет"}, {"y": 1303, "name": "было"}, {"y": 1264, "name": "говорит"}, {"y": 1237, "name": "был"}, {"y": 1169, "name": "день"}, {"y": 993, "name": "будут"}, {"y": 927, "name": "мой"}, {"y": 879, "name": "были"}, {"y": 587, "name": "сделал"}], "title": "ГЛАГОЛ", "subtitle": "Библия"}, {"data": [{"y": 509, "name": "итак"}, {"y": 66, "name": "правда"}, {"y": 56, "name": "словом"}, {"y": 38, "name": "однако"}, {"y": 11, "name": "во-первых"}, {"y": 11, "name": "увы"}, {"y": 8, "name": "представьте"}, {"y": 3, "name": "во-вторых"}, {"y": 3, "name": "ура"}, {"y": 2, "name": "наоборот"}], "title": "ВВОДНОЕ", "subtitle": "Библия"}, {"data": [{"y": 28008, "name": "и"}, {"y": 3461, "name": "а"}, {"y": 3320, "name": "ибо"}, {"y": 2783, "name": "но"}, {"y": 2616, "name": "чтобы"}, {"y": 1683, "name": "если"}, {"y": 1229, "name": "потому"}, {"y": 1004, "name": "ли"}, {"y": 947, "name": "да"}, {"y": 684, "name": "также"}], "title": "СОЮЗ", "subtitle": "Библия"}, {"data": [{"y": 6608, "name": "его"}, {"y": 5354, "name": "он"}, {"y": 4907, "name": "я"}, {"y": 3817, "name": "их"}, {"y": 3211, "name": "они"}, {"y": 2984, "name": "ты"}, {"y": 2067, "name": "ему"}, {"y": 1899, "name": "меня"}, {"y": 1778, "name": "мне"}, {"y": 1632, "name": "тебя"}], "title": "МЕСТОИМЕНИЕ", "subtitle": "Библия"}]};
+
+    runRenderPercent(v);
+
+    function runRenderPercent(v)
+    {
+        $.each(v, function(key,value) {
+            var itt = 0;
+            if(key == 'pie_word_by_part_of_speech') {
+
+                $.each(value, function(key,value2) {
+                    itt++;
+                    renderPiePercent(value2, 'pie_word_by_part_of_speech_' + itt);
+                });
+            }
+            else {
+                renderPiePercent(value, key);
+            }
+        });
+    }
+
+    function renderPiePercent(data,selector) {
+        $("#container-chart").append('<div id="'+selector+'"></div>');
+        var total = 0, percentage,convertArray = [];
+
+        $.each(data.data, function() {
+
+            total+=this.y;
+        });
+
+        $.each(data.data, function()
+        {
+            convertArray.push({name:this.name.toUpperCase() + ' ('+this.y +')',y: (this.y/total * 100)});
+        });
+
+        var v = Highcharts.map(Highcharts.getOptions().colors, function (color) {
+            return {
+                radialGradient: {
+                    cx: 0.1,
+                    cy: 0.3,
+                    r: 0.7
+                },
+                stops: [
+                    [0, color],
+                    [1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken
+                ]
+            };
+        });
+
+        var v =   Highcharts.chart(selector, {
+            chart: {
+                plotBackgroundColor:  null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie',
+                backgroundColor: {
+                    linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
+                    stops: [
+                        [0, 'rgb(255, 255, 255)'],
+                        [1, 'rgb(200, 200, 255)']
+                    ]
+                },
+            },
+
+            title: {
+                text: data.title,
+            },
+            credits: {
+                enabled: false
+            },
+            subtitle: {
+                text: data.subtitle
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    size:'70%',
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        },
+                        connectorColor: 'silver'
+
+                    },
+                    showInLegend: false
+                }
+            },
+            series: [{
+                name: '%',
+                data: convertArray
+            }]
+        });
+    }
+
+    nodeObjects = {{ js_tree_data }};
+
     var bibleTree = $('#bible-tree').jstree({
-        'core': {
-            'data':[{"id":10000,"parent":"#","text":"Библия","total_word":511163},
-                {"id":10001,"parent":"10000","text":"Ветхий завет","total_word":412369},
-                {"id":10002,"parent":"10000","text":"Новый завет","total_word":98794},
-                {"id":3,"parent":"10001","text":"Книга пророка Малахии","total_word":1004},
-                {"id":7,"parent":"10001","text":"Книга премудрости Иисуса, сына Сирахова *","total_word":15832},
-                {"id":8,"parent":"10001","text":"Второзаконие","total_word":16346},
-                {"id":11,"parent":"10001","text":"Вторая книга Царств","total_word":11021},
-                {"id":13,"parent":"10001","text":"Книга Есфири","total_word":3099},
-                {"id":14,"parent":"10001","text":"Книга пророка Авдия","total_word":345},
-                {"id":15,"parent":"10001","text":"Первая книга Паралипоменон","total_word":9199},
-                {"id":16,"parent":"10001","text":"Книга пророка Иеремии","total_word":22888},
-                {"id":18,"parent":"10001","text":"Псалтирь","total_word":23954},
-                {"id":19,"parent":"10001","text":"Книга Руфи","total_word":1456},
-                {"id":23,"parent":"10001","text":"Книга премудрости Соломона *","total_word":5613},
-                {"id":25,"parent":"10001","text":"Книга пророка Иезекииля","total_word":21310},
-                {"id":26,"parent":"10001","text":"Песнь песней Соломона","total_word":1418},
-                {"id":27,"parent":"10001","text":"Откровение святого Иоанна Богослова (Апокалипсис)","total_word":6520},
-                {"id":28,"parent":"10001","text":"Книга Иисуса Навина","total_word":9716},
-                {"id":32,"parent":"10001","text":"Плач Иеремии","total_word":1866},
-                {"id":33,"parent":"10001","text":"Книга пророка Даниила","total_word":8712},
-                {"id":35,"parent":"10001","text":"Вторая книга Паралипоменон","total_word":13615},
-                {"id":36,"parent":"10001","text":"Книга Неемии","total_word":5148},
-                {"id":37,"parent":"10001","text":"Исход","total_word":17450},
-                {"id":38,"parent":"10001","text":"Книга Екклезиаста, или Проповедника","total_word":3320},
-                {"id":41,"parent":"10001","text":"Книга пророка Амоса","total_word":2241},
-                {"id":42,"parent":"10001","text":"Книга Товита *","total_word":3956},
-                {"id":43,"parent":"10001","text":"Бытие","total_word":21848},
-                {"id":44,"parent":"10001","text":"Книга пророка Исаии","total_word":18848},
-                {"id":45,"parent":"10001","text":"Третья книга Маккавейская *","total_word":3932},
-                {"id":46,"parent":"10001","text":"Первая книга Маккавейская *","total_word":13265},
-                {"id":48,"parent":"10001","text":"Книга пророка Ионы","total_word":793},
-                {"id":49,"parent":"10001","text":"Третья книга Ездры *","total_word":11709},
-                {"id":50,"parent":"10001","text":"Левит","total_word":12716},
-                {"id":51,"parent":"10001","text":"Третья книга Царств","total_word":13101},
-                {"id":52,"parent":"10001","text":"Книга пророка Аввакума","total_word":804},
-                {"id":53,"parent":"10001","text":"Книга пророка Софонии","total_word":802},
-                {"id":56,"parent":"10001","text":"Книга пророка Аггея","total_word":598},
-                {"id":57,"parent":"10001","text":"Вторая книга Ездры *","total_word":5789},
-                {"id":58,"parent":"10001","text":"Первая книга Ездры","total_word":3669},
-                {"id":59,"parent":"10001","text":"Книга пророка Осии","total_word":2745},
-                {"id":60,"parent":"10001","text":"Книга пророка Михея","total_word":1658},
-                {"id":61,"parent":"10001","text":"Книга пророка Захарии","total_word":3317},
-                {"id":62,"parent":"10001","text":"Книга пророка Наума","total_word":643},
-                {"id":63,"parent":"10001","text":"Четвёртая книга Царств","total_word":11818},
-                {"id":64,"parent":"10001","text":"Вторая книга Маккавейская *","total_word":8972},
-                {"id":65,"parent":"10001","text":"Первая книга Царств","total_word":13757},
-                {"id":66,"parent":"10001","text":"Книга Иова","total_word":10829},
-                {"id":67,"parent":"10001","text":"Книга пророка Варуха *","total_word":1877},
-                {"id":68,"parent":"10001","text":"Книга пророка Иоиля","total_word":1060},
-                {"id":70,"parent":"10001","text":"Книга Иудифи *","total_word":6121},
-                {"id":71,"parent":"10001","text":"Притчи Соломона","total_word":8384},
-                {"id":72,"parent":"10001","text":"Послание Иеремии *","total_word":1025},
-                {"id":73,"parent":"10001","text":"Книга Судей израилевых","total_word":9853},
-                {"id":77,"parent":"10001","text":"Числа","total_word":16407},
-                {"id":1,"parent":"10002","text":"Послание Иакова","total_word":1372},
-                {"id":2,"parent":"10002","text":"3-е послание Иоанна","total_word":189},
-                {"id":4,"parent":"10002","text":"Послание к Филиппийцам","total_word":1342},
-                {"id":5,"parent":"10002","text":"1-е послание к Тимофею","total_word":1348},
-                {"id":6,"parent":"10002","text":"Послание к Ефесянам","total_word":1753},
-                {"id":9,"parent":"10002","text":"Послание к Колоссянам","total_word":1152},
-                {"id":10,"parent":"10002","text":"Послание к Евреям","total_word":3897},
-                {"id":12,"parent":"10002","text":"Послание к Галатам","total_word":1816},
-                {"id":17,"parent":"10002","text":"2-е послание к Фессалоникийцам","total_word":656},
-                {"id":20,"parent":"10002","text":"Послание к Титу","total_word":528},
-                {"id":21,"parent":"10002","text":"1-е послание Петра","total_word":1368},
-                {"id":22,"parent":"10002","text":"2-е послание к Коринфянам","total_word":3640},
-                {"id":24,"parent":"10002","text":"2-е послание к Тимофею","total_word":959},
-                {"id":29,"parent":"10002","text":"Евангелие от Луки","total_word":14930},
-                {"id":30,"parent":"10002","text":"1-е послание к Коринфянам","total_word":5370},
-                {"id":31,"parent":"10002","text":"Послание к Римлянам","total_word":5365},
-                {"id":34,"parent":"10002","text":"Евангелие от Марка","total_word":8695},
-                {"id":39,"parent":"10002","text":"Евангелие от Матфея","total_word":13766},
-                {"id":40,"parent":"10002","text":"1-е послание Иоанна","total_word":1543},
-                {"id":47,"parent":"10002","text":"Послание Иуды","total_word":342},
-                {"id":54,"parent":"10002","text":"Евангелие от Иоанна","total_word":12046},
-                {"id":55,"parent":"10002","text":"Послание к Филимону","total_word":309},
-                {"id":69,"parent":"10002","text":"Деяния святых апостолов","total_word":14157},
-                {"id":74,"parent":"10002","text":"2-е послание Иоанна","total_word":197},
-                {"id":75,"parent":"10002","text":"2-е послание Петра","total_word":860},
-                {"id":76,"parent":"10002","text":"1-е послание к Фессалоникийцам","total_word":1194}]
-        }, plugins: ["search","types"],
+        'core':
+            {data:nodeObjects},
+        plugins: ["search","types"],
         "types" : {
             "default" : {
                 "icon" : "glyphicon glyphicon-asterisk"
@@ -175,6 +194,8 @@
         $(this).jstree('open_all');
         $(this).jstree(true).select_node(10000);
         node = ($(this).jstree(true).get_node('10000')).original;
+
+        console.log(node);
         /*definitionSql  = node.view;
         RebuildReport(node);*/
     });
@@ -248,7 +269,7 @@ var item = {
         });
     };
 
-   /* prepareData('bible_part_of_speach');*/
+    prepareData('bible_part_of_speach');
     function prepareData(parallId)
     {
         d3.select('#chart').selectAll('svg').remove();
@@ -292,8 +313,8 @@ var item = {
 
         $('#wrap').append(v);
 
-        console.log(v);
-       initParallel(item[parallId].csv,item[parallId].yaxis);
+
+       /*initParallel(item[parallId].csv,item[parallId].yaxis);*/
     }
 </script>
 

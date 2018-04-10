@@ -64,7 +64,7 @@
 
         $.each(data, function()
         {
-            convertArray.push({name:this.name + '('+this.y +')',y: (this.y/total * 100)});
+            convertArray.push({name:(this.name).toUpperCase() + ' ('+this.y +')',y: (this.y/total * 100)});
         });
 
         var v = Highcharts.map(Highcharts.getOptions().colors, function (color) {
@@ -84,7 +84,7 @@
         var v =   Highcharts.chart(selector, {
             chart: {
                 plotBackgroundColor:  null,
-                plotBorderWidth: null,
+                plotBorderWidth: 2,
                 plotShadow: false,
                 type: 'pie',
                 backgroundColor: {
