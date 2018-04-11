@@ -15,8 +15,15 @@
                     <a class="nav-link" href="/objectdb/index">Конструкторы</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/parall/index">Морфологический анализ (Супер книга)</a>
+                    <a class="nav-link" href="/parall/index">Морфологический анализ "Супер книги"</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-disabled="false" >Логистическая регресия(в разработке)</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/parall/index">Полезности</a>
+                </li>
+
             </ul>
         </div>
     </div>

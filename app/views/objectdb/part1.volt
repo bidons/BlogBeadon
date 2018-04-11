@@ -207,32 +207,6 @@
         <li>
             Собственно этих двух запросов достаточно чтоб отрендерить данные, управлять порядком, видимостью, переводом-названий полей.
         </li>
-
-     {#   Имея реляционно все типы, и сам конструктор, мы можем с удобством управлять как конструкцией запроса, так и
-        поведением полей:
-        <br>
-        <li>
-            Видимость полей
-        </li>
-        <li>
-            Переводы полей
-        </li>
-        <li>
-            Управление фильтрами и сортировками
-        </li>
-        <li>
-            В зависимости от прав пользователя показывать скрывать поля
-        </li>
-        <li>
-            Управление количеством (использование счётчиков при долгих операций seq-scan при подсчёте строк на большом
-            моножестве)
-        </li>
-        <li>
-            Любой запрос может быть переписан и SQL среде и полноценно протестирован
-        </li>
-        <li>
-            Вьюха может быть материализована и проиндексирована
-        </li>#}
     </ul>
 </div>
 </div>
@@ -247,14 +221,13 @@
     RebuildReport(getPagingViewObject('paging_table'))
 
     function RebuildReport(node) {
-        console.log(node.col);
         $('#select2-query').text('');
         var gridParams = {
             urlDataTable: '/objectdb/showdata',
             checkedUrl: '/objectdb/idsdata',
             urlSelect2: '/objectdb/txtsrch',
             idName: 'id',
-            columns: JSON.parse(node.col),
+            columns: node.col,
             is_mat: false,
             lengthMenu: [[5, 10], [5, 10]],
             displayLength: 5,

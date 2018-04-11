@@ -8,7 +8,6 @@ class ParallController extends ControllerBase
     {
         parent::initialize();
     }
-
     public function indexAction()
     {
         $result_js = $this->getDI()->getShared("db")->fetchAll("

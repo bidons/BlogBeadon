@@ -99,9 +99,26 @@
 </div>
 
 </div>
-<script>
 
-    nodeObjects = {{ js_tree_data }}
+<div class="modal fade" id="modalDynamicInfo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"> </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
 
     RebuildReport(getPagingViewObject('vw_word_with_prop'))
 
@@ -113,7 +130,7 @@
             checkedUrl: '/objectdb/idsdata',
             urlSelect2: '/objectdb/txtsrch',
             idName: 'id',
-            columns: JSON.parse(node.col),
+            columns: node.col,
             is_mat: false,
             lengthMenu: [[5, 10], [5, 10]],
             displayLength: 5,
@@ -126,4 +143,39 @@
 
         wrapper = $('.data-tbl').DataTableWrapperExt(gridParams);
     }
+
+    $('#modalDynamicInfo').on("show.bs.modal", function(e) {
+        var value = ($(e.relatedTarget).attr('id'));
+        var info = wrapper.getJsonInfo();
+
+
+        if(value) {
+            switch (value) {
+                case 'datatable-data':
+                    object = info['dtObj'].o.debug.query[0];
+                    break;
+                case 'datatable-f-ttl':
+                    object = info['dtObj'].o.debug.query[1];
+                    break;
+                case 'datatable-ttl':
+                    object = info['dtObj'].o.debug.query[2];
+                    break;
+                case 'select2-query':
+                    object = info['s2obj'];
+                    break;
+                case 'response-json':
+                    object = info['dtObj'].o;
+                    break;
+                case 'request-json':
+                    object = info['dtObj'].i;
+                    break;
+                case 'sql-view':
+                    object = definitionSql;
+                    break;
+                default:
+            }
+
+            $(this).find(".modal-body").html('<pre><code class="json">' + syntaxHighlight(object) + '</code> </pre>');
+        }
+    });
 </script>

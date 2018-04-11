@@ -1,20 +1,17 @@
-
+<div class="container">
 <div class="col-md-12">
         <div class="text-center">
             <br>
             <img class="rounded-circle" src="/main/img/slide-3.jpg"  width="300" height="410">
         </div>
     </div>
-
     <hr>
-
     <div class="row">
         <div class="col-md-4">
             <div class="text-center">
             <img class="img-rounded" src="/main/img/postgresql.png"  alt="">
             </div>
         </div>
-
         <div class="col-md-8">
             <p>
                 Тут будет описано зачем всё это было придумано ...
@@ -38,9 +35,6 @@
                 <h2 class="intro-text text-center"> Тут кому спасибо.
                     <strong>Спасибо!</strong>
                     <img class="img-rounded"  src="/main/img/our_team_all.jpg"  alt="">
-                    {#<img src="/main/img/person_1.jpeg" width="300" height="420" alt="...">
-                    <img src="/main/img/person_2.jpeg" width="300" height="420"alt="...">
-                    <img src="/main/img/person_3.jpeg"  width="300" height="420" alt="...">#}
                 </h2>
                 <hr>
 
@@ -48,3 +42,4 @@
         </div>
     </div>
 
+</div>
