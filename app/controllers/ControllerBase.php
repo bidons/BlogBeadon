@@ -61,6 +61,35 @@ class ControllerBase extends Controller
 
         return $this->response;
     }
+
+    public function exeFnScalar(string $fn, $args = [], $returnArray = false)
+    {
+        $argsString = $this->handleArguments($args);
+
+        $sql = 'select '.$fn.'('.$argsString.')';
+
+        $this->_lastQueryFn = $sql;
+
+        try {
+            $result = $this->getDI()->getShared("db")->fetchOne($sql);
+        } catch (\PDOException $e) {
+            return null;
+        }
+
+        if (!$result) {
+            return $result;
+        }
+
+        $result =  array_values($result)[0];
+
+        $jsonResult = json_decode($result, $returnArray);
+
+        if (json_last_error() != JSON_ERROR_NONE) {
+            return $result;
+        }
+
+        return $jsonResult;
+    }
     
     
 }

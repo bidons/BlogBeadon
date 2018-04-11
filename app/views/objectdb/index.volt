@@ -1,3 +1,6 @@
+
+
+
 <div class="container">
 <h2 class="center-wrap">Конструкторы
     (<strong>Пагинаторы</strong>)

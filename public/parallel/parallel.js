@@ -60,12 +60,15 @@ function initParallel(path_csv,colors) {
         // Convert quantitative scales to floats
         data = raw_data.map(function (d) {
             for (var k in d) {
+
                 if (!_.isNaN(raw_data[0][k] - 0) && k != 'id') {
                     d[k] = parseFloat(d[k]) || 0;
                 }
             };
             return d;
         });
+
+
 
         // Extract the list of numerical dimensions and create a scale for each.
         xscale.domain(dimensions = d3.keys(data[0]).filter(function (k) {
@@ -74,7 +77,7 @@ function initParallel(path_csv,colors) {
                         return +d[k];
                     }))
                     .range([h, 0]));
-        }).sort());
+        })/*.sort()*/);
 
         // Add a group element for each dimension.
         var g = svg.selectAll(".dimension")

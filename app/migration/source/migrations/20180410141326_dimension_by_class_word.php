@@ -137,10 +137,10 @@ BEGIN
                                                                                    where bl.book_id in (select id
                                                                                                         from book  where is_new is false)
                                                                                   GROUP BY bl.class_name) as r)),
-               'pie_word_by_part_of_speech',(select json_agg(json_build_object('title',rs."group",'subtitle','Cтарый завет','data',rs))
+               'pie_word_by_part_of_speech',(select json_agg(json_build_object('title',rs."group",'subtitle','Cтарый завет','data',rs.data))
         from
-        (select r."group",(select json_agg(r) from (
-                select name,max(bl.total_word)
+        (select r."group",(select json_agg(r) as data from (
+                select name,max(bl.total_word) as y 
                 from bible_parall_by_class_book  as bl
                 where bl.class_name = r."group" and  bl.book_id in (select id from book  where is_new is false)
                 GROUP BY name,class_name
@@ -151,7 +151,6 @@ BEGIN
        GROUP BY "group") as r) as rs))
           into val_result;
 
-
       elseif (a_book_id = 10002)
       then
             select json_build_object('pie_part_of_speech',json_build_object('title','Доля частей речи','subtitle','Новый завет','data',(select jsonb_agg(r)
@@ -160,10 +159,10 @@ BEGIN
                                                                                    where bl.book_id in (select id
                                                                                                         from book  where is_new is true)
                                                                                   GROUP BY bl.class_name) as r)),
-               'pie_word_by_part_of_speech',(select json_agg(json_build_object('title',rs."group",'subtitle','Новый завет','data',rs))
+               'pie_word_by_part_of_speech',(select json_agg(json_build_object('title',rs."group",'subtitle','Новый завет','data',rs.data))
         from
-        (select r."group",(select json_agg(r) from (
-                select name,max(bl.total_word)
+        (select r."group",(select json_agg(r) as data from (
+                select name,max(bl.total_word) as y
                 from bible_parall_by_class_book  as bl
                 where bl.class_name = r."group" and  bl.book_id in (select id from book  where is_new is true)
                 GROUP BY name,class_name
@@ -174,14 +173,14 @@ BEGIN
        GROUP BY "group") as r) as rs))
               into val_result;
       else
- select json_build_object('pie_part_of_speech',json_build_object('title','Доля частей речий','subtitle','Новый завет','data',(select jsonb_agg(r)
+ select json_build_object('pie_part_of_speech',json_build_object('title','Доля частей речий','subtitle',val_title,'data',(select jsonb_agg(r)
                                                                                  from  (select bl.class_name as name,sum(total_word) as y
                                                                                  from bible_parall_by_class_book as bl
                                                                                    where bl.book_id in (a_book_id)
                                                                                   GROUP BY bl.class_name) as r)),
-               'pie_word_by_part_of_speech',(select json_agg(json_build_object('title',rs."group",'subtitle',val_title,'data',rs))
+               'pie_word_by_part_of_speech',(select json_agg(json_build_object('title',rs."group",'subtitle',val_title,'data',rs.data))
         from
-        (select r."group",(select json_agg(r) from (
+        (select r."group",(select json_agg(r) as data from (
                 select name,max(bl.total_word) as y
                 from bible_parall_by_class_book  as bl
                 where bl.class_name = r."group" and  bl.book_id in (a_book_id)
@@ -204,16 +203,22 @@ select 10000 as id,'#' as parent,'Библия' as text,(get_word_bible_normaliz
 union all
 select 10001,'10000' as parent,'Старый завет' as text,(get_word_bible_normalize_info(10001)).*,get_bible_pie_chart_info(10001,20)
 UNION ALL
-select 10002,'10000' as parent,'Новый завет' as text,(get_word_bible_normalize_info(10002)).*,get_bible_pie_chart_info(10002,30)
+select 10002,'10000' as parent,'Новый завет' as text,(get_word_bible_normalize_info(10002)).*,get_bible_pie_chart_info(10002,20)
 UNION ALL
-select b.id,'10001',b.name,(get_word_bible_normalize_info(b.id)).*,get_bible_pie_chart_info(10002,20)
+select b.id,'10001',b.name,(get_word_bible_normalize_info(b.id)).*,get_bible_pie_chart_info(id,20)
 from book as b
 where is_new is false
 UNION ALL
-select b.id,'10002',b.name,(get_word_bible_normalize_info(b.id)).*,get_bible_pie_chart_info(id,10)
+select b.id,'10002',b.name,(get_word_bible_normalize_info(b.id)).*,get_bible_pie_chart_info(id,20)
 from book as b;
+
+update book
+set is_new = TRUE
+where name = 'Откровение святого Иоанна Богослова (Апокалипсис)';
 
 EOD;
         $this->execute($query);
     }
 };
+
+
