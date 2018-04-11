@@ -65,17 +65,17 @@ parall .axis text.label {
     cursor: move;
     padding-bottom: 24px;
 }
-parall .quarter, .third, .half {
+/*parall .quarter, .third, .half {
     float: left;
 }
 parall .quarter {
     width: 23%;
     margin: 0 1%;
-}
-parall .third {
+}*/
+/*parall .third {
     width: 31.3%;
     margin: 0 1%;
-}
+}*/
 parall .half {
     width: 48%;
     margin: 0 1%;
@@ -110,25 +110,25 @@ parall button#keep-data:hover {
 parall button #exclude-data:hover {
     color: #900;
 }
-parall #item-list {
+parall #item-list #wrap{
     width: 100%;
     height: 460px;
     overflow-x: auto;
     overflow-y: auto;
     white-space: nowrap;
 }
-parall #legend {
+/*parall #legend {
     text-align: left;
     overflow-y: auto;
-    border-left: 1px solid rgba(140,140,140,0.5);
-}
-parall .row {
+    !*border-left: 1px solid rgba(140,140,140,0.5);*!
+}*/
+/*parall .row {
     cursor: pointer;
 }
 parall .row:hover {
     font-size: 16px;
     line-height: 1.3em;
-}
+}*/
 parall .off {
     color: #999;
 }

@@ -22,10 +22,8 @@
 </div>
 <hr>
 </div>
-
-<parall>
 <link rel="stylesheet" type="text/css" href="/parallel/parallel.css" />
-
+<parall>
     <div id ="row">
         <div class="center-wrap">
             <h5>Параллельные координаты</h5>
@@ -45,24 +43,20 @@
         </div>
     </div>
         <div style="clear:both;"></div>
-
     <div id="chart">
+</div>
     </div>
     <div id="wrap">
     </div>
-    </div>
-
 </parall>
 
-<br>
+
 <div class="row">
-    {#<hr>#}
-    <div class="col-md-4">
-        <input class="search-input form-control" placeholder="Поиск">
+    <div class="col-md-5">
         <div id = "bible-tree"></div>
     </div>
-    <div class="col-md-8">
-            <div id="container-chart">
+    <div class="col-md-7">
+        <div id="container-chart">
         </div>
     </div>
 </div>
@@ -72,7 +66,6 @@
 <script src="/parallel/parallel.js"></script>
 
 <script>
-
     var v = {"pie_part_of_speech": {"data": [{"y": 19039, "name": "НАРЕЧИЕ"}, {"y": 44645, "name": "ПРЕДЛОГ"}, {"y": 32479, "name": "ЧАСТИЦА"}, {"y": 69163, "name": "ПРИЛАГАТЕЛЬНОЕ"}, {"y": 9792, "name": "ИНФИНИТИВ"}, {"y": 12666, "name": "МЕСТОИМ_СУЩ"}, {"y": 572, "name": "БЕЗЛИЧ_ГЛАГОЛ"}, {"y": 5386, "name": "ЧИСЛИТЕЛЬНОЕ"}, {"y": 138929, "name": "СУЩЕСТВИТЕЛЬНОЕ"}, {"y": 4515, "name": "ДЕЕПРИЧАСТИЕ"}, {"y": 256, "name": "ПОСЛЕЛОГ"}, {"y": 73970, "name": "ГЛАГОЛ"}, {"y": 709, "name": "ВВОДНОЕ"}, {"y": 47591, "name": "СОЮЗ"}, {"y": 51451, "name": "МЕСТОИМЕНИЕ"}], "title": "Доля частей речий", "subtitle": "Библия"}, "pie_word_by_part_of_speech": [{"data": [{"y": 2366, "name": "когда"}, {"y": 1653, "name": "вот"}, {"y": 1090, "name": "тогда"}, {"y": 807, "name": "против"}, {"y": 674, "name": "там"}, {"y": 596, "name": "пусть"}, {"y": 516, "name": "только"}, {"y": 511, "name": "дома"}, {"y": 407, "name": "где"}, {"y": 372, "name": "ныне"}], "title": "НАРЕЧИЕ", "subtitle": "Библия"}, {"data": [{"y": 12118, "name": "в"}, {"y": 4516, "name": "с"}, {"y": 4204, "name": "от"}, {"y": 3870, "name": "из"}, {"y": 3681, "name": "к"}, {"y": 2596, "name": "по"}, {"y": 2336, "name": "у"}, {"y": 1960, "name": "для"}, {"y": 1470, "name": "пред"}, {"y": 1219, "name": "до"}], "title": "ПРЕДЛОГ", "subtitle": "Библия"}, {"data": [{"y": 8674, "name": "не"}, {"y": 7114, "name": "на"}, {"y": 3724, "name": "как"}, {"y": 2712, "name": "же"}, {"y": 2101, "name": "за"}, {"y": 2046, "name": "так"}, {"y": 1913, "name": "во"}, {"y": 1814, "name": "о"}, {"y": 785, "name": "бы"}, {"y": 694, "name": "ни"}], "title": "ЧАСТИЦА", "subtitle": "Библия"}, {"data": [{"y": 2533, "name": "то"}, {"y": 1755, "name": "это"}, {"y": 1386, "name": "которые"}, {"y": 1214, "name": "который"}, {"y": 1208, "name": "всех"}, {"y": 916, "name": "своего"}, {"y": 850, "name": "тот"}, {"y": 763, "name": "того"}, {"y": 758, "name": "твоего"}, {"y": 732, "name": "твой"}], "title": "ПРИЛАГАТЕЛЬНОЕ", "subtitle": "Библия"}, {"data": [{"y": 949, "name": "есть"}, {"y": 452, "name": "быть"}, {"y": 293, "name": "говорить"}, {"y": 222, "name": "жить"}, {"y": 205, "name": "делать"}, {"y": 177, "name": "сказать"}, {"y": 160, "name": "идти"}, {"y": 153, "name": "сделать"}, {"y": 142, "name": "служить"}, {"y": 136, "name": "пить"}], "title": "ИНФИНИТИВ", "subtitle": "Библия"}, {"data": [{"y": 5506, "name": "что"}, {"y": 1851, "name": "все"}, {"y": 1328, "name": "кто"}, {"y": 674, "name": "себя"}, {"y": 663, "name": "себе"}, {"y": 467, "name": "всем"}, {"y": 299, "name": "никто"}, {"y": 287, "name": "чего"}, {"y": 238, "name": "ничего"}, {"y": 229, "name": "собою"}], "title": "МЕСТОИМ_СУЩ", "subtitle": "Библия"}, {"data": [{"y": 278, "name": "грех"}, {"y": 74, "name": "можно"}, {"y": 58, "name": "надлежало"}, {"y": 42, "name": "надо"}, {"y": 40, "name": "нельзя"}, {"y": 29, "name": "надлежит"}, {"y": 19, "name": "следует"}, {"y": 14, "name": "следовало"}, {"y": 4, "name": "пришлось"}, {"y": 3, "name": "жаль"}], "title": "БЕЗЛИЧ_ГЛАГОЛ", "subtitle": "Библия"}, {"data": [{"y": 314, "name": "семь"}, {"y": 307, "name": "одного"}, {"y": 306, "name": "три"}, {"y": 291, "name": "два"}, {"y": 264, "name": "двадцать"}, {"y": 221, "name": "сто"}, {"y": 209, "name": "пять"}, {"y": 179, "name": "четыре"}, {"y": 176, "name": "двух"}, {"y": 161, "name": "десять"}], "title": "ЧИСЛИТЕЛЬНОЕ", "subtitle": "Библия"}, {"data": [{"y": 3358, "name": "господь"}, {"y": 1662, "name": "бог"}, {"y": 1522, "name": "господа"}, {"y": 1164, "name": "один"}, {"y": 1162, "name": "народ"}, {"y": 1157, "name": "сын"}, {"y": 1113, "name": "царь"}, {"y": 1046, "name": "бога"}, {"y": 874, "name": "земли"}, {"y": 865, "name": "земле"}], "title": "СУЩЕСТВИТЕЛЬНОЕ", "subtitle": "Библия"}, {"data": [{"y": 810, "name": "царя"}, {"y": 506, "name": "говоря"}, {"y": 374, "name": "моя"}, {"y": 144, "name": "увидев"}, {"y": 134, "name": "услышав"}, {"y": 134, "name": "моря"}, {"y": 131, "name": "сказав"}, {"y": 103, "name": "будучи"}, {"y": 101, "name": "взяв"}, {"y": 97, "name": "придя"}], "title": "ДЕЕПРИЧАСТИЕ", "subtitle": "Библия"}, {"data": [{"y": 192, "name": "ради"}, {"y": 62, "name": "вслед"}, {"y": 2, "name": "кверху"}], "title": "ПОСЛЕЛОГ", "subtitle": "Библия"}, {"data": [{"y": 3491, "name": "сказал"}, {"y": 2165, "name": "будет"}, {"y": 1303, "name": "было"}, {"y": 1264, "name": "говорит"}, {"y": 1237, "name": "был"}, {"y": 1169, "name": "день"}, {"y": 993, "name": "будут"}, {"y": 927, "name": "мой"}, {"y": 879, "name": "были"}, {"y": 587, "name": "сделал"}], "title": "ГЛАГОЛ", "subtitle": "Библия"}, {"data": [{"y": 509, "name": "итак"}, {"y": 66, "name": "правда"}, {"y": 56, "name": "словом"}, {"y": 38, "name": "однако"}, {"y": 11, "name": "во-первых"}, {"y": 11, "name": "увы"}, {"y": 8, "name": "представьте"}, {"y": 3, "name": "во-вторых"}, {"y": 3, "name": "ура"}, {"y": 2, "name": "наоборот"}], "title": "ВВОДНОЕ", "subtitle": "Библия"}, {"data": [{"y": 28008, "name": "и"}, {"y": 3461, "name": "а"}, {"y": 3320, "name": "ибо"}, {"y": 2783, "name": "но"}, {"y": 2616, "name": "чтобы"}, {"y": 1683, "name": "если"}, {"y": 1229, "name": "потому"}, {"y": 1004, "name": "ли"}, {"y": 947, "name": "да"}, {"y": 684, "name": "также"}], "title": "СОЮЗ", "subtitle": "Библия"}, {"data": [{"y": 6608, "name": "его"}, {"y": 5354, "name": "он"}, {"y": 4907, "name": "я"}, {"y": 3817, "name": "их"}, {"y": 3211, "name": "они"}, {"y": 2984, "name": "ты"}, {"y": 2067, "name": "ему"}, {"y": 1899, "name": "меня"}, {"y": 1778, "name": "мне"}, {"y": 1632, "name": "тебя"}], "title": "МЕСТОИМЕНИЕ", "subtitle": "Библия"}]};
 
     runRenderPercent(v);
@@ -175,7 +168,7 @@
 
     nodeObjects = {{ js_tree_data }};
 
-    var bibleTree = $('#bible-tree').jstree({
+   var bibleTree = $('#bible-tree').jstree({
         'core':
             {data:nodeObjects},
         plugins: ["search","types"],
@@ -190,15 +183,17 @@
         },
     });
 
+
     bibleTree.bind('ready.jstree', function(e, data) {
         $(this).jstree('open_all');
         $(this).jstree(true).select_node(10000);
         node = ($(this).jstree(true).get_node('10000')).original;
 
         console.log(node);
-        /*definitionSql  = node.view;
-        RebuildReport(node);*/
+        definitionSql  = node.view;
+        RebuildReport(node);
     });
+
 
 var item = {
         "bible_by_type": {
@@ -286,36 +281,57 @@ var item = {
             xaxis = xaxis + '<strong>'+key+' - </strong>'+value+'<br>';
         });
 
-        var v = '<div class="third" id="legend-block">'
-            +'<div class="bright">'
-            +'<div class="little-box">'
-            +'<h3>X(axis)</h3>'
-            +'<p>'
-            +xaxis
-            +'</p>'
-            +'</div>'
-            +'<div class="little-box">'
+        var v =
+             '<div class="row">'
+            +'<div class="col-sm">'
+            +'<div class="third" id="legend-block">'
+            +'<div class="little-box"><h3>X(axis)</h3>'
+            +'<p>'+xaxis +'</p>'
             +'</div>'
             +'</div>'
+             +'</div>'
+            +'<div class="col-sm">'
+            +'<div class="third"><h3>Y(axis)</h3>'
+            +'<p id="legend"> </p></div>'
             +'</div>'
-            +'<div  class="third">'
-            +'<small>'
-            +'</small>'
-            +'<h3>Y (axis) </h3>'
-            +'<p id="legend">'
-            +'</p>'
-            +'</div>'
+            +'<div class="col-sm">'
             +'<div class="third">'
-            +'<h3><input type="text" id="search" placeholder=""></input></h3>'
-            +'<p id="item-list">'
-            +'</p>'
+            +'<h3><input type="text" id="search" placeholder=""/></h3>'
+            +'<p id="item-list"></p></div>'
+            +'</div>'
             +'</div>';
 
+
+        console.log(v);
         $('#wrap').append(v);
 
-
-       /*initParallel(item[parallId].csv,item[parallId].yaxis);*/
+       initParallel(item[parallId].csv,item[parallId].yaxis);
     }
 </script>
+
+<div id="wrap">
+    <div class="col-md-4">
+        <div class="third" id="legend-block">
+            <div class="bright">
+                <div class="little-box"><h3>X(axis)</h3>
+                </div>
+                <div class="little-box"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="third">
+            <h3>Y (axis) </h3>
+            <p id="legend"></p></div>
+    </div>
+    <div class="col-md-4">
+        <div class="third"><h3><input type="text" id="search" placeholder=""></h3>
+            <p id="item-list">
+            </p>
+        </div>
+    </div>
+</div>
+
+
 
 

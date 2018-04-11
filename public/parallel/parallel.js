@@ -1,6 +1,6 @@
 function initParallel(path_csv,colors) {
     var width = document.body.clientWidth,
-        height = 400;/*d3.max([document.body.clientHeight-540, 240])*/
+        height = d3.max([document.body.clientHeight-540, 400])
 
 
     var m = [60, 0, 10, 0],
@@ -20,7 +20,6 @@ function initParallel(path_csv,colors) {
         render_speed = 50,
         brush_count = 0,
         excluded_groups = [];
-
 
 // Scale chart and canvas height
     d3.select("#chart")
@@ -207,7 +206,7 @@ function initParallel(path_csv,colors) {
         // create legend
         var legend_data = d3.select("#legend")
             .html("")
-            .selectAll(".row")
+            .selectAll(".row-i")
             .data(_.keys(colors).sort())
 
         // filter by group
@@ -267,7 +266,7 @@ function initParallel(path_csv,colors) {
 
         var table = d3.select("#item-list")
             .html("")
-            .selectAll(".row")
+            .selectAll(".row-i")
             .data(sample)
             .enter().append("div")
             .on("mouseover", highlight)
@@ -314,7 +313,7 @@ function initParallel(path_csv,colors) {
 // Highlight single polyline
     function highlight(d) {
         d3.select("#foreground").style("opacity", "0.25");
-        d3.selectAll(".row").style("opacity", function (p) {
+        d3.selectAll(".row-i").style("opacity", function (p) {
             return (d.group == p) ? null : "0.3"
         });
         path(d, highlighted, color(d.group, 1));
@@ -323,7 +322,7 @@ function initParallel(path_csv,colors) {
 // Remove highlight
     function unhighlight() {
         d3.select("#foreground").style("opacity", null);
-        d3.selectAll(".row").style("opacity", null);
+        d3.selectAll(".row-i").style("opacity", null);
         highlighted.clearRect(0, 0, w, h);
     }
 
@@ -475,8 +474,8 @@ function initParallel(path_csv,colors) {
             })
             .attr("class", function (d) {
                 return (tallies[d].length > 0)
-                    ? "row"
-                    : "row off";
+                    ? "row-i"
+                    : "row-i off";
             });
 
         legend.selectAll(".color-bar")
