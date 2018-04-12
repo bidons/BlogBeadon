@@ -125,11 +125,10 @@ WITH cte AS (
 
     RebuildReport(getPagingViewObject('vw_gen_materialize'))
 
-    renderStockChart(data[0],'stock-chart');
-    renderPiePercent(data[1],'pie-chart-2');
+    /*renderStockChart(data[0],'stock-chart');
+    renderPiePercent(data[1],'pie-chart-2');*/
 
     function renderPiePercent(data,selector) {
-        /*console.log(data);*/
         var total = 0, percentage,convertArray = [];
         $.each(data.chart, function() {
             total+=this.y;

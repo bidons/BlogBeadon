@@ -182,7 +182,6 @@
         },
     });
 
-
     bibleTree.bind('ready.jstree', function(e, data) {
         $(this).jstree('open_all');
         $(this).jstree(true).select_node(10000);
@@ -190,7 +189,6 @@
 
         runRenderPercent(node.id);
     });
-
 
     $('#bible-tree').bind("click.jstree", function (event,data) {
         var tree = $(this).jstree();

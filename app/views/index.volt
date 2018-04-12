@@ -14,7 +14,3 @@
     </div>
 </body>
 {{ partial('layouts/footer') }}
-
-
-
-    pieces
