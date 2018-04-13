@@ -91,9 +91,8 @@
 <tr><td>Execution time: 0.157 ms</td></tr>
 </table>
         </pre>
-        <li>Что из этого следует:
-            В не зависимости от количество джойнов и обращений, планировщик будет терзучить только то множество которое будет в результате,
-            и то множество которое будет в условии или при сортировке.
+        <li>
+            Что из этого следует: В не зависимости от количества джойнов и обращений, планировщик будет терзучить только то множество которое будет в результате, и то множество которое будет в условии или при сортировке
 
             <pre style="margin: 0; line-height: 125%">  <span style="color: #888888">-- Плохой запрос (для пагинации, джойн так себе затея)</span>
             <span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
@@ -112,7 +111,7 @@
             );
             </pre>
 
-            <pre style="margin: 0; line-height: 125%"><span style="color: #888888">-- Ничего так запрос (но обращатся к полю region как к условию так и к сортировке плохо)</span>
+            <pre style="margin: 0; line-height: 125%"><span style="color: #888888">-- Ничего так запрос (но обращаться к полю region как к условию так и к сортировке плохо)</span>
             <span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
             <span style="color: #008800; font-weight: bold">SELECT</span> ip2location(c<span style="color: #6600EE; font-weight: bold">.</span>ip)<span style="color: #6600EE; font-weight: bold">.</span>region,<span style="color: #333333">*</span>
             <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
@@ -120,7 +119,7 @@
             );
             </pre>
 
-            <pre style="margin: 0; line-height: 125%">   <span style="color: #888888">-- Ничего так (но обращатся к полям из &quot;позднего джойна&quot; как к условию так и к сортировке плохо)</span>
+            <pre style="margin: 0; line-height: 125%">   <span style="color: #888888">-- Ничего так (но обращаться к полям из &quot;позднего джойна&quot; как к условию так и к сортировке плохо)</span>
             <span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
             <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span>
             <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
@@ -128,7 +127,7 @@
             );
             </pre>
 
-            Но собственно все правила можно отбросить если использовать материализацию
+            {#Но собственно все правила можно отбросить если использовать материализацию#}
         </li>
 
     </ul>

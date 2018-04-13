@@ -15,7 +15,7 @@
                     <a class="nav-link" href="/objectdb/index">Конструкторы</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/parall/index">Морфологический анализ "Супер книги"</a>
+                    <a class="nav-link" href="/parall/index">Параллельные координаты</a>
                 </li>
             </ul>
         </div>
