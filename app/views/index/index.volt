@@ -1,18 +1,19 @@
 <div class="container">
 <div class="col-md-12">
         <div class="text-center">
-            <br>
-            <img class="rounded-circle" src="/main/img/slide-3.jpg"  width="300" height="410">
+            {#<img class="rounded-bottom" src="/main/img/postgresql.png"  width="300" height="410">#}
         </div>
     </div>
-    <hr>
+    <br>
+    <br>
+    <br>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-12">
             <div class="text-center">
-            <img class="img-rounded" src="/main/img/postgresql.png"  alt="">
+            <img class="rounded-bottom" src="/main/img/slide-3.jpg"  alt="">
             </div>
         </div>
-        <div class="col-md-8">
+       {# <div class="col-md-8">
             <p>
                 Тут будет описано зачем всё это было придумано ...
 
@@ -25,10 +26,10 @@
             <p>
                 Maecenas nec porta tellus. Maecenas sit amet eros augue. Vivamus odio turpis, venenatis eget dapibus feugiat, ullamcorper non dolor. Vestibulum nisl elit, fringilla quis justo a, commodo faucibus dui. Phasellus pulvinar hendrerit lacus ac venenatis. Ut tincidunt arcu mauris, in pellentesque ipsum sodales ut. Vivamus congue diam tortor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;
             </p>
-        </div>
+        </div>#}
     </div>
 
-    <div class="row">
+   {# <div class="row">
         <div class="box">
             <div class="col-lg-12">
                 <hr>
@@ -40,6 +41,6 @@
 
             </div>
         </div>
-    </div>
+    </div>#}
 
 </div>
