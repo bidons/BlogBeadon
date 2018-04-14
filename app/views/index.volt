@@ -1,3 +1,5 @@
+
+<link rel="icon" href="/favicon_rw.ico" />
 {{ partial('layouts/header') }}
 {{ partial('layouts/nav') }}
 <body>
