@@ -71,14 +71,14 @@ $di->set(
     true
 );
 
+
+
 $di->set(
     'db',
     function () use ($config, $di){
         $em = $di->getShared('eventsManager');
-        
-        if ($GLOBALS['DB_LOG']) {
 
-            /*dd($config->application->logDir."db_log.log");*/
+        if (DEBUG) {
             $logger = new \Phalcon\Logger\Adapter\File($config->application->logDir."db_log.log");
 
             $em->attach(
