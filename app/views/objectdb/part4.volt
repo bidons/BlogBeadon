@@ -138,6 +138,7 @@ WITH cte AS (
     RebuildReport(getPagingViewObject('vw_gen_materialize'))
 
     function renderCharts(view_name) {
+
         $.ajax({
             url: "/objectdb/viewchart/" + view_name,
         }).done(function (response) {
