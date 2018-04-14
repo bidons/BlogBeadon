@@ -1,13 +1,14 @@
 {
   "name": "sergeyklay/phalcon-compose",
   "description": "Open-source and community-driven boilerplate for Phalcon projects by using Docker and Docker Compose",
+  "keywords": ["phalcon", "docker", "compose", "boilerplate"],
   "license": "MIT",
   "type": "project",
-  "homepage": "",
+  "homepage": "https://github.com/sergeyklay/phalcon-compose",
   "authors": [
     {
-      "name": "fursin.v",
-      "email": "fursin.v@gmail.com"
+      "name": "Serghei Iakovlev",
+      "email": "serghei@phalconphp.com"
     }
   ],
   "support": {
@@ -23,6 +24,9 @@
     ]
   },
   "require": {
+    "phalcon/devtools": "3.2.2",
     "robmorgan/phinx": "0.5.4",
+    "rappasoft/laravel-helpers": "dev-master",
+    "aws/aws-sdk-php": "^3.20"
   }
 }

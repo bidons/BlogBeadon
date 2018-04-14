@@ -1,3 +1,7 @@
+{{ assets.outputCss('blog-css') }}
+{{ assets.outputJs('blog-js') }}
+
+
 <div id="container">
     <h2 class="center-wrap">Параллельные координаты
     </h2>
@@ -114,7 +118,6 @@
         var total = 0, percentage,convertArray = [];
 
         $.each(data.data, function() {
-
             total+=this.y;
         });
 
@@ -150,7 +153,6 @@
                     ]
                 },
             },
-
             title: {
                 text: data.title,
             },

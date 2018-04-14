@@ -22,13 +22,10 @@ class ParallController extends ControllerBase
     {
         $this->view->setRenderLevel(\Phalcon\Mvc\View::LEVEL_ACTION_VIEW);
 
-        if ($section_id) {
-            $result_js = $this->getDI()->getShared("db")->fetchAll("
-        select charts
-        from bible_tree
-        where id = $section_id;");
-        }
+        $query = "select charts from bible_tree where id = $section_id";
 
-        return ($result_js[0]['charts']);
+        $result = $this->modelsManager->exeQrScalar($query);
+
+        return $result;
     }
 }

@@ -1,11 +1,4 @@
-    {#{{ assets.outputCss('main-css') }}
-    {{ assets.outputJs('main-js') }}#}
-   {{ assets.outputCss('blog-css') }}
-    {{ assets.outputJs('blog-js') }}
-
-
-    {{ partial('layouts/header') }}
-
+{{ partial('layouts/header') }}
 {{ partial('layouts/nav') }}
 <body>
 

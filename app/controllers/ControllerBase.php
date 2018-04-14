@@ -1,13 +1,19 @@
 <?php
 
 use Phalcon\Mvc\Controller;
+use App\Library\Model\ModelsManager;
 
+/**
+ * Class ControllerBase
+ *
+ * @property ModelsManager $modelsManager
+ */
 class ControllerBase extends Controller
 {
 
     public function initialize()
     {
-        /*$this->addAssetsMain();*/
+        $this->addAssetsMain();
         $this->addAssetsBlog();
     }
 
@@ -16,11 +22,11 @@ class ControllerBase extends Controller
        $mainCss = $this->assets->collection("main-css");
         $mainJs =  $this->assets->collection("main-js");
 
-        /*$mainCss
+        $mainCss
             ->addCss("plugins/bootstrap/dist/css/bootstrap.css")
             ->addCss("blog/css/blog.css");
         $mainJs -> addJs("main/js/jquery.js")
-                ->addJs("plugins/bootstrap/dist/js/bootstrap.js");*/
+                ->addJs("plugins/bootstrap/dist/js/bootstrap.js");
     }
 
     protected function addAssetsBlog()

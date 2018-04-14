@@ -2,7 +2,7 @@
 
 namespace App\Library\Model;
 
-use App\Library\Model\DbFunctionException;
+
 use Phalcon\Mvc\Model\Manager;
 
 class ModelsManager extends Manager
@@ -63,8 +63,7 @@ class ModelsManager extends Manager
                     return $value;
                 }
             },
-            $args))
-        ;
+            $args));
 
         $sql = 'select '.$fn.'('.$argsString.')';
 
@@ -73,7 +72,7 @@ class ModelsManager extends Manager
         try {
             $result =  ($this->getDI()->getShared("db")->fetchOne($sql));
         } catch (\PDOException $e) {
-            dd($sql);
+            /*dd($sql);*/
             return NULL;
         }
         $result =  array_values($result)[0];
@@ -87,6 +86,21 @@ class ModelsManager extends Manager
         return $jsonResult;
     }
 
+    public function exeQrScalar($query)
+    {
+        $query = $query . ' limit 1;';
+        $this->_lastQueryFn = $query;
+        
+        try {
+            $result =  ($this->getDI()->getShared("db")->fetchOne($query));
+
+            /*dd($result);*/
+        } catch (\PDOException $e) {
+            return NULL;
+        }
+        
+        return reset($result);
+    }
     public function getLastQueryFn()
     {
         return $this->_lastQueryFn;

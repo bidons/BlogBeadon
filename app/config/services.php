@@ -34,9 +34,15 @@ $di->set(
 $listener = new \Phalcon\Debug();
 $listener->listen();
 
-/**
- * Setting up the view component
- */
+$di->set('modelsManager', function () use ($di) {
+    $manager = new \App\Library\Model\ModelsManager();
+    $em = $di->getShared('eventsManager');
+    $manager->setEventsManager($em);
+    $manager->registerNamespaceAlias('Model', 'App\Models');
+
+    return $manager;
+});
+
 $di->set(
     "view",
     function () use ($config) {

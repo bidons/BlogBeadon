@@ -131,6 +131,10 @@ function getPagingViewObject (view_name)
                     $('#datatable-ttl').text('Total:' + objectInfo.dtObj.o.debug.query[2].recordsTotal.time);
                 },
                 initComplete: function (settings, json) {
+                    if (options.initComplete) {
+                        options.initComplete();
+                    }
+                    
                     if (options.dtFilters) {
                         addFilter(col);
                     }

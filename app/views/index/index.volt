@@ -1,3 +1,6 @@
+{{ assets.outputCss('main-css') }}
+{{ assets.outputJs('main-js') }}
+
 <div class="container">
 <div class="col-md-12">
         <div class="text-center">
