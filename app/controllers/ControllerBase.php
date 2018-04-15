@@ -10,7 +10,6 @@ use App\Library\Model\ModelsManager;
  */
 class ControllerBase extends Controller
 {
-
     public function initialize()
     {
         $this->addAssetsMain();
@@ -38,7 +37,9 @@ class ControllerBase extends Controller
             ->addCss("plugins/bootstrap/dist/css/bootstrap.css")
             ->addCss("plugins/datatables/jquery.dataTables.min.css")
             ->addCss("blog/css/blog.css")
+            /*select2-bootstrap-4-theme.css*/
             ->addCss("plugins/select2/select2.css")
+
             ->addCss("plugins/daterangepicker/daterangepicker-bs3.css")
             ->addCss("plugins/vakata/dist/themes/default/style.min.css");
 
@@ -46,9 +47,9 @@ class ControllerBase extends Controller
             ->addJs("plugins/bootstrap/dist/js/bootstrap.js")
             ->addJs("https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql")
             ->addJs("plugins/datatables/jquery.dataTables.min.js")
-            ->addJs("https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js")
+            /*->addJs("https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js")*/
             ->addJs("main/js/DataTableWrapperExt.js")
-            ->addJs("plugins/select2/select2.min.js")
+            ->addJs("plugins/select2/select2.full.min.js")
             ->addJs("plugins/daterangepicker/moment.js")
             ->addJs("plugins/daterangepicker/daterangepicker.js")
             ->addJs("plugins/vakata/dist/jstree.min.js")

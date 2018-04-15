@@ -204,3 +204,11 @@ parall .controls {
 }
 
 
+.book-section-search
+{
+    width:176px;
+    font-size:80%;
+    text-align:center;
+    float:left;
+    position:relative;
+}

@@ -20,7 +20,7 @@ class ParallController extends ControllerBase
 
     public function biblePieAction($section_id)
     {
-        $this->view->setRenderLevel(\Phalcon\Mvc\View::LEVEL_ACTION_VIEW);
+
 
         $query = "select charts from bible_tree where id = $section_id";
 
@@ -28,4 +28,22 @@ class ParallController extends ControllerBase
 
         return $result;
     }
+
+    public function part1Action()
+    {
+
+    }
+
+    public function bookAction($bible_tree_id)
+    {
+        $this->view->setRenderLevel(\Phalcon\Mvc\View::LEVEL_ACTION_VIEW);
+
+        $query = "select json_agg(json_build_object('id',id,'text',text))
+                  from bible_tree where parent = '$bible_tree_id'";
+
+        $result = $this->modelsManager->exeQrScalar($query);
+
+        return $result;
+    }
+    
 }

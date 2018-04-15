@@ -2,7 +2,7 @@
 
 use Phalcon\DI\FactoryDefault;
 
-require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/../helpers.php';
 error_reporting(E_ALL);
 
 try {
