@@ -2,7 +2,6 @@
 {{ assets.outputJs('blog-js') }}
 
 <h2 class="center-wrap">Конструкторы
-    (<strong>Пагинаторы</strong>)
 </h2>
 
 <div class="container">
@@ -30,9 +29,14 @@
     <ul>
         <li>
 
-            <p>Для начала нужно понять как оптимизатор-планировщик PostgreSQL в зависимости от конструкции формирует план запроса и выдаёт результат</p>
+            <p>Для начала нужно рассказать как оптимизатор-планировщик PostgreSQL в зависимости от конструкции формирует план запроса и выдаёт результат.
+                Это обобщающая иформация но
+            </p>
 
-            <p> И так есть таблица client и связана с client_phone, создадим обвёртку вьюху</p>
+            <p> Есть таблица client и связана с client_phone, создадим обвёртку вьюху
+
+
+            </p>
 
             <pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
     <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span>

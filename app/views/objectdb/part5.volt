@@ -2,7 +2,6 @@
 {{ assets.outputJs('blog-js') }}
 
 <h2 class="center-wrap">Конструкторы
-    (<h1>Пагинаторы</h1>)
 </h2>
 
 <div class="container">
