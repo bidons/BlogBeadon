@@ -4,7 +4,6 @@
 
 <div class="container">
 <h2 class="center-wrap">Конструкторы
-    (<strong>Пагинаторы</strong>)
 </h2>
 
 <div class="row">

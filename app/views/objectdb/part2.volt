@@ -29,27 +29,27 @@
     <ul>
         <li>
 
-            <p>Для начала нужно рассказать как оптимизатор-планировщик PostgreSQL в зависимости от конструкции формирует план запроса и выдаёт результат.
-                Это обобщающая иформация но
+            <p>Для начала нужно понять как планировщик выполнения запросов PostgreSQL в зависимости от конструкции
+                формирует план запроса и выдаёт результат. Уточню, что это общие принципы.
             </p>
 
-            <p> Есть таблица client и связана с client_phone, создадим обвёртку вьюху
-
-
+            <p> Есть таблица client и связана с client_phone, создадим обвёртку
+                <pre class="prettyprint lang-sql">
+                    CREATE VIEW vw_client AS
+                        (
+                            SELECT c.id, c.email, cp.main
+                            FROM client AS c
+                            LEFT JOIN client_phone AS cp ON c.phone_id = cp.id
+                        );
+                </pre>
             </p>
 
-            <pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
-    <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span>
-    <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
-    <span style="color: #008800; font-weight: bold">LEFT</span> <span style="color: #008800; font-weight: bold">JOIN</span> client_phone <span style="color: #008800; font-weight: bold">AS</span> cp <span style="color: #008800; font-weight: bold">ON</span> c<span style="color: #6600EE; font-weight: bold">.</span>phone_id  <span style="color: #333333">=</span>cp<span style="color: #6600EE; font-weight: bold">.</span>id
-    );
-    </pre>
-
-        <li>Пнём с лимитом (как видно индекс был заюзан ровно столько строк сколько и лимита)
-           <pre>
-               <span style="color: #008800; font-weight: bold">EXPLAIN ANALYSE</span>
-                    <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span> <span style="color: #008800; font-weight: bold">FROM</span> vw_client <span style="color: #008800; font-weight: bold">limit</span> <span style="color: #6600EE; font-weight: bold">10</span>;
-
+        <li>Выполнем с лимитированным количеством, как видно индекс был использован ровно столько строк сколько и лимитом
+           <pre class="prettyprint lang-sql">
+                 EXPLAIN ANALYSE
+                            SELECT *
+                            FROM vw_client LIMIT 10;
+           </pre>
 <table border="1" style="border-collapse:collapse">
 <tr><th>QUERY PLAN</th></tr>
 <tr><td>Limit  (cost=0.42..6.33 rows=10 width=391) (actual time=0.016..0.055 rows=10 loops=1)</td></tr>
@@ -60,13 +60,14 @@
 <tr><td>Planning time: 0.211 ms</td></tr>
 <tr><td>Execution time: 0.092 ms</td></tr>
 </table>
+
+            <li>Получаем количеством строк, как видно таблица с джойном была проигнорирована
+              <pre class="prettyprint lang-sql">
+                 EXPLAIN ANALYSE
+                            SELECT count(*)
+                            FROM vw_client LIMIT 10;
            </pre>
-
-            <li>Теперь количество (таблица с джойном была проигнорирована)</li>
-        <pre>
-               <span style="color: #008800; font-weight: bold">EXPLAIN ANALYSE</span>
-                    <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span> <span style="color: #008800; font-weight: bold">FROM</span> vw_client <span style="color: #008800; font-weight: bold">limit</span> <span style="color: #6600EE; font-weight: bold">10</span>;
-
+        </li>
             <table border="1" style="border-collapse:collapse">
                 <tr><th>QUERY PLAN</th></tr>
                 <tr><td>Aggregate  (cost=6970.12..6970.14 rows=1 width=8) (actual time=78.669..78.670 rows=1 loops=1)</td></tr>
@@ -74,67 +75,85 @@
                 <tr><td>Planning time: 0.085 ms</td></tr>
                 <tr><td>Execution time: 78.714 ms</td></tr>
             </table>
+
+        <li>Выполним с условием (опять же 10-строк с индексом)</li>
+        <pre class="prettyprint lang-sql">
+                EXPLAIN ANALYSE
+                    SELECT *
+                        FROM vw_client
+                        WHERE email ~'@gmail.com'
+                        LIMIT 10;
+        </pre>
+    <table border="1" style="border-collapse:collapse">
+    <tr><th>QUERY PLAN</th></tr>
+    <tr><td>Limit  (cost=0.42..8.07 rows=10 width=391) (actual time=0.023..0.113 rows=10 loops=1)</td></tr>
+    <tr><td>  -&gt;  Nested Loop Left Join  (cost=0.42..60296.58 rows=78841 width=391) (actual time=0.022..0.107 rows=10 loops=1)</td></tr>
+    <tr><td>        -&gt;  Seq Scan on client c  (cost=0.00..6970.12 rows=78841 width=182) (actual time=0.012..0.061 rows=10 loops=1)</td></tr>
+    <tr><td>              Filter: (email ~ &#39;@gmail.com&#39;::text)</td></tr>
+    <tr><td>              Rows Removed by Filter: 18</td></tr>
+    <tr><td>        -&gt;  Index Scan using client_phone_pkey on client_phone cp  (cost=0.42..0.67 rows=1 width=209) (actual time=0.003..0.003 rows=1 loops=10)</td></tr>
+    <tr><td>              Index Cond: (c.phone_id = id)</td></tr>
+    <tr><td>Planning time: 0.425 ms</td></tr>
+    <tr><td>Execution time: 0.157 ms</td></tr>
+    </table>
+
+        <li>А теперь самое интерессное выгребем с условием но при этом возьмём только одно поле,
+        как видно есть определённая связь, обращение к полю и само условие исключаю дополнительные сканы и обращения</li>
+        <pre class="prettyprint lang-sql">
+                EXPLAIN ANALYSE
+                    SELECT id
+                        FROM vw_client
+                        WHERE email ~'@gmail.com'
+                        LIMIT 10;
         </pre>
 
-        <li>Теперь c условием (опять же 10-строк с индексом)</li>
+        <table border="1" style="border-collapse:collapse">
+            <tr><td>Seq Scan on client c  (cost=0.00..10298.30 rows=83931 width=26) (actual time=0.018..287.580 rows=79014 loops=1)</td></tr>
+            <tr><td>  Filter: (email ~ &#39;gmail.com&#39;::text)</td></tr>
+            <tr><td>  Rows Removed by Filter: 87170</td></tr>
+            <tr><td>Planning time: 0.466 ms</td></tr>
+            <tr><td>Execution time: 290.095 ms</td></tr>
+        </table>
 
-              <pre style="margin: 0; line-height: 125%">      <span style="color: #008800; font-weight: bold">EXPLAIN</span> <span style="color: #008800; font-weight: bold">ANALYSE</span>
-      <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span>
-      <span style="color: #008800; font-weight: bold">FROM</span> vw_client
-      <span style="color: #008800; font-weight: bold">WHERE</span> email <span style="color: #333333">~</span><span style="background-color: #fff0f0">&#39;@gmail.com&#39;</span>
-      <span style="color: #008800; font-weight: bold">LIMIT</span> <span style="color: #6600EE; font-weight: bold">10</span>;
 
-<table border="1" style="border-collapse:collapse">
-<tr><th>QUERY PLAN</th></tr>
-<tr><td>Limit  (cost=0.42..8.07 rows=10 width=391) (actual time=0.023..0.113 rows=10 loops=1)</td></tr>
-<tr><td>  -&gt;  Nested Loop Left Join  (cost=0.42..60296.58 rows=78841 width=391) (actual time=0.022..0.107 rows=10 loops=1)</td></tr>
-<tr><td>        -&gt;  Seq Scan on client c  (cost=0.00..6970.12 rows=78841 width=182) (actual time=0.012..0.061 rows=10 loops=1)</td></tr>
-<tr><td>              Filter: (email ~ &#39;@gmail.com&#39;::text)</td></tr>
-<tr><td>              Rows Removed by Filter: 18</td></tr>
-<tr><td>        -&gt;  Index Scan using client_phone_pkey on client_phone cp  (cost=0.42..0.67 rows=1 width=209) (actual time=0.003..0.003 rows=1 loops=10)</td></tr>
-<tr><td>              Index Cond: (c.phone_id = id)</td></tr>
-<tr><td>Planning time: 0.425 ms</td></tr>
-<tr><td>Execution time: 0.157 ms</td></tr>
-</table>
-        </pre>
+
+
+
+
         <li>
             Что из этого следует: В не зависимости от количества джойнов и обращений, планировщик будет терзучить только то множество которое будет в результате, и то множество которое будет в условии или при сортировке
 
-            <pre style="margin: 0; line-height: 125%">  <span style="color: #888888">-- Плохой запрос (для пагинации, джойн так себе затея)</span>
-            <span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
-            <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span>
-            <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
-            <span style="color: #008800; font-weight: bold">JOIN</span> client_phone <span style="color: #008800; font-weight: bold">AS</span> cp <span style="color: #008800; font-weight: bold">ON</span> c<span style="color: #6600EE; font-weight: bold">.</span>phone_id  <span style="color: #333333">=</span>cp<span style="color: #6600EE; font-weight: bold">.</span>id
+              <pre class="prettyprint lang-sql">
+            -- Плохой запрос (для пагинации, джойн так себе затея, обязательная связанность для множества плохо)
+            CREATE VIEW vw_client AS (
+            SELECT *
+            FROM client AS c
+            JOIN client_phone AS cp ON c.phone_id  =cp.id
             );
-            </pre>
 
-            <pre style="margin: 0; line-height: 125%"> <span style="color: #888888">-- Плохой запрос (агрегат )</span>
-            <span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
-            <span style="color: #008800; font-weight: bold">SELECT</span> c<span style="color: #6600EE; font-weight: bold">.</span>id,count(<span style="color: #333333">*</span>),<span style="color: #008800; font-weight: bold">first</span>(cp<span style="color: #6600EE; font-weight: bold">.</span>phone_main)
-            <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
-            <span style="color: #008800; font-weight: bold">JOIN</span> client_phone <span style="color: #008800; font-weight: bold">AS</span> cp <span style="color: #008800; font-weight: bold">ON</span> c<span style="color: #6600EE; font-weight: bold">.</span>phone_id  <span style="color: #333333">=</span>cp<span style="color: #6600EE; font-weight: bold">.</span>id
-            <span style="color: #008800; font-weight: bold">GROUP</span> <span style="color: #008800; font-weight: bold">by</span> c<span style="color: #6600EE; font-weight: bold">.</span>id
+            -- Плохой запрос (агрегат )
+            CREATE VIEW vw_client AS (
+            SELECT c.id,count(*),first(cp.phone_main)
+            FROM client AS c
+            JOIN client_phone AS cp ON c.phone_id  =cp.id
+            GROUP by c.id
             );
-            </pre>
 
-            <pre style="margin: 0; line-height: 125%"><span style="color: #888888">-- Ничего так запрос (но обращаться к полю region как к условию так и к сортировке плохо)</span>
-            <span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
-            <span style="color: #008800; font-weight: bold">SELECT</span> ip2location(c<span style="color: #6600EE; font-weight: bold">.</span>ip)<span style="color: #6600EE; font-weight: bold">.</span>region,<span style="color: #333333">*</span>
-            <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
-            <span style="color: #008800; font-weight: bold">left</span> <span style="color: #008800; font-weight: bold">JOIN</span> client_phone <span style="color: #008800; font-weight: bold">AS</span> cp <span style="color: #008800; font-weight: bold">ON</span> c<span style="color: #6600EE; font-weight: bold">.</span>phone_id  <span style="color: #333333">=</span>cp<span style="color: #6600EE; font-weight: bold">.</span>id
+            -- Ничего так запрос (но обращаться к полю region как к условию так и к сортировке плохо)
+            CREATE VIEW vw_client AS (
+            SELECT ip2location(c.ip).region,*
+            FROM client AS c
+            left JOIN client_phone AS cp ON c.phone_id  =cp.id
             );
-            </pre>
 
-            <pre style="margin: 0; line-height: 125%">   <span style="color: #888888">-- Ничего так (но обращаться к полям из &quot;позднего джойна&quot; как к условию так и к сортировке плохо)</span>
-            <span style="color: #008800; font-weight: bold">CREATE</span> <span style="color: #008800; font-weight: bold">VIEW</span> vw_client <span style="color: #008800; font-weight: bold">AS</span> (
-            <span style="color: #008800; font-weight: bold">SELECT</span> <span style="color: #333333">*</span>
-            <span style="color: #008800; font-weight: bold">FROM</span> client <span style="color: #008800; font-weight: bold">AS</span> c
-            <span style="color: #008800; font-weight: bold">LEFT</span> <span style="color: #008800; font-weight: bold">JOIN</span> lateral (<span style="color: #008800; font-weight: bold">select</span> <span style="color: #333333">*</span> <span style="color: #008800; font-weight: bold">from</span> client_phone <span style="color: #008800; font-weight: bold">as</span> cp <span style="color: #008800; font-weight: bold">where</span> c<span style="color: #6600EE; font-weight: bold">.</span>id <span style="color: #333333">=</span> c<span style="color: #6600EE; font-weight: bold">.</span>id) <span style="color: #008800; font-weight: bold">as</span> cp <span style="color: #008800; font-weight: bold">on</span> <span style="color: #008800; font-weight: bold">true</span>
+            -- Ничего так (но обращаться к полям из "позднего джойна" как к условию так и к сортировке плохо)
+            CREATE VIEW vw_client AS (
+            SELECT *
+            FROM client AS c
+            LEFT JOIN lateral (select * from client_phone as cp where c.id = c.id) as cp on true
             );
-            </pre>
-
-            {#Но собственно все правила можно отбросить если использовать материализацию#}
+           </pre>
         </li>
-
     </ul>
+</div>
 </div>
