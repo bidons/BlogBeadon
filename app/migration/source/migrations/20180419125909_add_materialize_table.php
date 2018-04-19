@@ -252,6 +252,7 @@ drop function paging_objectdb(jsonb,text,integer);
 
 
 DROP FUNCTION IF EXISTS paging_objectdb( JSONB );
+
 CREATE OR REPLACE FUNCTION paging_objectdb(a_js JSONB)
   RETURNS SETOF JSONB
 LANGUAGE plpgsql
@@ -268,7 +269,7 @@ DECLARE
                                         ) AS r);
   val_offlim               TEXT = ' limit ' || COALESCE($1 ->> 'length', '0') || ' offset ' ||
                                   COALESCE($1 ->> 'start', '0');
-  val_condition            TEXT;
+  val_condition            TEXT ;
 
   val_query                TEXT;
   val_result               JSONB = '{}';
@@ -291,11 +292,10 @@ BEGIN
   WHERE p.name = $1 ->> 'objdb'
   INTO val_m_columns, val_m_count_total, val_mat_mode, val_table;
 
-  -- if condition found
   IF (val_condition_arg IS NOT NULL)
   THEN
     WITH getcolumns AS
-(
+    (
         SELECT jsonb_array_elements(val_condition_arg) AS r
     ), normalize AS
     (
@@ -306,7 +306,7 @@ BEGIN
           r ->> 'ft'  AS f_type
         FROM getcolumns AS t
     )
-    SELECT string_agg(CASE WHEN (f_type ~ 'timestamp|date')
+    SELECT ' where ' || string_agg(CASE WHEN (f_type ~ 'timestamp|date')
       THEN concat_ws(' ',
                      f_data,
                      f_cd,
@@ -392,10 +392,6 @@ BEGIN
       EXECUTE val_query
       INTO val_query_result_integer;
 
-      RETURN QUERY
-      SELECT val_result;
-
-
       val_debug = val_debug || jsonb_build_array(jsonb_build_object('recordsFiltered', val_query, 'time', round(
           (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4)));
       val_result = val_result || jsonb_build_object('recordFiltered', val_query_result_integer);
@@ -434,9 +430,6 @@ BEGIN
 
 END;
 $$;
-/*
-select paging_objectdb('{"_url":"\/objectdb\/showdata","draw":"2","columns":[{"col":"table_name","ft":"text","fv":"sg_generate_lihotop","fc":"in"}],"start":"0","length":"5","search":{"value":"","regex":"false"},"is_mat":"false","objdb":"vw_rep_sys_size_ddl","_":"1524158025533"}');*/
-
 
 EOD;
         $this->execute($query);
