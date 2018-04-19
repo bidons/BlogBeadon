@@ -8,7 +8,7 @@ trait DataTableControllerTraitExt
 {
     public function showDataAction()
     {
-        $result = $this->modelsManager->exeFnScalar('paging_objectdb', [json_encode($this -> table_condition), null, -1], true);
+        $result = $this->modelsManager->exeFnScalar('paging_objectdb', [json_encode($this -> table_condition)], true);
         return $this->responseJson($result);
     }
 

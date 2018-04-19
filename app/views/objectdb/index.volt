@@ -169,13 +169,13 @@
         if(value) {
             switch (value) {
                 case 'datatable-data':
-                    object = info['dtObj'].o.debug.query[0];
+                    object = info['dtObj'].o.debug[0].data;
                     break;
                 case 'datatable-f-ttl':
-                    object = info['dtObj'].o.debug.query[1];
+                    object = info['dtObj'].o.debug[1].recordsFiltered;
                     break;
                 case 'datatable-ttl':
-                    object = info['dtObj'].o.debug.query[2];
+                    object = info['dtObj'].o.debug[2].recordsTotal;
                     break;
                 case 'select2-query':
                     object = info['s2obj'];

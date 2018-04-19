@@ -94,6 +94,8 @@ function getPagingViewObject (view_name)
                 aTargets: [parseInt(options.checkboxes + 0)],
             });
 
+
+
             datatable = $(idTableSelector).DataTable({
                 processing: true,
                 serverSide: true,
@@ -125,10 +127,10 @@ function getPagingViewObject (view_name)
                 drawCallback: function (settings) {
                     objectInfo['dtObj'] =  {o:this.api().data().ajax.json(),i:this.api().data().ajax.params()};
 
-                    $('#datatable-data').text('Data:'+ objectInfo.dtObj.o.debug.query[0].data.time);
+                    $('#datatable-data').text('Data:'+ objectInfo.dtObj.o.debug[0].time);
 
-                    $('#datatable-f-ttl').text('TotalFiltered:' +objectInfo.dtObj.o.debug.query[1].recordsFiltered.time);
-                    $('#datatable-ttl').text('Total:' + objectInfo.dtObj.o.debug.query[2].recordsTotal.time);
+                    $('#datatable-f-ttl').text('TotalFiltered:' +objectInfo.dtObj.o.debug[1].time);
+                    $('#datatable-ttl').text('Total:' + objectInfo.dtObj.o.debug[2].time);
                 },
                 initComplete: function (settings, json) {
                     if (options.initComplete) {

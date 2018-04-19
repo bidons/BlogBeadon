@@ -82,11 +82,11 @@ $di->set(
     function () use ($config, $di){
         $em = $di->getShared('eventsManager');
         
-        if ($GLOBALS['DB_LOG']) {
+        if (true/*$GLOBALS['DB_LOG']*/) {
 
             /*dd($config->application->logDir."db_log.log");*/
-            $logger = new \Phalcon\Logger\Adapter\File($config->application->logDir."db_log.log");
-
+            $logger = new \Phalcon\Logger\Adapter\File("db_log.log"/*$config->application->logDir."db_log.log"*/);
+            /*dd($logger)*/;
             $em->attach(
                 "db:beforeQuery",
                 function ($event, $connection) use ($logger) {
