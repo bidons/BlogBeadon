@@ -55,7 +55,7 @@ CREATE TABLE paging_table_materialize_info
   create_time       TIMESTAMPTZ DEFAULT now()
 );
 ALTER TABLE paging_table
-  ADD COLUMN last_paging_table_materialize_info_id INTEGER REFERENCES paging_table_materialize_info (id);
+  ADD COLUMN last_paging_table_materialize_info_id INTEGER;
 
 CREATE OR REPLACE FUNCTION paging_table_materialize_before_insert_info()
   RETURNS TRIGGER
@@ -72,7 +72,7 @@ $$
 LANGUAGE plpgsql VOLATILE;
 
 CREATE TRIGGER paging_table_bch_trg
-BEFORE INSERT ON paging_table
+BEFORE INSERT ON paging_table_materialize_info
 FOR EACH ROW EXECUTE PROCEDURE paging_table_materialize_before_insert_info();
 
 DROP FUNCTION if exists materialize_worker( TEXT, TEXT );
@@ -430,6 +430,9 @@ BEGIN
 
 END;
 $$;
+
+select rebuild_paging_prop('paging_table',null,'table',false);
+
 
 EOD;
         $this->execute($query);
