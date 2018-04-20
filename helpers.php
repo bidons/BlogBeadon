@@ -1,6 +1,6 @@
 <?php
 
-$GLOBALS['DB_LOG'] = false;
+$GLOBALS['DB_LOG'] = true;
 
 function dd()
 {

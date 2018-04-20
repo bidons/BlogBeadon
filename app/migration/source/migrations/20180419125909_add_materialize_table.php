@@ -410,7 +410,7 @@ BEGIN
 
     val_debug = val_debug || jsonb_build_array(jsonb_build_object('recordsFiltered', val_query, 'time', round(
         (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4)));
-    val_result = val_result || jsonb_build_object('recordFiltered', val_query_result_integer);
+    val_result = val_result || jsonb_build_object('recordsFiltered', val_query_result_integer);
 
     val_query = concat_ws(' ', 'select count(*)', 'from', val_table);
 

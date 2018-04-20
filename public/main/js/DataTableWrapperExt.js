@@ -40,26 +40,16 @@ function getPagingViewObject (view_name)
         var element = this;
 
         element.css('overflow-x', 'scroll');
+
         var id = element.attr('id');
         if (!id) {
             id = parseInt(Math.random() * 1000000000);
             element.attr('id', id);
         }
         var idTable = id + '-datatable';
-        /*var idSelector = "#" + id;*/
         var idTableSelector = "#" + idTable;
-        var columnsData;
         var select2columnsSelector = 'select-' + idTable;
-        var tableObjectName = options.tableDefault;
-
-        options = options || {};
-
-        options.checkboxes = options.checkboxes || false;
-        options.dtFilters = options.dtFilters || false;
-        options.dtTheadButtons = options.dtTheadButtons || false;
-        options.select2Input = options.select2Input || false;
-        options.is_mat = options.is_mat || false;
-        options.displayLength = options.displayLength ? options.displayLength : 20;
+        var tableObjectName = options.externalOpt.tableDefault;
 
         var objectInfo = {objdb: tableObjectName,'dtObj':{},'s2obj':{}};
         var conditionTable = {};
@@ -71,101 +61,76 @@ function getPagingViewObject (view_name)
         var colVis = {};
 
         function createTable(col) {
-            var result = [];
-            var columnsSettings = [];
+            options.dataTableOpt['columns'] = col;
 
-            result.push({
-                data: null,
-                visible: false,
-                defaultContent: '',
-                orderable: false
-            });
-
-            var itt = options.checkboxes + 0;
-
-            col.columns.forEach(function (item, i, data) {
-                if (item.visible) {
-                    itt++;
-                    result[itt] = item;
-                }
-            });
-
-            columnsSettings.push({
-                aTargets: [parseInt(options.checkboxes + 0)],
-            });
-
-
-
-            datatable = $(idTableSelector).DataTable({
-                processing: true,
-                serverSide: true,
-                searching: false,
-                bFilter : false,
-                bLengthChange: false,
-                pageLength: 5,
-                iDisplayLength: options.displayLength,
-                dom: '<"top"flp>rt<"bottom"i><"clear"><"bottom"p>',
-                ajax: {
-                    url: options.urlDataTable,
+            // Add ajax option and prepare condition
+            options.dataTableOpt['ajax'] =
+                {
+                url: options.externalOpt.urlDataTable,
                     type: "GET",
                     data: function (d) {
-                        d['columns'] = prepareCondition(d).columns;
-                        var filters = getUrlFIlters();
+                    d['columns'] = prepareCondition(d).columns;
+                    var filters = getUrlFIlters();
 
-                        if (options.conditionDefault) {
-                            d['columns'] = options.conditionDefault;
-                            options.conditionDefault = null;
-                        }
+                    if (options.conditionDefault) {
+                        d['columns'] = options.conditionDefault;
+                        options.conditionDefault = null;
+                    }
 
-                        d.is_mat = options.is_mat;
-                        d.objdb = tableObjectName;
-                        conditionTable = d;
-                    },
-                },  
-                columns: result,
-                aoColumnDefs: columnsSettings,
-                drawCallback: function (settings) {
-                    objectInfo['dtObj'] =  {o:this.api().data().ajax.json(),i:this.api().data().ajax.params()};
-
-                    $('#datatable-data').text('Data:'+ objectInfo.dtObj.o.debug[0].time);
-
-                    $('#datatable-f-ttl').text('TotalFiltered:' +objectInfo.dtObj.o.debug[1].time);
-                    $('#datatable-ttl').text('Total:' + objectInfo.dtObj.o.debug[2].time);
+                    d.is_mat = options.is_mat;
+                    d.objdb = tableObjectName;
+                    conditionTable = d;
                 },
-                initComplete: function (settings, json) {
-                    if (options.initComplete) {
-                        options.initComplete();
-                    }
-                    
-                    if (options.dtFilters) {
-                        addFilter(col);
-                    }
+            };
 
-                    $(idTableSelector + ' thead th.sorting').click(function () {
-                        sortObject = [];
+            //Add drawCallBack
+            options.dataTableOpt['drawCallback'] = function (settings) {
+                objectInfo['dtObj'] =  {o:this.api().data().ajax.json(),i:this.api().data().ajax.params()};
+                $('#datatable-data').text('Data:'+ objectInfo.dtObj.o.debug[0].time);
+                $('#datatable-f-ttl').text('TotalFiltered:' +objectInfo.dtObj.o.debug[1].time);
+                $('#datatable-ttl').text('Total:' + objectInfo.dtObj.o.debug[2].time);
+            };
+            // Add initComplete
+            options.dataTableOpt['initComplete'] = function (settings, json) {
+                if (options.initComplete)
+                    options.initComplete();
 
-                        var data = (datatable.column(this).dataSrc());
-                        var sortedType;
-                        var result = $(this).attr('class').split('_', 2)[1];
+                if (options.externalOpt.dtFilters)
+                    addFilter(col);
 
-                        if (!result) {
-                            sortedType = 'asc';
-                        }
-                        else if (result == 'asc') {
-                            sortedType = 'desc';
-                        }
-                        else if (result == 'desc') {
-                            sortedType = 'asc';
-                        }
-                        sortObject = [{'column': data, 'dir': sortedType}];
-                    });
-                },
-                createdRow: function (row, data, index) {
-                    if (options.createdRow) {
-                        options.createdRow(row, data, index);
+                $(idTableSelector + ' thead th').click(function () {
+                    sortObject = [];
+
+                    var data = (datatable.column(this).dataSrc());
+
+                    var result = $(this).attr('class');
+                    var sortedType = result.split('_', 2)[1];
+
+                    if (result == 'sorting_disabled')
+                        return;
+
+                    if (!result) {
+                        sortedType = 'asc';
                     }
+                    else if (result == 'asc') {
+                        sortedType = 'desc';
+                    }
+                    else if (result == 'desc') {
+                        sortedType = 'asc';
+                    }
+                    sortObject = [{'column': data, 'dir': sortedType}];
+
+                });
+
+            };
+            // render row
+            options.dataTableOpt['createdRow'] = function (row, data, index) {
+                if (options.createdRow) {
+                    options.createdRow(row, data, index);
                 }
-            });
+            }
+            //init table
+            datatable = $(idTableSelector).DataTable(options.dataTableOpt);
         }
 
         function getUrlFIlters() {
@@ -173,14 +138,13 @@ function getPagingViewObject (view_name)
             if (!filters) {
                 return {};
             }
-
             filters = urlParamDecode(filters);
 
             return filters;
         }
 
         function addFilter(col) {
-            var item = col.columns;
+            var item = col;
             html ='';
 
             item.forEach(function (item, i, data) {
@@ -264,7 +228,7 @@ function getPagingViewObject (view_name)
                         },
                     },
                     ajax: {
-                        url: options.urlSelect2,
+                        url: options.externalOpt.urlSelect2,
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         data: function (srch) {
@@ -398,32 +362,34 @@ function getPagingViewObject (view_name)
         }
 
         function initTable(visCol) {
-            if (!options.columns) {
+            var columns = options.externalOpt.columns.columns;
+
+            if (!columns) {
                 return $.ajax({
                     method: "GET",
-                    url: options.urlColumnData,
+                    url: options.externalOpt.urlColumnData,
                     data: {
                         visCol: visCol,
                         objdb: tableObjectName
                     }
                 }).done(function (data) {
-                    CollRender(data);
+                    CollRender(columns);
                 });
             }
             else {
-                CollRender(options.columns);
+                CollRender(columns);
             }
         }
 
-        function CollRender(data) {
-            element.html('');
+        function CollRender(columns) {
+            moment.lang('ru');
 
+            element.html('');
             var simple_checkbox = function (data, type, full, meta) {
-                var is_checked = data == true ? "checked" : "";
+                var is_checked = columns == true ? "checked" : "";
                 return '<input type="checkbox" class="checkbox" ' +
                     is_checked + '  disabled/>';
             };
-            moment.lang('ru');
             var pretty_timestamp =
                 function (data, type, full, meta) {
                     var now = moment.parseZone(data);
@@ -432,31 +398,23 @@ function getPagingViewObject (view_name)
                     return now == 'Invalid date' ? '' : now;
                 };
 
-            if (data.columns) {
-            }
-            for (var i = 0; i < data.columns.length; i++) {
-                if (data.columns[i]["type"] == "bool") {
-                    data.columns[i].render = simple_checkbox;
+            for (var i = 0; i < columns.length; i++) {
+                if (columns[i]["type"] == "bool") {
+                    columns[i].render = simple_checkbox;
                 }
-                if (data.columns[i]["type"] == "timestamptz" || data.columns[i]["type"] == "timestamp" || data.columns[i]["type"] == "date") {
-                    data.columns[i].render = pretty_timestamp;
+                if (columns[i]["type"] == "timestamptz" || columns[i]["type"] == "timestamp" || columns[i]["type"] == "date") {
+                    columns[i].render = pretty_timestamp;
                 }
             }
-            columnsData = data;
 
-            var buttons = [];
-
-            var htmlElements = [
-                '<div>',
-                buttons.join(''),
-                '</div>',
+            var htmlElements = [,
                 '<table id="' + idTable + '" class="table table-striped table-bordered" cellspacing="0" width="100%">' +
                 ' </table>'
             ];
 
             element.prepend(htmlElements.join(''));
 
-            createTable(data);
+            createTable(columns);
 
             $('[data-type=rebuild]').click(function () {
                 wrapper.rebuildTable();
