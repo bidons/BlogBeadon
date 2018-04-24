@@ -245,11 +245,7 @@ BEGIN
 END;
 $$;
 
-
-drop function paging_objectdb(jsonb,text,integer);
-
-
-
+DROP FUNCTION paging_objectdb(jsonb,text,integer);
 
 DROP FUNCTION IF EXISTS paging_objectdb( JSONB );
 
@@ -288,7 +284,7 @@ BEGIN
     is_materialize,
     p.name
   FROM paging_table AS p
-    JOIN paging_table_materialize_info AS ptm ON ptm.id = p.last_paging_table_materialize_info_id
+   left JOIN paging_table_materialize_info AS ptm ON ptm.id = p.last_paging_table_materialize_info_id
   WHERE p.name = $1 ->> 'objdb'
   INTO val_m_columns, val_m_count_total, val_mat_mode, val_table;
 
@@ -362,7 +358,7 @@ BEGIN
 
     val_debug = val_debug || jsonb_build_array(jsonb_build_object('recordsFiltered', val_query, 'time', round(
         (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4)));
-    val_result = val_result || jsonb_build_object('recordFiltered', val_m_count_total);
+    val_result = val_result || jsonb_build_object('recordsFiltered', val_m_count_total);
 
     val_debug = val_debug || jsonb_build_array(jsonb_build_object('recordsTotal', val_query, 'time', round(
         (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4)));
@@ -379,7 +375,7 @@ BEGIN
 
       val_debug = val_debug || jsonb_build_array(jsonb_build_object('recordsFiltered', val_query, 'time', round(
           (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4)));
-      val_result = val_result || jsonb_build_object('recordFiltered', val_query_result_integer);
+      val_result = val_result || jsonb_build_object('recordsFiltered', val_query_result_integer);
 
       val_debug = val_debug || jsonb_build_array(jsonb_build_object('recordsTotal', val_query, 'time', round(
           (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4)));
@@ -394,7 +390,7 @@ BEGIN
 
       val_debug = val_debug || jsonb_build_array(jsonb_build_object('recordsFiltered', val_query, 'time', round(
           (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4)));
-      val_result = val_result || jsonb_build_object('recordFiltered', val_query_result_integer);
+      val_result = val_result || jsonb_build_object('recordsFiltered', val_query_result_integer);
 
       val_debug = val_debug || jsonb_build_array(jsonb_build_object('recordsTotal', val_query, 'time', round(
           (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4)));
@@ -431,7 +427,6 @@ BEGIN
 END;
 $$;
 
-select rebuild_paging_prop('paging_table',null,'table',false);
 
 
 EOD;
