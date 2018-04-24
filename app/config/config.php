@@ -19,7 +19,7 @@ return new Config(
             "libraryDir"     => __DIR__ . "/../../app/library/",
             "cacheDir"       => __DIR__ . "/../../app/cache/",
             "baseUri"        => "/",
-            "logDir"         => __DIR__ . "/../../app/logs/"
+            "logDir"         => "/var/www/phalcon/logs/"
         ],
     ]
 );

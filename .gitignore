@@ -6,7 +6,7 @@ app/cache/mpdf/*.php
 app/cache/mpdf/*.dat
 app/cache/mpdf/fonts/*.php
 app/cache/mpdf/fonts/*.dat
-app/logs/*.log
+/logs/*.log
 vendor
 public/components
 public/bower_components

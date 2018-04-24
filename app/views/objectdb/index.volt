@@ -135,31 +135,43 @@
 
         ReportTree.bind('ready.jstree', function(e, data) {
             $(this).jstree('open_all');
-            $(this).jstree(true).select_node(100019);
-            node = ($(this).jstree(true).get_node('100019')).original;
+            $(this).jstree(true).select_node(100009);
+            node = ($(this).jstree(true).get_node('100009')).original;
             definitionSql  = node.view;
             RebuildReport(node);
         });
 
         function RebuildReport(node){
             $('#select2-query').text('');
-            var gridParams = {
-                urlDataTable:  '/objectdb/showdata',
-                checkedUrl:    '/objectdb/idsdata',
-                urlSelect2:    '/objectdb/txtsrch',
-                idName: 'id',
-                columns: node.col,
-                is_mat: node.is_mat,
-                lengthMenu: [[5,10],[5,10]],
-                displayLength: 5,
-                select2Input: true,
-                tableDefault: node.view_name,
-                checkboxes: false,
-                dtFilters: true,
-                dtFiltersPanel: '',
-                dtTheadButtons: false};
-
-            wrapper = $('.data-tbl').DataTableWrapperExt(gridParams);
+            var parmsTableWrapper = {
+                externalOpt: {
+                    urlDataTable: '/objectdb/showdata',
+                    urlColumnData:'/objectdb/showcol',
+                    checkedUrl: '/objectdb/idsdata',
+                    urlSelect2: '/objectdb/txtsrch',
+                    select2Input: true,
+                    tableDefault: node.view_name,
+                    checkboxes: false,
+                    dtFilters: true,
+                    dtTheadButtons: false,
+                    idName: 'id',
+                    columns: node.col
+                },
+                dataTableOpt:
+                    {
+                        pagingType: 'simple_numbers',
+                        lengthMenu: [[5,10],[5,10]],
+                        displayLength: 5,
+                        serverSide:true,
+                        processing: true,
+                        searching: false,
+                        bFilter : false,
+                        bLengthChange: false,
+                        pageLength: 5,
+                        dom: '<"top"flp>rt<"bottom"i><"clear"><"bottom"p>',
+                    },
+            };
+            wrapper = $('.data-tbl').DataTableWrapperExt(parmsTableWrapper);
         }
     });
 
@@ -169,13 +181,13 @@
         if(value) {
             switch (value) {
                 case 'datatable-data':
-                    object = info['dtObj'].o.debug.query[0];
+                    object = info['dtObj'].o.debug[0].data;
                     break;
                 case 'datatable-f-ttl':
-                    object = info['dtObj'].o.debug.query[1];
+                    object = info['dtObj'].o.debug[1].recordsFiltered;
                     break;
                 case 'datatable-ttl':
-                    object = info['dtObj'].o.debug.query[2];
+                    object = info['dtObj'].o.debug[2].recordsTotal;
                     break;
                 case 'select2-query':
                     object = info['s2obj'];

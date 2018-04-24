@@ -147,24 +147,36 @@
 
     RebuildReport(getPagingViewObject('paging_table'))
 
-    function RebuildReport(node) {
-        $('#select2-query').text('');
-        var gridParams = {
-            urlDataTable: '/objectdb/showdata',
-            checkedUrl: '/objectdb/idsdata',
-            urlSelect2: '/objectdb/txtsrch',
-            idName: 'id',
-            columns: node.col,
-            is_mat: false,
-            lengthMenu: [[5, 10], [5, 10]],
-            displayLength: 5,
-            select2Input: true,
-            tableDefault: node.view_name,
-            checkboxes: false,
-            dtFilters: false,
-            dtTheadButtons: false
+    function RebuildReport(node){
+        console.log(node);
+        var parmsTableWrapper = {
+            externalOpt: {
+                urlDataTable: '/objectdb/showdata',
+                urlColumnData:'/objectdb/showcol',
+                checkedUrl: '/objectdb/idsdata',
+                urlSelect2: '/objectdb/txtsrch',
+                select2Input: true,
+                tableDefault: node.view_name,
+                checkboxes: false,
+                dtFilters: true,
+                dtTheadButtons: false,
+                idName: 'id',
+                columns: node.col
+            },
+            dataTableOpt:
+                {
+                    pagingType: 'simple_numbers',
+                    lengthMenu: [[5,10],[5,10]],
+                    displayLength: 5,
+                    serverSide:true,
+                    processing: true,
+                    searching: false,
+                    bFilter : false,
+                    bLengthChange: false,
+                    pageLength: 5,
+                    dom: '<"top"flp>rt<"bottom"i><"clear"><"bottom"p>',
+                },
         };
-
-        wrapper = $('.data-tbl').DataTableWrapperExt(gridParams);
-    }
+        wrapper = $('.data-tbl').DataTableWrapperExt(parmsTableWrapper);
+    };
 </script>

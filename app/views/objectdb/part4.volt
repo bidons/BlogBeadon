@@ -1,10 +1,6 @@
 {{ assets.outputCss('blog-css') }}
 {{ assets.outputJs('blog-js') }}
 
-{#
-<script src="https://code.highcharts.com/stock/highstock.js"></script>
-#}
-
 <div class="container">
 <h2 class="center-wrap">Конструкторы
 </h2>
@@ -24,6 +20,7 @@
             <li><a class="wrapper-blog" href="/objectdb/part2" title="Особенности работы  (планировщика запросов) PosgreSQL">Особенности работы  (планировщика запросов) PosgreSQL</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part3" title="Работы с фильтрами-условиями (предикативная логика)">Работы с фильтрами-условиями (предикативная логика)</a></li>
             <li><a class="wrapper-blog" href="/objectdb/part4" title="Материализация (Materialize View)" >Материализация (Materialize View)</a></li>
+            <li><a class="wrapper-blog" href="/objectdb/part5" title="Как всё устроено" >Как всё устроено</a></li>
         </ol>
     </div>
 </div>
@@ -61,24 +58,113 @@
         </li>
 
         <li>
-            Поехали зауяхчим вьюху и материализуем её:
+            Создадим обвёртку и материализуем её:
             Сгенерим существительных  13-ать на 200000-тысч строк в интервале двух лет по дням, рандомно.
                  <pre class="prettyprint lang-sql">
-
+CREATE VIEW vw_gen_materialize as
 WITH cte AS (
-            SELECT generate_series(1, 200000) AS id,
-                   md5((random())::text)                                                                 AS md5,
-            ('{Дятел, Братство, Духовность, Мебель,
+    SELECT
+      generate_series(1, 200000)                                                                                    AS id,
+      md5(
+          (random()) :: TEXT)                                                                                       AS md5,
+      ('{Дятел, Братство, Духовность, Мебель,
                Любовник, Аристократ, Ковер, Портос,
-               Трещина, Зубки, Бес, Лень, Благоговенье}'::text[])[(random() * (12)::double precision)]   AS series,
-            date((((('now'::text)::date - '2 years'::interval) +
-            (trunc((random() * (365)::double precision)) * '1 day'::interval)) +
-            (trunc((random() * (1)::double precision)) * '1 year'::interval)))                           AS action_date
-                     )
-             SELECT cte.id, cte.md5, cte.series, cte.action_date
-             FROM cte
-             ORDER BY cte.action_date;
+               Трещина, Зубки, Бес, Лень, Благоговенье}' :: TEXT []) [(random() * (12) :: DOUBLE PRECISION)] AS series,
+      date((((('now' :: TEXT) :: DATE - '2 years' :: INTERVAL) +
+             (trunc((random() * (365) :: DOUBLE PRECISION)) * '1 day' :: INTERVAL)) +
+            (trunc((random() * (1) :: DOUBLE PRECISION)) *
+             '1 year' :: INTERVAL)))                                                                                AS action_date
+)
+    SELECT
+      cte.id,
+      cte.md5,
+      cte.series,
+      cte.action_date
+    FROM cte
+    ORDER BY cte.action_date;
         </pre>
+        </li>
+        <li>
+            Создадим материализованное представление, екземпляр идентичен самой обвёртки, но теперь он статичен и может
+            быть проиндексирован. Опция WITH NO DATA - таблица появится без данных,
+            есть определённая полезность в этом,рестор бекапа не будет выполнять инструкцию "REFRESH MATERIALIZED"
+            <pre class="prettyprint lang-sql">
+                CREATE MATERIALIZED VIEW mv_gen_materialize AS
+                  (
+                    SELECT *
+                    FROM vw_gen_materialize
+                  ) WITH NO DATA;
+
+                REFRESH MATERIALIZED VIEW mv_gen_materialize;
+
+                CREATE EXTENSION if NOT EXISTS pg_trgm;
+
+                CREATE INDEX mv_gen_materialize_series_trg_idx          ON mv_gen_materialize USING GIN (series gin_trgm_ops);
+                CREATE INDEX mv_gen_materialize_series_action_date_idx ON mv_gen_materialize USING BTREE (action_date);
+            </pre>
+        </li>
+        <li>
+            Поскольку множество статично и его преагрегированное состояние не изменно на момент времени перестроения,
+            мы можем процедурно вызывать различные запросы для получения данных для визулизаций, CSV, JSON и тд.
+            <pre class="prettyprint lang-sql">
+                REFRESH MATERIALIZED VIEW mv_gen_materialize;
+
+                WITH prepare_data AS
+                    (
+                        SELECT
+                          date_part('epoch', date_trunc('day', mv.action_date :: DATE)) :: BIGINT * 1000 AS date,
+                          series,
+                          count(mv.action_date)                                                          AS cn
+                        FROM mv_gen_materialize AS mv
+                        WHERE series IS NOT NULL
+                        GROUP BY series, mv.action_date :: DATE
+                    ), get_data AS
+                    (
+                        SELECT
+                          g.series,
+                          jsonb_agg(json_build_array(date, cn) ORDER BY date)  AS rs,
+                          array_agg(date) AS d
+                        FROM prepare_data AS g
+                        WHERE series IS NOT NULL
+                        GROUP BY g.series
+                    ), get_pie_data AS
+                    (
+                        SELECT
+                          series   AS name,
+                          count(*) AS y
+                        FROM mv_gen_materialize
+                        WHERE series IS NOT NULL
+                        GROUP BY series
+                    )
+                    SELECT json_build_array((SELECT json_build_object('title', 'Генерация (сток)', 'type', 'stock', 'chart',
+                                                                      json_agg(
+                                                                          json_build_object('type', 'area', 'name', series, 'data', rs)))
+                                             FROM get_data),
+                                            json_build_object('title', 'Генерация (пирог)', 'type', 'pie', 'chart',
+                                                              (SELECT json_agg(get_pie_data)
+                                                               FROM get_pie_data))
+                    );
+
+                            ---Output
+                                    [
+                        {
+                            "type": "stock",
+                            "chart": [
+                                {
+                                    "data": [
+                                        [
+                                            1461013200000,
+                                            55
+                                        ],
+                                        [
+                                            1461099600000,
+                                            45
+                                        ],
+                                        [
+                                            1461186000000,
+                                            50
+                                        ],
+            </pre>
         </li>
     </ul>
 </div>
@@ -220,32 +306,37 @@ WITH cte AS (
         });
     }
 
-
-    function RebuildReport(node) {
-
+    function RebuildReport(node){
         definitionSql  = node.view;
-
-        console.log(node)
-        var gridParams = {
-            urlDataTable: '/objectdb/showdata',
-            checkedUrl: '/objectdb/idsdata',
-            urlSelect2: '/objectdb/txtsrch',
-            idName: 'id',
-            columns: node.col,
-            is_mat: node.is_mat,
-            lengthMenu: [[5, 10], [5, 10]],
-            displayLength: 5,
-            select2Input: true,
-            tableDefault: node.view_name,
-            checkboxes: false,
-            dtFilters: true,
-            dtTheadButtons: false,
-            initComplete: function ()
-            {
-                renderCharts('vw_gen_materialize');
-            }
+        var parmsTableWrapper = {
+            externalOpt: {
+                urlDataTable: '/objectdb/showdata',
+                urlColumnData:'/objectdb/showcol',
+                checkedUrl: '/objectdb/idsdata',
+                urlSelect2: '/objectdb/txtsrch',
+                select2Input: true,
+                tableDefault: node.view_name,
+                checkboxes: false,
+                dtFilters: true,
+                dtTheadButtons: false,
+                idName: 'id',
+                columns: node.col
+            },
+            dataTableOpt:
+                {
+                    pagingType: 'simple_numbers',
+                    lengthMenu: [[5,10],[5,10]],
+                    displayLength: 5,
+                    serverSide:true,
+                    processing: true,
+                    searching: false,
+                    bFilter : false,
+                    bLengthChange: false,
+                    pageLength: 5,
+                    dom: '<"top"flp>rt<"bottom"i><"clear"><"bottom"p>',
+                },
         };
-        wrapper = $('.data-tbl').DataTableWrapperExt(gridParams);
+        wrapper = $('.data-tbl').DataTableWrapperExt(parmsTableWrapper);
     }
 
     function renderStockChart(d,selector) {
