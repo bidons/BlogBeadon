@@ -29,7 +29,7 @@ class AddMaterializeTable2 extends AbstractMigration
     {
 $query =<<<'EOD'
 
-CREATE OR REPLACE FUNCTION materialize_paging_column(integer) RETURN VOID
+CREATE OR REPLACE FUNCTION materialize_paging_column(integer) RETURNS VOID
 VOLATILE
 LANGUAGE SQL STRICT
 AS $$
