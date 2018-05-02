@@ -487,7 +487,6 @@ function getPagingViewObject (view_name)
             }
         }
 
-
         function checkNode(id) {
             return checkedIds[id] == true;
         }
@@ -511,9 +510,7 @@ function getPagingViewObject (view_name)
             getJsonInfo: function () {
                 return objectInfo;
             },
-
             clearFilter: function () {
-
                 $(idTableSelector + ' [data-column]').each(function (data) {
                     if ($(this).attr('multiple')){
                         $(this).select2("val", "");

@@ -14,10 +14,8 @@ trait DataTableControllerTraitExt
 
         $query = "select paging_objectdb('{$data}',null,-1)";
 
-
         $result = $this->getDi()->getShared("db")->fetchOne($query);
         $result = json_decode($result['paging_objectdb']);
-
 
         return $this->responseJson($result);
     }
@@ -36,8 +34,6 @@ trait DataTableControllerTraitExt
 
     public function columnDataAction()
     {
-
-
         $data = json_encode($this -> table_condition);
 
         if(isset($data['visCol']))

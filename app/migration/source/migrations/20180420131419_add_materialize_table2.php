@@ -29,7 +29,7 @@ class AddMaterializeTable2 extends AbstractMigration
     {
 $query =<<<'EOD'
 
-CREATE OR REPLACE FUNCTION materialize_paging_column(integer) RETURNS VOID
+CREATE OR REPLACE FUNCTION materialize_paging_column(integer) RETURN VOID
 VOLATILE
 LANGUAGE SQL STRICT
 AS $$
@@ -174,7 +174,6 @@ END;
 $$;
 
 
-
 select rebuild_paging_prop('paging_table',null,'table',false);
 select rebuild_paging_prop('paging_column_type',null,'table',false);
 select rebuild_paging_prop('paging_column',null,'table',false);
@@ -198,6 +197,8 @@ update paging_column
 set is_visible = true,is_filter = false
 where paging_table_id in (select id from paging_table where name = 'paging_column_type')
 and name in ('id','name');
+
+select materialize_worker('recreate','vw_gen_materialize',null);
 
 EOD;
 $this->execute($query);

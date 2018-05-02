@@ -220,13 +220,13 @@ WITH cte AS (
 <script>
     /*data = data.chart_data;*/
 
-    RebuildReport(getPagingViewObject('vw_gen_materialize'))
+    RebuildReport(getPagingViewObject('vw_gen_materialize'));
 
     function renderCharts(view_name) {
-
         $.ajax({
             url: "/objectdb/viewchart/" + view_name,
         }).done(function (response) {
+            console.log(response);
             response = JSON.parse(response);
             renderStockChart(response[0],'stock-chart');
             renderPiePercent(response[1],'pie-chart-2');
@@ -337,6 +337,9 @@ WITH cte AS (
                 },
         };
         wrapper = $('.data-tbl').DataTableWrapperExt(parmsTableWrapper);
+
+        renderCharts('vw_gen_materialize');
+
     }
 
     function renderStockChart(d,selector) {
