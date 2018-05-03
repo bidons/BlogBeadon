@@ -276,17 +276,19 @@ DECLARE
   val_m_count_total        INTEGER;
   val_m_columns            TEXT;
   val_condition_arg        JSONB = a_js -> 'columns';
+  val_paging                boolean;
 BEGIN
 
   SELECT
     p.m_column,
     ptm.m_count,
     is_materialize,
-    p.name
+    p.name,
+    is_paging_full
   FROM paging_table AS p
    left JOIN paging_table_materialize_info AS ptm ON ptm.id = p.last_paging_table_materialize_info_id
   WHERE p.name = $1 ->> 'objdb'
-  INTO val_m_columns, val_m_count_total, val_mat_mode, val_table;
+  INTO val_m_columns, val_m_count_total, val_mat_mode, val_table,val_paging;
 
   IF (val_condition_arg IS NOT NULL)
   THEN
@@ -417,9 +419,8 @@ BEGIN
 
     val_debug = val_debug || jsonb_build_array(jsonb_build_object('recordsTotal', val_query, 'time', round(
         (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4)));
-    val_result = val_result || jsonb_build_object('recordsTotal', val_m_count_total);
+    val_result = val_result || jsonb_build_object('recordsTotal', val_query_result_integer);
   END IF;
-
 
   RETURN QUERY
   SELECT val_result || jsonb_build_object('debug', val_debug);

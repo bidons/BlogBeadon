@@ -40,8 +40,6 @@
             parent.select2(select2Options).on("change", function (e) {
                 child.prop("disabled", true);
 
-
-                console.log($(this).val());
                 var _this = this;
                 $.getJSON(url.replace(':parentId:', $(this).val()), function(items) {
 
