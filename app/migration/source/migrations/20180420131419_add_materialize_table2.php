@@ -199,8 +199,13 @@ where paging_table_id in (select id from paging_table where name = 'paging_colum
 and name in ('id','name');
 
 select materialize_worker('recreate','vw_gen_materialize',null);
+<<<<<<< HEAD
 
 /*create function paging_object_db_srch(jsonb) returns jsonb
+=======
+/*
+create function paging_object_db_srch(jsonb) returns jsonb
+>>>>>>> df1b27c9bcc631dd222739e02891759d3e0a2a17
 IMMUTABLE
 LANGUAGE plpgsql
 AS $$
