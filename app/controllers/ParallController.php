@@ -20,10 +20,7 @@ class ParallController extends ControllerBase
 
     public function biblePieAction($section_id)
     {
-
-
         $query = "select charts from bible_tree where id = $section_id";
-
         $result = $this->modelsManager->exeQrScalar($query);
 
         return $result;
@@ -31,7 +28,6 @@ class ParallController extends ControllerBase
 
     public function part1Action()
     {
-
     }
 
     public function bookAction($bible_tree_id)
@@ -45,5 +41,4 @@ class ParallController extends ControllerBase
 
         return $result;
     }
-    
 }

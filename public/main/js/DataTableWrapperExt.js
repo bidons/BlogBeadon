@@ -3,7 +3,7 @@ nodeObjects = [{"id":3,"parent":"#","text":"Материализованные �
     {"id":4,"parent":"#","text":"Обвёртки (полезные запросы) (472)","view_name":"view_useful","col":null,"icon":"unknown","view":null},
     {"id":1,"parent":"#","text":"Части речи (51235)","view_name":"part_of_speech","col":null,"icon":"unknown","view":null},
     {"id":2,"parent":"#","text":"Лексемы-Триграммы (2000000)","view_name":"full_text_search","col":null,"icon":"unknown","view":null},
-    {"id":5,"parent":"#","text":"Таблицы ()","view_name":"table","col":null,"icon":"unknown","view":null},
+    {"id":5,"parent":"#","text":"Таблицы","view_name":"table","col":null,"icon":"unknown","view":null},
     {"id":100022,"parent":"3","text":"Материализация (сущ.) (200000)","view_name":"vw_gen_materialize","col":{"columns": [{"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "md5", "type": "text", "title": "md5", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "series", "type": "text", "title": "series", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["between", "not between", "in"], "cdi": null, "data": "action_date", "type": "timestamptz", "title": "action_date", "primary": false, "visible": true, "is_filter": true, "orderable": true}]},"icon":"unknown","view":" WITH cte AS (\n         SELECT generate_series(1, 200000) AS id,\n            md5((random())::text) AS md5,\n            ('{Дятел,Братство,Духовность,Мебель,Любовник,Аристократ,Ковер,Портос,Трещина,Зубки,Бес,Лень,Благоговенье}'::text[])[(random() * (12)::double precision)] AS series,\n            date((((('now'::text)::date - '2 years'::interval) + (trunc((random() * (365)::double precision)) * '1 day'::interval)) + (trunc((random() * (1)::double precision)) * '1 year'::interval))) AS action_date\n        )\n SELECT cte.id,\n    cte.md5,\n    cte.series,\n    (cte.action_date)::timestamp with time zone AS action_date\n   FROM cte\n  ORDER BY ((cte.action_date)::timestamp with time zone);"},
     {"id":100010,"parent":"1","text":"Наречие (1865)","view_name":"vw_adverb","col":{"columns": [{"cd": ["select2dynamic"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "name", "type": "varchar", "title": "name", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "uname", "type": "varchar", "title": "uname", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "freq", "type": "int4", "title": "freq", "primary": false, "visible": true, "is_filter": true, "orderable": true}]},"icon":"unknown","view":" SELECT sg.id,\n    sg.name,\n    sg.uname,\n    sg.freq\n   FROM sg_entry sg\n  WHERE (sg.id_class = 21);"},
     {"id":100009,"parent":"1","text":"Союз (75)","view_name":"vw_conjunction","col":{"columns": [{"cd": ["select2dynamic"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "name", "type": "varchar", "title": "name", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "uname", "type": "varchar", "title": "uname", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "freq", "type": "int4", "title": "freq", "primary": false, "visible": true, "is_filter": true, "orderable": true}]},"icon":"unknown","view":" SELECT sg.id,\n    sg.name,\n    sg.uname,\n    sg.freq\n   FROM sg_entry sg\n  WHERE (sg.id_class = 20);"},
@@ -24,9 +24,9 @@ nodeObjects = [{"id":3,"parent":"#","text":"Материализованные �
     {"id":100017,"parent":"2","text":"Триграммный поиск (1000000)","view_name":"vw_sg_generate_lihotop","col":{"columns": [{"cd": ["select2dynamic"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "gen_text", "type": "text", "title": "gen_text", "primary": false, "visible": true, "is_filter": true, "orderable": true}]},"icon":"unknown","view":" SELECT sg.id,\n    sg.gen_text\n   FROM sg_generate_lihotop sg;"},
     {"id":100005,"parent":"1","text":"Глаголы (3441)","view_name":"vw_verb","col":{"columns": [{"cd": ["select2dynamic"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "name", "type": "varchar", "title": "name", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "uname", "type": "varchar", "title": "uname", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "freq", "type": "int4", "title": "freq", "primary": false, "visible": true, "is_filter": true, "orderable": true}]},"icon":"unknown","view":" SELECT sg.id,\n    sg.name,\n    sg.uname,\n    sg.freq\n   FROM sg_entry sg\n  WHERE (sg.id_class = 13);"},
     {"id":100021,"parent":"1","text":"Части речи и типы (19977)","view_name":"vw_word_with_prop","col":{"columns": [{"cd": ["select2dynamic"], "cdi": null, "data": "word", "type": "varchar", "title": "Часть речи", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">="], "cdi": null, "data": "freq", "type": "int4", "title": "Частота использования", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "class_name", "type": "varchar", "title": "Тип речи", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "language", "type": "varchar", "title": "Язык", "primary": false, "visible": true, "is_filter": false, "orderable": false}]},"icon":"unknown","view":" SELECT sg.name AS word,\n    sg.freq,\n    sgc.name AS class_name,\n    sgl.name AS language\n   FROM ((sg_entry sg\n     LEFT JOIN sg_class sgc ON ((sgc.id = sg.id_class)))\n     LEFT JOIN sg_language sgl ON ((sgl.id = sgc.id_lang)))\n  WHERE (sg.id_class <> 22);"},
-    {"id":100024,"parent":"5","text":"paging_table ()","view_name":"paging_table","col":{"columns": [{"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "name", "type": "text", "title": "name", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "descr", "type": "text", "title": "descr", "primary": false, "visible": true, "is_filter": false, "orderable": true}]},"icon":"unknown","view":null},
-    {"id":100025,"parent":"5","text":"paging_column_type ()","view_name":"paging_column_type","col":{"columns": [{"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "name", "type": "text", "title": "name", "primary": false, "visible": true, "is_filter": false, "orderable": true}]},"icon":"unknown","view":null},
-    {"id":100026,"parent":"5","text":"paging_column ()","view_name":"paging_column","col":{"columns": [{"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "paging_table_id", "type": "int4", "title": "paging_table_id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "paging_column_type_id", "type": "int4", "title": "paging_column_type_id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "name", "type": "text", "title": "name", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "title", "type": "text", "title": "title", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["="], "cdi": null, "data": "is_visible", "type": "bool", "title": "is_visible", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["="], "cdi": null, "data": "is_orderable", "type": "bool", "title": "is_orderable", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["="], "cdi": null, "data": "is_primary", "type": "bool", "title": "is_primary", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "priority", "type": "int4", "title": "priority", "primary": false, "visible": true, "is_filter": false, "orderable": true}]},"icon":"unknown","view":null}];
+    {"id":100024,"parent":"5","text":"paging_table","view_name":"paging_table","col":{"columns": [{"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "name", "type": "text", "title": "name", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "descr", "type": "text", "title": "descr", "primary": false, "visible": true, "is_filter": false, "orderable": true}]},"icon":"unknown","view":null},
+    {"id":100025,"parent":"5","text":"paging_column_type","view_name":"paging_column_type","col":{"columns": [{"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "name", "type": "text", "title": "name", "primary": false, "visible": true, "is_filter": false, "orderable": true}]},"icon":"unknown","view":null},
+    {"id":100026,"parent":"5","text":"paging_column","view_name":"paging_column","col":{"columns": [{"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "paging_table_id", "type": "int4", "title": "paging_table_id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "paging_column_type_id", "type": "int4", "title": "paging_column_type_id", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "name", "type": "text", "title": "name", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "title", "type": "text", "title": "title", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["="], "cdi": null, "data": "is_visible", "type": "bool", "title": "is_visible", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["="], "cdi": null, "data": "is_orderable", "type": "bool", "title": "is_orderable", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["="], "cdi": null, "data": "is_primary", "type": "bool", "title": "is_primary", "primary": false, "visible": true, "is_filter": false, "orderable": true}, {"cd": ["=", "!=", "<", ">", "<=", ">=", "in"], "cdi": null, "data": "priority", "type": "int4", "title": "priority", "primary": false, "visible": true, "is_filter": false, "orderable": true}]},"icon":"unknown","view":null}];
 
 function getPagingViewObject (view_name)
 {
@@ -110,9 +110,23 @@ function getPagingViewObject (view_name)
             //Add drawCallBack
             options.dataTableOpt['drawCallback'] = function (settings) {
                 objectInfo['dtObj'] =  {o:this.api().data().ajax.json(),i:this.api().data().ajax.params()};
-                $('#datatable-data').text('Data:'+ objectInfo.dtObj.o.debug[0].time);
-                $('#datatable-f-ttl').text('TotalFiltered:' +objectInfo.dtObj.o.debug[1].time);
-                $('#datatable-ttl').text('Total:' + objectInfo.dtObj.o.debug[2].time);
+
+                data = objectInfo.dtObj.o.debug[0].time;
+                ttlf = objectInfo.dtObj.o.debug[2].time;
+                ttl = objectInfo.dtObj.o.debug[1].time;
+
+                $('.table-info').empty();
+                if(data){
+                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-data" data-toggle="modal"  data-target="#modalDynamicInfo">Лимит:'+ objectInfo.dtObj.o.debug[0].time +'</span>');
+                }
+
+                if(ttlf){
+                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-f-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего:'+ objectInfo.dtObj.o.debug[2].time  +'</span>');
+                }
+
+                if(ttl){
+                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего с услв.:'+ objectInfo.dtObj.o.debug[1].time  +'</span>');
+                }
             };
             // Add initComplete
             options.dataTableOpt['initComplete'] = function (settings, json) {
@@ -143,17 +157,14 @@ function getPagingViewObject (view_name)
                         sortedType = 'asc';
                     }
                     sortObject = [{'column': data, 'dir': sortedType}];
-
                 });
-
             };
-            // render row
+
             options.dataTableOpt['createdRow'] = function (row, data, index) {
                 if (options.createdRow) {
                     options.createdRow(row, data, index);
                 }
             }
-            //init table
             datatable = $(idTableSelector).DataTable(options.dataTableOpt);
         }
 
@@ -188,7 +199,6 @@ function getPagingViewObject (view_name)
 
                             (item.cd).forEach(function(element) {
                                 option = option + '<option>'+element+'</option>';
-
                             });
 
                           var v = '<th><div class="input-group">'+
@@ -204,7 +214,7 @@ function getPagingViewObject (view_name)
                 html = html + v;
             });
 
-            $(idTableSelector).prepend('<thead><tr>"' + html + '"</tr></thead>');
+            $(idTableSelector + ' thead').append('<tr>"' + html + '"</tr>');
 
             $('th .input-group').each(function() {
                 $(this).change(function() {
@@ -266,11 +276,10 @@ function getPagingViewObject (view_name)
                             var ob = [];
 
                             objectInfo['s2obj']= {o:data,i:{'objdb': tableObjectName, 'col': col, 'type': type}};
+                                $('.table-info-select').empty();
 
                             if(objectInfo.s2obj['o'])
-                                $('#select2-query').text('Select2:' + objectInfo.s2obj.o.time);
-                            else
-                                $('#select2-query').text('');
+                                $('.table-info-select').append('<span class="badge badge-secondary" id="select2-query"  data-toggle="modal"  data-target="#modalDynamicInfo">Select2:' + objectInfo.s2obj.o.time+'</span>');
 
                             if(ob.push) {
                                 $.each(data.rs, function (key, value) {
@@ -361,29 +370,6 @@ function getPagingViewObject (view_name)
             conditionTable['columns'] = columns;
             return conditionTable;
         };
-
-        function deleteRow(e) {
-            e.preventDefault();
-            var url = $(this).attr('href');
-            var button = $('.modal-delete button[data-btn-type=make-delete]');
-            button.attr('data-url', url);
-
-            $('.modal-delete').modal('show');
-        }
-
-        function startEdit(e) {
-            e.preventDefault();
-            var url = $(this).attr('href');
-            var title = options.editForm.title || 'Изменить';
-            modalForm(url, title);
-        }
-
-        function startCreate(e) {
-            e.preventDefault();
-            var url = $(this).attr('href');
-            var title = options.createForm.title || 'Добавить';
-            modalForm(url, title);
-        }
 
         function initTable(visCol) {
             var columns = options.externalOpt.columns.columns;
