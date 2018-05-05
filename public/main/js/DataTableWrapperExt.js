@@ -65,7 +65,6 @@ function getPagingViewObject (view_name)
             options.dataTableOpt['columns'] = columns;
             options.dataTableOpt['order'] = [];
 
-            // Add ajax option and prepare condition
             options.dataTableOpt['ajax'] =
                 {
                     url: options.externalOpt.urlDataTable,
