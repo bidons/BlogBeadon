@@ -50,7 +50,7 @@ function getPagingViewObject (view_name)
         var select2columnsSelector = 'select-' + idTable;
         var tableObjectName = options.externalOpt.tableDefault;
 
-        var objectInfo = {objdb: tableObjectName,'dtObj':{},'s2obj':{}};
+        var objectInfo = {objdb: tableObjectName, 'dtObj': {}, 's2obj': {}};
         var conditionTable = {};
         var wrapper;
         var datatable;
@@ -60,33 +60,39 @@ function getPagingViewObject (view_name)
         var colVis = {};
 
         function createTable(col) {
-            // Add columns
-            options.dataTableOpt['columns'] = col;
+            var columns = col;
+
+
+            options.dataTableOpt['columns'] = columns;
+            options.dataTableOpt['order'] = [];
 
             // Add ajax option and prepare condition
             options.dataTableOpt['ajax'] =
                 {
-                url: options.externalOpt.urlDataTable,
+                    url: options.externalOpt.urlDataTable,
                     type: "GET",
                     data: function (d) {
-                    d['columns'] = prepareCondition(d).columns;
-                    var filters = getUrlFIlters();
+                        d['columns'] = prepareCondition(d).columns;
+                        /*var filters = getUrlFIlters();*/
+                        if (d.order[0]) {
+                            var col = columns[d.order[0].column].data;
+                            d.order = [{'column': col, 'dir': d.order[0].dir}];
+                        }
 
-                    if (options.conditionDefault) {
-                        d['columns'] = options.conditionDefault;
-                        options.conditionDefault = null;
-                    }
+                        if (options.conditionDefault) {
+                            d['columns'] = options.conditionDefault;
+                            options.conditionDefault = null;
+                        }
 
-                    d.is_mat = options.is_mat;
-                    d.objdb = tableObjectName;
-                    conditionTable = d;
-                },
-            };
+                        d.objdb = tableObjectName;
+                        conditionTable = d;
+                    },
+                };
 
             // Add language
             options.dataTableOpt['language'] =
                 {
-                "processing": "Подождите...",
+                    "processing": "Подождите...",
                     "search": "Поиск:",
                     "lengthMenu": "Показать _MENU_ записей",
                     "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
@@ -97,35 +103,36 @@ function getPagingViewObject (view_name)
                     "zeroRecords": "Записи отсутствуют.",
                     "emptyTable": "В таблице отсутствуют данные",
                     "paginate": {
-                    "first": "Первая",
+                        "first": "Первая",
                         "previous": "Предыдущая",
                         "next": "Следующая",
                         "last": "Последняя"
-                },
-                "aria": {
-                    "sortAscending": ": активировать для сортировки столбца по возрастанию",
+                    },
+                    "aria": {
+                        "sortAscending": ": активировать для сортировки столбца по возрастанию",
                         "sortDescending": ": активировать для сортировки столбца по убыванию"
-                }};
+                    }
+                };
 
             //Add drawCallBack
             options.dataTableOpt['drawCallback'] = function (settings) {
-                objectInfo['dtObj'] =  {o:this.api().data().ajax.json(),i:this.api().data().ajax.params()};
+                objectInfo['dtObj'] = {o: this.api().data().ajax.json(), i: this.api().data().ajax.params()};
 
                 data = objectInfo.dtObj.o.debug[0].time;
                 ttlf = objectInfo.dtObj.o.debug[2].time;
                 ttl = objectInfo.dtObj.o.debug[1].time;
 
                 $('.table-info').empty();
-                if(data){
-                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-data" data-toggle="modal"  data-target="#modalDynamicInfo">Лимит:'+ objectInfo.dtObj.o.debug[0].time +'</span>');
+                if (data) {
+                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-data" data-toggle="modal"  data-target="#modalDynamicInfo">Лимит:' + objectInfo.dtObj.o.debug[0].time + '</span>');
                 }
 
-                if(ttlf){
-                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-f-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего:'+ objectInfo.dtObj.o.debug[2].time  +'</span>');
+                if (ttlf) {
+                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-f-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего:' + objectInfo.dtObj.o.debug[2].time + '</span>');
                 }
 
-                if(ttl){
-                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего с услв.:'+ objectInfo.dtObj.o.debug[1].time  +'</span>');
+                if (ttl) {
+                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего с услв.:' + objectInfo.dtObj.o.debug[1].time + '</span>');
                 }
             };
             // Add initComplete
@@ -136,28 +143,6 @@ function getPagingViewObject (view_name)
                 if (options.externalOpt.dtFilters)
                     addFilter(col);
 
-                $(idTableSelector + " thead [class*='sorting']").click(function () {
-                    sortObject = [];
-
-                    var data = (datatable.column(this).dataSrc());
-
-                    var result = $(this).attr('class');
-                    var sortedType = result.split('_', 2)[1];
-
-                    if (result == 'sorting_disabled')
-                        return;
-
-                    if (!sortedType) {
-                        sortedType = 'asc';
-                    }
-                    else if (result == 'asc') {
-                        sortedType = 'desc';
-                    }
-                    else if (result == 'desc') {
-                        sortedType = 'asc';
-                    }
-                    sortObject = [{'column': data, 'dir': sortedType}];
-                });
             };
 
             options.dataTableOpt['createdRow'] = function (row, data, index) {
@@ -168,23 +153,13 @@ function getPagingViewObject (view_name)
             datatable = $(idTableSelector).DataTable(options.dataTableOpt);
         }
 
-        function getUrlFIlters() {
-            var filters = getQueryVariable('filters');
-            if (!filters) {
-                return {};
-            }
-            filters = urlParamDecode(filters);
-
-            return filters;
-        }
-
         function addFilter(col) {
             var item = col;
-            html ='';
+            html = '';
 
             item.forEach(function (item, i, data) {
-                v= '';
-                if(item.visible) {
+                v = '';
+                if (item.visible) {
                     v = '<th></th>';
 
                     if (item.is_filter) {
@@ -197,17 +172,17 @@ function getPagingViewObject (view_name)
                         else if (item.cd) {
                             var option = '';
 
-                            (item.cd).forEach(function(element) {
-                                option = option + '<option>'+element+'</option>';
+                            (item.cd).forEach(function (element) {
+                                option = option + '<option>' + element + '</option>';
                             });
 
-                          var v = '<th><div class="input-group">'+
-                            '<div class="input-group-btn">'+
-                            '<select class="btn btn-default">'+ option +
-                            '</select>'+
-                            '</div>'+
-                            '<input type="' + item.type + '" filter-cond="=" class="form-control input-sm" data-column="'+ item.data +'" placeholder="'+ item.title +'">'+
-                            '</div></th>';
+                            var v = '<th><div class="input-group">' +
+                                '<div class="input-group-btn">' +
+                                '<select class="btn btn-default">' + option +
+                                '</select>' +
+                                '</div>' +
+                                '<input type="' + item.type + '" filter-cond="=" class="form-control input-sm" data-column="' + item.data + '" placeholder="' + item.title + '">' +
+                                '</div></th>';
                         }
                     }
                 }
@@ -216,15 +191,15 @@ function getPagingViewObject (view_name)
 
             $(idTableSelector + ' thead').append('<tr>"' + html + '"</tr>');
 
-            $('th .input-group').each(function() {
-                $(this).change(function() {
+            $('th .input-group').each(function () {
+                $(this).change(function () {
                     var cond;
                     $(this).find(":selected").each(function (d) {
-                        cond  = this.innerHTML;
+                        cond = this.innerHTML;
                     });
 
                     $(this).find("[filter-cond]").each(function (d) {
-                        $(this).attr('filter-cond',cond);
+                        $(this).attr('filter-cond', cond);
                     });
                 });
             });
@@ -275,13 +250,13 @@ function getPagingViewObject (view_name)
                         processResults: function (data, page) {
                             var ob = [];
 
-                            objectInfo['s2obj']= {o:data,i:{'objdb': tableObjectName, 'col': col, 'type': type}};
-                                $('.table-info-select').empty();
+                            objectInfo['s2obj'] = {o: data, i: {'objdb': tableObjectName, 'col': col, 'type': type}};
+                            $('.table-info-select').empty();
 
-                            if(objectInfo.s2obj['o'])
-                                $('.table-info-select').append('<span class="badge badge-secondary" id="select2-query"  data-toggle="modal"  data-target="#modalDynamicInfo">Select2:' + objectInfo.s2obj.o.time+'</span>');
+                            if (objectInfo.s2obj['o'])
+                                $('.table-info-select').append('<span class="badge badge-secondary" id="select2-query"  data-toggle="modal"  data-target="#modalDynamicInfo">Select2:' + objectInfo.s2obj.o.time + '</span>');
 
-                            if(ob.push) {
+                            if (ob.push) {
                                 $.each(data.rs, function (key, value) {
                                     ob.push({'id': value, 'text': value});
                                 });
@@ -316,19 +291,18 @@ function getPagingViewObject (view_name)
                 }
             });
 
-            $(selectColStamp).on('apply.daterangepicker', function(ev, picker) {
+            $(selectColStamp).on('apply.daterangepicker', function (ev, picker) {
                 $(this).val(picker.startDate.format('YYYY.MM.DD') + ' - ' + picker.endDate.format('YYYY.MM.DD'));
                 datatable.ajax.reload();
             });
 
-            $(selectColStamp).on('cancel.daterangepicker', function(ev, picker) {
+            $(selectColStamp).on('cancel.daterangepicker', function (ev, picker) {
                 $(this).val('');
                 datatable.ajax.reload();
             });
         }
 
         function prepareCondition(d) {
-            d.order = sortObject;
             conditionTable['columns'] = [];
 
             var columns = [];
@@ -348,7 +322,7 @@ function getPagingViewObject (view_name)
                             fc: 'in'
                         });
                     }
-                    else if(filterCond) {
+                    else if (filterCond) {
                         columns.push({
                             col: filterData,
                             ft: filterType,
@@ -431,52 +405,6 @@ function getPagingViewObject (view_name)
             });
         }
 
-        function checkedChange(e) {
-            var cell = $(e.target);
-
-            var state = cell.prop('checked');
-            var id = cell.attr('data-id-row');
-
-            if (id == 'checkAll') {
-                conditionTable['fieldIds'] = options.idName;
-                $.get(options.checkedUrl, conditionTable,
-                    function (data) {
-
-
-                        /*data = JSON.parse(data.data);*/
-
-                        data.data.forEach(function (item) {
-                            if (state) {
-                                checkedIds[item] = state;
-                            } else {
-                                checkedIds = {};
-                            }
-                        });
-                        cell.prop('checked', state);
-
-                        $(options.checkedCounterSelector).html(wrapper.nodeCount());
-
-                        datatable.rows().each(function (object, index, data) {
-                            $(object).find('input.data_table_check_item').prop('checked', state).trigger('change');
-                        });
-                    }
-                );
-            } else {
-                if (state) {
-                    checkedIds[id] = state;
-                } else {
-                    delete checkedIds[id];
-                }
-                cell.prop('checked', state);
-
-                $(options.checkedCounterSelector).html(wrapper.nodeCount());
-            }
-        }
-
-        function checkNode(id) {
-            return checkedIds[id] == true;
-        }
-
         wrapper = {
             nodeCount: function () {
                 return Object.keys(checkedIds).length;
@@ -498,7 +426,7 @@ function getPagingViewObject (view_name)
             },
             clearFilter: function () {
                 $(idTableSelector + ' [data-column]').each(function (data) {
-                    if ($(this).attr('multiple')){
+                    if ($(this).attr('multiple')) {
                         $(this).select2("val", "");
                     }
                     var val = $(this).val();
@@ -514,28 +442,8 @@ function getPagingViewObject (view_name)
 
         initTable();
 
-        var filters = getUrlFIlters();
         return wrapper;
-
-
-        function urlParamDecode(src) {
-            return JSON.parse(Base64.decode(decodeURIComponent(src)));
-        }
-
-        function getQueryVariable(variable) {
-            var query = window.location.search.substring(1);
-            var vars = query.split("&");
-            for (var i = 0; i < vars.length; i++) {
-                var pair = vars[i].split("=");
-                if (pair[0] == variable) {
-                    return pair[1];
-                }
-            }
-            return (false);
-        }
     }
-
-
 })(jQuery);
 
 $('#modalDynamicInfo').on("show.bs.modal", function(e) {
@@ -569,32 +477,6 @@ $('#modalDynamicInfo').on("show.bs.modal", function(e) {
             default:
         }
 
-        $(this).find(".modal-body").html('<pre><code class="json">' + syntaxHighlight(object) + '</code> </pre>');
+        $(this).find(".modal-body").html('<pre><code class="json">' + object + '</code> </pre>');
     }
 });
-
-function syntaxHighlight(json) {
-    if (typeof json != 'string') {
-        json = JSON.stringify(json, undefined, 2);
-    }
-    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-        var cls = 'number';
-        if (/^"/.test(match)) {
-            if (/:$/.test(match)) {
-                cls = 'key';
-            } else {
-                cls = 'string';
-            }
-        } else if (/true|false/.test(match)) {
-            cls = 'boolean';
-        } else if (/null/.test(match)) {
-            cls = 'null';
-        }
-        return '<span class="' + cls + '">' + match + '</span>';
-    });
-}
-
-
-
-
