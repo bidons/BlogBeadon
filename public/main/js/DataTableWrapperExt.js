@@ -62,7 +62,6 @@ function getPagingViewObject (view_name)
         function createTable(col) {
             var columns = col;
 
-
             options.dataTableOpt['columns'] = columns;
             options.dataTableOpt['order'] = [];
 
@@ -73,7 +72,7 @@ function getPagingViewObject (view_name)
                     type: "GET",
                     data: function (d) {
                         d['columns'] = prepareCondition(d).columns;
-                        /*var filters = getUrlFIlters();*/
+
                         if (d.order[0]) {
                             var col = columns[d.order[0].column].data;
                             d.order = [{'column': col, 'dir': d.order[0].dir}];
