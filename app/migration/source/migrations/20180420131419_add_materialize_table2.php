@@ -173,11 +173,9 @@ BEGIN
 END;
 $$;
 
-
 select rebuild_paging_prop('paging_table',null,'table',false);
 select rebuild_paging_prop('paging_column_type',null,'table',false);
 select rebuild_paging_prop('paging_column',null,'table',false);
-
 
 update paging_column
 set is_visible = false
@@ -199,49 +197,6 @@ where paging_table_id in (select id from paging_table where name = 'paging_colum
 and name in ('id','name');
 
 select materialize_worker('recreate','vw_gen_materialize',null);
-<<<<<<< HEAD
-
-/*create function paging_object_db_srch(jsonb) returns jsonb
-=======
-/*
-create function paging_object_db_srch(jsonb) returns jsonb
->>>>>>> df1b27c9bcc631dd222739e02891759d3e0a2a17
-IMMUTABLE
-LANGUAGE plpgsql
-AS $$
-declare
-  srch text = $1 ->>'term';
-  objdb text = $1 ->> 'objdb';
-  col_type text = $1 ->> 'type';
-  col text = $1 ->> 'col';
-  colselect text = Coalesce($1->> 'colselect',col);
-  ident text = $1 ->> 'ident';
-  rs jsonb;
-  searchingField text = ' lower(' ||  col || ')';
-
-  val_query text;
-begin
-
-    if(col_type ~ 'int|numeric' and str2integer(srch) is not null)
-    THEN
-
-          val_query = concat('select json_agg(',col,')'
-              ,' from (select ',col,' from ',objdb,' where ',col,'=',srch,' limit 10) as r;');
-
-          EXECUTE val_query
-          into rs;
-    else
-      val_query =concat_ws(' ' ,'select jsonb_agg('|| col || ') from (select',col,'from',objdb,'where ',searchingField,
-                        'like',quote_literal('%' || lower(srch) || '%'),'limit 10) as r;');
-    end if;
-
-      EXECUTE val_query
-      into rs;
-
-      return rs;
-end;
-$$;*/
-
 
 EOD;
 $this->execute($query);

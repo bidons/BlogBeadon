@@ -19,9 +19,8 @@ class ObjectdbController extends ControllerBase
     public function part3Action(){}
     public function part4Action(){}
     public function part5Action(){}
+    public function part6Action(){}
 
-
-    
     public function viewChartAction($viewname)
     {
         $this->view->setRenderLevel(\Phalcon\Mvc\View::LEVEL_ACTION_VIEW);
