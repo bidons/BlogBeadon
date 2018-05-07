@@ -98,6 +98,8 @@ WITH cte AS (
         <li>
             Поскольку множество статично и его преагрегированное состояние не изменно на момент времени перестроения,
             мы можем процедурно вызывать различные запросы для получения данных для визулизаций, CSV, JSON и тд.
+            К примеру заюзав библиотечку -" <a class="wrapper-blog" href="https://www.highcharts.com/" title="">HighCharts</a>",
+            и заранее подготовив данные можно получить готовую визуализацию.
             <pre class="prettyprint lang-sql">
                 REFRESH MATERIALIZED VIEW mv_gen_materialize;
 

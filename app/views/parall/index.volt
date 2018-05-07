@@ -66,7 +66,10 @@
     <li>
         Ниже пироги, топ 20 слов в категории по частоте использования, можно перемещатся по дереву (* - не
         каноническая),
-        и смотреть результат в каждой из секций
+        и смотреть результат в каждой из секций.
+        Заранее спасибо Javascript (D3) и ребятам которые поделились инструментом
+        <a class="wrapper-blog" href="http://bl.ocks.org/syntagmatic/3150059" title="">Parallel (D3)</a>
+        И вот єтим <a class="wrapper-blog" href="https://www.highcharts.com/" title="">HighCharts</a>;
     </li>
 </div>
 
