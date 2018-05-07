@@ -12,7 +12,11 @@
     <br>
     <div class="row">
         <div class="col-md-12">
+            <div class="center-wrap">
+                Добро пожаловать. Тут я буду делится своим опытом по части реляционных баз данных.
+            </div>
             <div class="text-center">
+
             <img class="img-fluid img-thumbnail" src="/main/img/slide-3.jpg"  alt="">
             </div>
         </div>
