@@ -37,9 +37,7 @@ class ControllerBase extends Controller
             ->addCss("plugins/bootstrap/dist/css/bootstrap.css")
             ->addCss("plugins/datatables/jquery.dataTables.min.css")
             ->addCss("blog/css/blog.css")
-            /*select2-bootstrap-4-theme.css*/
             ->addCss("plugins/select2/select2.css")
-
             ->addCss("plugins/daterangepicker/daterangepicker-bs3.css")
             ->addCss("plugins/vakata/dist/themes/default/style.min.css");
 

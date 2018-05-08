@@ -15,7 +15,7 @@
         <div class="entry-content"></div>
         <div class="post-series-content">
             <ol>
-                <li><a class="wrapper-blog" href="/parall/index" title="Параллельные кординаты">Параллельные координаты
+                <li><a class="wrapper-blog" href="/parall/index" title="Параллельные кординаты">Введение
               {#          (введение)</a></li>
                 <li><a class="wrapper-blog" #}{#href="/objectdb/part1" #}{#title="Практическое применение">Практическое
                         применение</a></li>
