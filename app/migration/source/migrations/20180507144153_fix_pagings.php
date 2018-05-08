@@ -98,6 +98,20 @@ SELECT rebuild_paging_prop('vw_ddl_search','Поиск по DDL конструк
 
 SELECT materialize_worker('recreate','vw_ddl_search',null);
 
+update paging_column
+set is_orderable = false,title = 'Конструкция'
+where paging_table_id in
+      (select id from paging_table
+where name = 'vw_ddl_search')
+and name = 'definition';
+
+update paging_column
+set title = 'Тип'
+where paging_table_id in
+      (select id from paging_table
+where name = 'vw_ddl_search')
+and name = 'type';
+
 EOD;
 $this->execute($query);
 }

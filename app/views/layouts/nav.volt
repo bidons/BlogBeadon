@@ -17,6 +17,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/parall/index">Параллельные координаты</a>
                 </li>
+                {#<li class="nav-item">
+                    <a class="nav-link" href="/parall/index">OLAP</a>
+                </li>#}
             </ul>
         </div>
     </div>

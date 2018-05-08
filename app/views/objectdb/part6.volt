@@ -22,7 +22,7 @@
                 <p>
                 <ol>
                     <li>
-                        <pre class="prettyprint lang-json">
+                        <pre class="prettyprint lang-sql">
 -- Создание обвёртки
 CREATE VIEW vw_ddl_search AS
 SELECT
@@ -92,9 +92,25 @@ SELECT rebuild_paging_prop('vw_ddl_search','Поиск по DDL конструк
 
 -- Материализация
 SELECT materialize_worker('recreate','vw_ddl_search',null);
-                        </pre>
-                    </li>
-            </ol>
+
+-- Отключаем сортировку она тут бесмысленная, присваеваем полю логическое имя
+update paging_column
+set is_orderable = false,title = 'DDL'
+where paging_table_id in
+      (select id from paging_table
+where name = 'vw_ddl_search')
+and name = 'definition';
+
+-- Присваеваем полю логическое имя
+update paging_column
+set title = 'Конструкция'
+where paging_table_id in
+      (select id from paging_table
+where name = 'vw_ddl_search')
+and name = 'definition';
+        </pre>
+            </li>
+                </ol>
         </ul>
     </div>
 
@@ -125,22 +141,27 @@ SELECT materialize_worker('recreate','vw_ddl_search',null);
                 dtFilters: true,
                 dtTheadButtons: true,
                 idName: 'id',
-                columns: {"columns": [{"cd": ["select2dynamic"], "cdi": null, "data": "type", "type": "text", "title": "type", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["~"], "cdi": null, "data": "definition", "type": "text", "title": "definition", "primary": false, "visible": true, "is_filter": true, "orderable": true}]}
+                columns: {"columns": [{"cd": ["select2dynamic"], "cdi": null, "data": "type", "type": "text", "title": "Конструкция", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["~"], "cdi": null, "data": "definition", "type": "text", "title": "DDL", "primary": false, "visible": true, "is_filter": true, "orderable": false}]}
             },
-            dataTableOpt:
-                {
-                    pagingType: 'simple_numbers',
-                    lengthMenu: [[5,10],[5,10]],
-                    displayLength: 5,
-                    serverSide:true,
-                    processing: true,
-                    searching: false,
-                    bFilter : false,
-                    bLengthChange: false,
-                    pageLength: 5,
-                    dom: '<"top"flp>rt<"bottom"i><"clear"><"bottom"p>',
-                },
-        };
+            dataTableOpt: {
+                pagingType: 'simple_numbers',
+                lengthMenu: [[5, 10], [5, 10]],
+                displayLength: 5,
+                serverSide: true,
+                processing: true,
+                searching: false,
+                bFilter: false,
+                bLengthChange: false,
+                pageLength: 5,
+                dom: '<"top"flp>rt<"bottom"i><"clear"><"bottom"p>',
+                "columnDefs": [{
+                    "targets": 1,
+                    "render": function (data, type, row) {
+                        return '<pre class="prettyprint lang-sql">'+data+'</pre>'
+                    }
+                }],
+            }
+        }
         wrapper = $('.data-tbl').DataTableWrapperExt(parmsTableWrapper);
     }
 </script>
