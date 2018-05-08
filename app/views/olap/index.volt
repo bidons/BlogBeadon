@@ -88,13 +88,17 @@
     });
 
     $("#section-agg").select2();
-    $("#section-type").select2();
-    $("#section-type").select2();
+    $("#section-type").select2().on("select2:select", function (e) {
+        getProfileCategory('rebuild');
+    });
+
 
     getProfileCategory('rebuild');
     getProfileCategory('rebuild');
 
     function getProfileCategory(mode) {
+
+        $('#section-value').empty();
             $.ajax({
                 type: "POST",
                 url: "/olap/profcategory/" + $('#section-type').val(),
@@ -109,7 +113,6 @@
                 $("#section-value").trigger("change");
             });
     };
-
 </script>
 
 
