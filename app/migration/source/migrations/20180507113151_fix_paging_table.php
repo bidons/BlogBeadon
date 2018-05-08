@@ -596,7 +596,6 @@ BEGIN
 END;
 $$;
 
-
 EOD;
 $this->execute($query);
 }

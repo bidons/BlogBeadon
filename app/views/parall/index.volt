@@ -21,8 +21,8 @@
                 <li><a class="wrapper-blog" {#href="/objectdb/part1" #}title="Практическое применение">Практическое
                         применение</a></li>
                 <li><a class="wrapper-blog" {#href="/objectdb/part2" #}title="GIN(ts-vector)">GIN(ts-vector)</a></li>
-                <li><a class="wrapper-blog" {#href="/objectdb/part3" #}title="Прикольные фичи при работе с агрегатами">Прикольные
-                        фичи при работе с агрегатами</a></li>
+                <li><a class="wrapper-blog" {#href="/objectdb/part2" #}title="GIN(ts-vector)">Примеры</a></li>
+
             </ol>
         </div>
     </div>
