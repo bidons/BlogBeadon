@@ -90,15 +90,15 @@ class ModelsManager extends Manager
     {
         $query = $query . ' limit 1;';
         $this->_lastQueryFn = $query;
-        
+
         try {
             $result =  ($this->getDI()->getShared("db")->fetchOne($query));
-
-            /*dd($result);*/
         } catch (\PDOException $e) {
             return NULL;
         }
-        
+
+
+
         return reset($result);
     }
     public function getLastQueryFn()

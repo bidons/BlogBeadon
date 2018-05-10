@@ -214,6 +214,11 @@ BEGIN
 END
 $$;
 
+CREATE TABLE client_dimension_guide AS
+SELECT value,type_id,value_id
+  FROM client_dimension
+GROUP BY value,type_id,value_id;
+
 EOD;
         $this->execute($query);
     }

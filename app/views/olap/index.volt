@@ -1,11 +1,7 @@
-
 {{ assets.outputCss('blog-css') }}
 {{ assets.outputJs('blog-js') }}
 
-
 <script src="//code.highcharts.com/mapdata/countries/ua/ua-all.js"></script>
-{#<script src="//code.highcharts.com/mapdata/countries/ua/ua-all.js"></script>#}
-
 <h2 class="center-wrap">
     <h2 class="center-wrap">OLAP</h2>
 </h2>
@@ -17,11 +13,7 @@
             </div>
         </div>
         <div class="entry-content"></div>
-        <div class="post-series-content">
-            <ol>
-                <li><a class="wrapper-blog" href="/parall/index" title="Введение">Введение</a></li>
-            </ol>
-        </div>
+        {{ partial('layouts/olapl') }}
     </div>
 </div>
 <hr>

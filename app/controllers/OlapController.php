@@ -36,14 +36,14 @@ class OlapController extends ControllerBase
                         SELECT
                           value_id as id,
                           Coalesce(first(value),'Не определён') as text
-                        FROM client_dimension
+                        FROM client_dimension_guide
                         WHERE type_id = '$argg'
                         GROUP BY type_id,value_id)
                     select json_agg(row_to_json(cte)) 
-                    from cte;";
+                    from cte";
 
-        $result = $this->getDi()->getShared("db")->fetchOne($query);
+        $result = $this->modelsManager->exeQrScalar($query);
 
-        return  $this->responseJson($result['json_agg']);
+        return  $result;
     }
 }
