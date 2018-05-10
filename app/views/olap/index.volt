@@ -36,13 +36,13 @@
             <option value="8">Образование</option>
             <option value="9">Регионы</option>
             <option value="4">Занятость (тип)</option>
-            <option value="1">Занятость (сост.)</option>
+            <option value="1">Занятость (состояние)</option>
             <option value="6">Занятость (сотрудники)</option>
-            <option value="5">Образование (детатлизация)</option>
+            <option value="5">Образование (детализация)</option>
             <option value="7">Имущество</option>
             <option value="10">Cемейное положение</option>
             <option value="11">Пол</option>
-            <option value="2">Телефонные операторы.</option>
+            <option value="2">Тел. операторы</option>
         </select>
     </div>
 </div>
@@ -50,12 +50,10 @@
     <div class="row">
     <select name="type" id="section-value" style="100%" class="form-control"> </select>
     </div>
-
     <br>
     <div class="col-12">
         <div id="pie-chart" style="min-width: 600px; height: 750px; max-width: 1500px; margin: 0 auto"></div>
     </div>
-
     <div class="col-12">
         <div id="geo-chart" style="min-width: 600px; height: 750px; max-width: 1500px; margin: 0 auto"></div>
     </div>
@@ -67,8 +65,6 @@
 
 <script>
     $(document).ready(function () {
-
-
         var today = moment().add(1, 'days').format('YYYY.MM.DD');
 
         $('[data-filter-cond=interval]').daterangepicker({
