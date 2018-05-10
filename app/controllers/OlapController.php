@@ -9,22 +9,24 @@ class OlapController extends ControllerBase
         parent::initialize();
     }
     public function indexAction() {}
+    public function part1Action() {}
+
 
     public function piechartAction()
     {
-        $result = $this->modelsManager->exeFnScalar('pie_chart_marketing_build', [json_encode($_GET)], true);
+        $result = $this->modelsManager->exeFnScalar('get_pie_chart_olap', [json_encode($_GET)], true);
         return $this->responseJson($result);
     }
 
     public function geochartAction()
     {
-        $result = $this->modelsManager->exeFnScalar('geo_chart_marketing_build', [json_encode($_POST)], true);
+        $result = $this->modelsManager->exeFnScalar('get_geo_chart_olap', [json_encode($_GET)], true);
         return $this->responseJson($result);
     }
 
     public function linechartAction()
     {
-        $result = $this->modelsManager->exeFnScalar('line_chart_marketing_build', [json_encode($_POST)], true);
+        $result = $this->modelsManager->exeFnScalar('get_line_chart_olap', [json_encode($_GET)], true);
         return $this->responseJson($result);
     }
 

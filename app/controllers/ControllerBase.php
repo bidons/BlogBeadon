@@ -51,9 +51,11 @@ class ControllerBase extends Controller
             ->addJs("plugins/daterangepicker/moment.js")
             ->addJs("plugins/daterangepicker/daterangepicker.js")
             ->addJs("plugins/vakata/dist/jstree.min.js")
-            ->addJs("plugins/highcharts/highstock.js");
-            /*->addJs("https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js");*/
-
+            ->addJs("plugins/proj4/dist/proj4.js")
+            ->addJs("plugins/highcharts/highstock.js")
+            /*->addJs("https://code.highcharts.com/highcharts.js")*/
+            ->addJs("plugins/highcharts/modules/map.js")
+            /*->addJs("plugins/highcharts/modules/exporting.js")*/;
     }
 
     public function responseJson($data, $code = 200)
@@ -95,6 +97,4 @@ class ControllerBase extends Controller
 
         return $jsonResult;
     }
-    
-    
 }
