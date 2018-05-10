@@ -195,8 +195,7 @@
                  }
             });
         })
-    }
-    ;
+    };
     function renderPiePercent(data, selector) {
         var total = 0, percentage, convertArray = [];
 

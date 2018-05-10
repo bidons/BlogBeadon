@@ -18,8 +18,8 @@ class ObjectdbController extends ControllerBase
     public function part2Action(){}
     public function part3Action(){}
     public function part4Action(){}
-    public function part5Action(){}
     public function part6Action(){}
+    public function part5Action(){}
 
     public function viewChartAction($viewname)
     {

@@ -12,7 +12,7 @@ class OlapController extends ControllerBase
 
     public function piechartAction()
     {
-        $result = $this->modelsManager->exeFnScalar('pie_chart_marketing_build', [json_encode($_POST)], true);
+        $result = $this->modelsManager->exeFnScalar('pie_chart_marketing_build', [json_encode($_GET)], true);
         return $this->responseJson($result);
     }
 
@@ -44,12 +44,4 @@ class OlapController extends ControllerBase
 
         return  $this->responseJson($result['json_agg']);
     }
-
-    public function piecalendarAction()
-    {
-        $result = $this->modelsManager->exeFnScalar('pie_chart_marketing_calendar', [json_encode($_GET)], true);
-
-        return $this->responseJson($result);
-    }
-
 }
