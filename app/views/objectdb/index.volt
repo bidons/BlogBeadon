@@ -27,12 +27,12 @@
                  </li>
             <br>
                  <li>
-                      Cмысл заключает вот в чём: - "Если обвернуть во вьюху запрос и обращаться к запросу как к обычной таблице, то мы можем получить очень неплохие вкусняхи,
+                      Cмысл заключает вот в чём: - "Если обвернуть запрос во "View" и обращаться к запросу как к обычной таблице, то мы можем получить очень неплохие вкусняхи,
                             к примеру можно использовать расширения, и по полной юзать возможности PostgreSql ltree,dblink,postgres_fdw,file_fdw,Windows function, join lateral, pivot extension etc";.
                  </li>
             <br>
             <p>
-                    В качестве примера я накидал лабораторию, слегка переопределив <a class="wrapper-blog" href="https://datatables.net/" title="DataTable">DataTable</a> для работы с конструктором, и заранее создал дерево проекта.
+                    В качестве примера я накидал лабораторию, слегка переопределив <a class="wrapper-blog" href="https://datatables.net/" title="https://datatables.net/">DataTable</a> для работы с конструктором, и заранее создал дерево проекта.
                 В качестве реляционных примеров будем использовать:
                         -" <a class="wrapper-blog" href="http://www.solarix.ru/sql-dictionary-sdk.shtml" title="Лексику и морфологию Русского языка">Лексику и морфологию Русского языка</a>"
             </p>
@@ -50,8 +50,8 @@
             <div class="center-wrap">
                 <div style="margin-bottom:16px">
                     <div class="table-info" style="margin-bottom:16px"> </div>
-                    <span class="badge badge-secondary" id="response-json"  data-toggle="modal"  data-target="#modalDynamicInfo">Response:1</span>
-                    <span class="badge badge-secondary" id="request-json"   data-toggle="modal"  data-target="#modalDynamicInfo">Request:1</span>
+                    <span class="badge badge-secondary" id="response-json"  data-toggle="modal"  data-target="#modalDynamicInfo">Ответ:1</span>
+                    <span class="badge badge-secondary" id="request-json"   data-toggle="modal"  data-target="#modalDynamicInfo">Запрос:1</span>
                     <div class="table-info-select" style="margin-bottom:16px">
                     </div>
                 </div>
@@ -59,7 +59,7 @@
                         <div class="input-group-btn">
                             <button class="btn btn-default" onclick="wrapper.getDataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter">Поиск</span> </button>
                             <button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>
-                            <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">View-Sql</span></button>
+                            <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">SQL</span></button>
                         </div>
                 </div>
             <div class="data-tbl"> </div>
@@ -84,7 +84,7 @@
             </div>
         </div>
     </div>
-
+</div>
     <script>
     var wrapper;
     var definitionSql ='';
@@ -217,6 +217,3 @@
         });
     }
 </script>
-
-
-

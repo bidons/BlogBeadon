@@ -1,7 +1,7 @@
 {{ assets.outputCss('blog-css') }}
 {{ assets.outputJs('blog-js') }}
-
 <script src="//code.highcharts.com/mapdata/countries/ua/ua-all.js"></script>
+
 <h2 class="center-wrap">
     <h2 class="center-wrap">OLAP</h2>
 </h2>
@@ -162,10 +162,6 @@
                         plotBorderWidth: null,
                         plotShadow: false,
                         type: 'pie',
-                        /*backgroundColor: {
-                            linearGradient: {x1: 0, y1: 0, x2: 1, y2: 1},
-                            stops: [[0, 'rgb(255, 255, 255)'], [1, 'rgb(200, 200, 255)']]
-                        },*/
                     },
                     title: {
                         text: $('#section-agg').select2('data')[0].text
@@ -247,9 +243,7 @@
                             if (options.sizeFormatter) {
                                 options.size = options.sizeFormatter.call(this);
                             }
-                            // Call parent function
                             var result = Highcharts.seriesTypes.pie.prototype.getCenter.call(this);
-                            // Must correct for slicing room to get exact pixel pos
                             result[0] -= slicingRoom;
                             result[1] -= slicingRoom;
                             return result;
