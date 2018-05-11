@@ -60,7 +60,16 @@
     <div class="col-12">
         <div id="geo-chart" style="min-width: 600px; height: 750px; max-width: 1500px; margin: 0 auto"></div>
     </div>
+
+    <div class="row">
+        <div class="col" id="query-pie"></div>
+        <div class="col" id="query-line"></div>
+        <div class="col" id="query-geo"></div>
+    </div>
+
 </div>
+
+
 <br>
 
 <script>
@@ -145,6 +154,9 @@
                     'agg': $('#section-agg').val()
                 }
             }).done(function (data) {
+
+                $('#query-pie').append('<pre class="prettyprint lang-sql">' + data.query +'</pre>');
+
                 var total = 0, percentage, convertArray = [];
 
                 $.each(data.data, function () {
@@ -212,6 +224,9 @@
                         'agg': $('#section-agg').val()
                     }
                 }).done(function (data) {
+
+                    $('#query-geo').append('<pre class="prettyprint lang-sql">' + data.query +'</pre>');
+
                     Highcharts.seriesType('mappie', 'pie', {
                             center: null,
                             clip: true,
@@ -473,6 +488,7 @@
                     'agg': $('#section-agg').val()
                 }
             }).done(function (data) {
+                $('#query-line').append('<pre class="prettyprint lang-sql">' + data.query +'</pre>');
                 itt = 0;
                 console.log(data);
                 $.each(data.data, function (index, value) {
