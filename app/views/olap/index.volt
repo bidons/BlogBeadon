@@ -34,7 +34,6 @@
 
         <select name="type" id="section-type" style="width:250" class="form-control">
             <option value="8">Образование</option>
-            <option value="9">Регионы</option>
             <option value="4">Занятость (тип)</option>
             <option value="1">Занятость (состояние)</option>
             <option value="6">Занятость (сотрудники)</option>
@@ -43,6 +42,7 @@
             <option value="10">Cемейное положение</option>
             <option value="11">Пол</option>
             <option value="2">Тел. операторы</option>
+            <option value="9">Регионы</option>
         </select>
     </div>
 </div>
@@ -139,6 +139,11 @@
             $('#line-chart').empty();
             $('#geo-chart').empty();
             $('#pie-chart').empty();
+
+            $('#query-pie').empty();
+            $('#query-line').empty();
+            $('#query-geo').empty();
+
 
             renderPiePercent();
         }
