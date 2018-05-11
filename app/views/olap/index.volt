@@ -87,7 +87,7 @@
             }
         });
 
-        $('[data-filter-cond=interval]').val('2016-01-01' + ' - ' + '2017-04-01');
+        $('[data-filter-cond=interval]').val('2016-05-01' + ' - ' + '2017-04-01');
 
         $('#refresh-charts').on('click', function () {
             renderData();
@@ -154,16 +154,9 @@
 
                 Highcharts.chart('pie-chart', {
                     chart: {
-                        /*plotBackgroundColor: null,
-                        plotBorderWidth: null,*/
                         plotShadow: false,
                         type: 'pie',
                         backgroundColor: 'transparent',
-                        events: {
-                            load: function () {
-                                this.renderer.image('http://pgbeadon.com/main/img/concrete_seamless.png').add();
-                            }
-                        }
                     },
                     title: {
                         text: $('#section-agg').select2('data')[0].text
