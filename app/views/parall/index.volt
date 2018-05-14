@@ -182,8 +182,6 @@
                 }
                 else {
                     itt++;
-
-                    console.log(value);
                     val = value;
                  }
             });

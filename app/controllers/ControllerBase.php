@@ -45,7 +45,6 @@ class ControllerBase extends Controller
             ->addJs("plugins/bootstrap/dist/js/bootstrap.js")
             ->addJs("https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql")
             ->addJs("plugins/datatables/jquery.dataTables.min.js")
-            /*->addJs("https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js")*/
             ->addJs("main/js/DataTableWrapperExt.js")
             ->addJs("plugins/select2/select2.full.min.js")
             ->addJs("plugins/daterangepicker/moment.js")
@@ -53,9 +52,7 @@ class ControllerBase extends Controller
             ->addJs("plugins/vakata/dist/jstree.min.js")
             ->addJs("plugins/proj4/dist/proj4.js")
             ->addJs("plugins/highcharts/highstock.js")
-            /*->addJs("https://code.highcharts.com/highcharts.js")*/
-            ->addJs("plugins/highcharts/modules/map.js")
-            /*->addJs("plugins/highcharts/modules/exporting.js")*/;
+            ->addJs("plugins/highcharts/modules/map.js");
     }
 
     public function responseJson($data, $code = 200)
