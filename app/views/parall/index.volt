@@ -109,15 +109,13 @@
 
 <div class="container">
     <div class="center-wrap">
-        <h5>"Топ 20-ацать слов в категории по частоте использования"</h5>
+        <h5>Топ 20-ацать слов в категории по частоте использования</h5>
         <div id='select-parallel'></div>
     </div>
     <button id="refresh-bible-pie" onclick="renderPie()">Обновить</button>
-
     <select name="type" id="book-section" style="width:300" disabled=true class="form-control">
         <option value="10000">Библия</option>
     </select>
-
     <select name="type" id="section-type" style="width:300" class="form-control">
         <option>--Все объекты в секции--</option>
         <option value="10001">Старый завет</option>
@@ -146,18 +144,15 @@
             runRenderPercent(b);
             return;
         };
-
         if (bs) {
             runRenderPercent(bs);
             return;
         };
-
         if (s) {
             runRenderPercent(s);
             return;
         };
     }
-
     function runRenderPercent(book_id) {
         $("#container-chart").empty();
         $.ajax({
