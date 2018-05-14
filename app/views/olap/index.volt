@@ -214,11 +214,8 @@
         };
 
         function renderGeo() {
-
             if ($('#section-type').val() == 9) {
-                console.log(9);
                 renderLine();
-
             } else {
                 $.ajax({
                     url: "/olap/geochart",
@@ -495,7 +492,6 @@
             }).done(function (data) {
                 $('#query-line').append('<pre class="prettyprint lang-sql">' + data.query +'</pre>');
                 itt = 0;
-                console.log(data);
                 $.each(data.data, function (index, value) {
                     data.data[itt]['color'] = Highcharts.getOptions().colors[itt];
                     itt++

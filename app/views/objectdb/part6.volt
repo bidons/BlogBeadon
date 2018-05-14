@@ -93,7 +93,7 @@ SELECT rebuild_paging_prop('vw_ddl_search','Поиск по DDL конструк
 -- Материализация
 SELECT materialize_worker('recreate','vw_ddl_search',null);
 
--- Отключаем сортировку она тут бесмысленная, присваеваем полю логическое имя
+-- Отключаем сортировку она тут бесмысленная, присваиваем полю логическое имя
 update paging_column
 set is_orderable = false,title = 'DDL'
 where paging_table_id in
@@ -101,7 +101,7 @@ where paging_table_id in
 where name = 'vw_ddl_search')
 and name = 'definition';
 
--- Присваеваем полю логическое имя
+-- Присваиваем полю логическое имя
 update paging_column
 set title = 'Конструкция'
 where paging_table_id in

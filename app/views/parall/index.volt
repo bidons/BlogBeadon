@@ -172,7 +172,6 @@
                             var fr = 'pie_word_by_part_of_speech_' + (itt - 1);
                             var tw = 'pie_word_by_part_of_speech_' + (itt);
 
-                            console.log(itt);
                             $("#container-chart").append('<div class="row"><div class="col"><div id="' + fr + '"></div></div><div class="col"><div id="' + tw + '"></div></div></div>');
 
                             renderPiePercent(val, fr);
