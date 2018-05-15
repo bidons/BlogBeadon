@@ -11,6 +11,8 @@ class ObjectdbController extends ControllerBase
     {
         parent::initialize();
         $this -> table_condition = $_GET;
+
+        $this->view->setVar('projectTree',json_encode(projectTree('objectdb')));
     }
 
     public function indexAction(){}

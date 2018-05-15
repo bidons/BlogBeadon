@@ -2,11 +2,9 @@
 
 class IndexController extends ControllerBase
 {
-    use DataTableControllerTraitExt;
-
     public function indexAction()
     {
-        
+        $this->view->setVar('projectTree',json_encode(projectTree(null)));
     }
 
     /*public function objectDbAction()
@@ -26,13 +24,7 @@ class IndexController extends ControllerBase
     }*/
 
 
-    function dd()
-    {
-        array_map(function ($x) {
-            echo (new \Phalcon\Debug\Dump(null, true))->variable($x);
-        }, func_get_args());
-        die(1);
-    }
+
 }
 
 
