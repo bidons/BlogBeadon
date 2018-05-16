@@ -1,6 +1,4 @@
-
 <link rel="icon" href="/favicon_rw.ico" />
-
 <head>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -12,14 +10,12 @@
 
         gtag('config', 'UA-118128290-1');
     </script>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
 
     <title>PgBeadon</title>
-
 </head>
 
 {#{{ partial('layouts/header') }}#}

@@ -12,7 +12,7 @@
                     </a>
                 </li>#}
                 <li class="nav-item">
-                    <a class="nav-link" href="/objectdb/index">Конструкторы</a>
+                    <a class="nav-link" href="/objectdb/index">Пагинаторы</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/parall/index">Параллельные координаты</a>

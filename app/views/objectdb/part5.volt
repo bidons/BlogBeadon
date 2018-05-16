@@ -1,20 +1,9 @@
 {{ assets.outputCss('blog-css') }}
 {{ assets.outputJs('blog-js') }}
 
-<h2 class="center-wrap">Конструкторы
-</h2>
+{{ partial('layouts/objdb') }}
 
 <div class="container">
-<div class="row">
-    <div class="col-md-4">
-        <div class="text-center">.
-            <img class="rounded-circle" src="/main/img/person_2.jpeg"  width="300" height="250">
-        </div>
-    </div>
-    <div class="entry-content"></div>
-    {{ partial('layouts/objdb') }}
-</div>
-<hr>
     <div class="well">
         <ul>
                 <p class="center-wrap">

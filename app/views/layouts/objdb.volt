@@ -1,15 +1,32 @@
+<div class="container">
+    {% for value in projectTree if value['href'] == router.getRewriteUri() %}
+        <h4 class="center-wrap">
+            <pre>{{value['name']}}</pre>
+        </h4>
+    {% endfor %}
 
-<div class="post-series-content">
-        <ol>
-            {#{{ projectTree }}#}
-            <li><a class="wrapper-blog" href="/objectdb/index" title="Введение (зачем, почему)">Введение</a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part1" title="Реляционное связывание (таблиц и полей)">Реляционное связывание таблиц и полей</a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part2" title="Особенности работы  (планировщика запросов) PostgreSQL">Особенности работы  (планировщика запросов при работе с "View") PostgreSQL</a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part3" title="Работы с фильтрами-условиями (предикативная логика)">Работы с фильтрами-условиями (предикативная логика)</a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part4" title="Материализация (Materialize View)" >Материализация (Materialize View)</a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part5" title="Внутренности">Описание механизмов</a></li>
-            <li><a class="wrapper-blog" href="/objectdb/part6" title="Создание конструкторов для поиска по DDL">Ппоиска по DDL конструкциям</a></li>
-        </ol>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="text-center">
+                <img class="rounded-circle" src="/main/img/slide-1.png" width="370" height="300">
+            </div>
+        </div>
+
+    <div class="col-8">
+        <br>
+        <br>
+        <ul class="list">
+        {% for field in projectTree %}
+            {% if field['href'] == router.getRewriteUri() %}
+                <li><a href="{{field['href']}}" class="list-group-item-action list-group-item-primary">{{field['sname']}}</a></li>
+            {% else %}
+            <li><a href="{{field['href']}}" class="list-group-item-action">{{field['sname']}}</a></li>
+            {% endif%}
+        {% endfor %}
+        </ul>
+    </div>
+    </div>
 </div>
+<hr>
 
 

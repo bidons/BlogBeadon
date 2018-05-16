@@ -35,7 +35,7 @@
 
 <style>
     .highcharts-point-hover {
-        stroke: rgb(0,206,255);
+        stroke: rgb(204, 248, 243);
         stroke-width: 1px;
     }
 </style>

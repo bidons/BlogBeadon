@@ -2,6 +2,7 @@
 {{ assets.outputJs('blog-js') }}
 <script src="//code.highcharts.com/mapdata/countries/ua/ua-all.js"></script>
 
+
 <h2 class="center-wrap">
     <h2 class="center-wrap">OLAP</h2>
 </h2>
