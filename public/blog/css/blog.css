@@ -1,12 +1,14 @@
-body,input,.modal-content,.list-group-item{
+body,.modal-content,.list-group-item,input{
     background: url('/main/img/concrete_seamless.png');
     background-repeat: repeat;
     background-position: 0 0;
     background-color: #e2e2de;
 }
+
 body {
     padding-top: 54px;
 }
+
 @media (min-width: 992px) {
     body {
         padding-top: 56px;
@@ -17,19 +19,5 @@ body {
     text-align: center;
 }
 
-.post-series-content {
-    margin: 0 0 26px;
-    padding: 20px;
-}
-.entry-content {
-    font-family: verdana;
-    font-size: 18px;
-    font-weight: normal;
-    color: #000000;
-}
-
-.entry-content {
-    line-height: 1.63;
-}
 
 

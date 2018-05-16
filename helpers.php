@@ -20,9 +20,13 @@ function projectTree($node)
               array("href"=>"/objectdb/part3","name"=> "Пагинаторы: Предикаты","sname"=>"Предикаты"),
               array("href"=>"/objectdb/part4","name"=> "Пагинаторы: Materialize View","sname"=>"Materialize View"),
               array("href"=>"/objectdb/part5","name"=> "Пагинаторы: Исходники","sname"=>"Исходники"),
-              array("href"=>"/objectdb/part6","name"=> "Пагинаторы: Пример конструктора","sname"=>"Пример конструктора")));
+              array("href"=>"/objectdb/part6","name"=> "Пагинаторы: Пример конструктора","sname"=>"Пример конструктора")),
+        'olap' => array(array("href"=>"/olap/index","name"=>"OLAP: Введение","sname"=>"Введение")),
+        'parall' => array(array("href"=>"/parall/index","name"=>"Параллельные кординаты: Введение","sname"=>"Введение")));
+
     if ($node){
         return $data[$node];
     }
     return $data;
 };
+

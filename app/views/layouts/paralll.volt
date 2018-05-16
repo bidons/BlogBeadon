@@ -4,14 +4,12 @@
             <pre>{{value['name']}}</pre>
         </h4>
     {% endfor %}
-
     <div class="row">
         <div class="col-md-4">
             <div class="text-center">
-                <img class="rounded-circle" src="/main/img/cube.jpeg" width="370" height="300">
+                <img class="rounded-circle" src="/main/img/super_book.jpg" width="370" height="300">
             </div>
         </div>
-
         <div class="col-8">
             <br>
             <br>

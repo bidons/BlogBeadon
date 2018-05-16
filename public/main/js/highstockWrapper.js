@@ -1,4 +1,7 @@
 Highcharts.setOptions({
+    chart: {
+        backgroundColor: 'transparent',
+    },
     lang: {
         loading: 'Загрузка...',
         months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],

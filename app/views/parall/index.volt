@@ -1,32 +1,14 @@
-{{ assets.outputCss('blog-css') }}
-{{ assets.outputJs('blog-js') }}
+{{ assets.outputCss('main-css') }}
+{{ assets.outputJs('main-js') }}
 
-<h2 class="center-wrap">
-    <h2 class="center-wrap">Параллельные координаты</h2>
-</h2>
+<link rel="stylesheet" type="text/css" href="/plugins/select2/select2.css">
+<script type="text/javascript" src="/plugins/select2/select2.min.js"></script>
+<script type="text/javascript" src="/plugins/highcharts/highstock.js"></script>
+<script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
+
+{{ partial('layouts/paralll') }}
 
 <div class="container">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="text-center">
-                <img class="rounded-circle" src="/main/img/super_book.jpg" width="370" height="300">
-            </div>
-        </div>
-        <div class="entry-content"></div>
-        <div class="post-series-content">
-            <ol>
-                <li><a class="wrapper-blog" href="/parall/index" title="Параллельные кординаты">Введение
-              {#          (введение)</a></li>
-                <li><a class="wrapper-blog" #}{#href="/objectdb/part1" #}{#title="Практическое применение">Практическое
-                        применение</a></li>
-                <li><a class="wrapper-blog" #}{#href="/objectdb/part2" #}{#title="GIN(ts-vector)">GIN(ts-vector)</a></li>
-                <li><a class="wrapper-blog" #}{#href="/objectdb/part2" #}{#title="GIN(ts-vector)">Примеры</a></li>#}
-                    </a>
-                </li>
-            </ol>
-        </div>
-    </div>
-    <hr>
     <li>
            В данном разделе предметной частью будут параллельные координаты, расматривать его стоит как механизм визулизации данных для определения узких мест при
            анализе различных преагрегированных состояний, одним словом "паралельные координаты" в этой статье это способ визуализации статистических данных в виде параллельных координат

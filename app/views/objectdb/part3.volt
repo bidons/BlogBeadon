@@ -1,5 +1,6 @@
-{{ assets.outputCss('blog-css') }}
-{{ assets.outputJs('blog-js') }}
+{{ assets.outputCss('blog-dt-css') }}
+{{ assets.outputJs('blog-dt-js') }}
+<script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql"></script>
 
 {{ partial('layouts/objdb') }}
 
@@ -10,9 +11,7 @@
             <p>
                 При использовании обвёрток, мы используем простое условие 'WHERE'. Логика предикатов-условий (логических операторов) теперь имеет более простую форму, выглядит это так - "дай мне что-то из таблицы по условию, где это и это true с минимальным количеством взаимоисключающих переменных. Всё что нельзя просто достать с простым условием, заставляет нас переделывать сам конструктор что собственно намного облегчает работу с множеством в реляционной среде.
                 </p>
-            </li>
-
-
+        </li>
     <li> Cоздадим простую обвёртку (части речи + тип языка+ тип речи + исключим "ПУНКТУАТОРЫ")
 
         <pre class="prettyprint lang-sql">CREATE VIEW vw_word_with_prop AS

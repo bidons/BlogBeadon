@@ -1,5 +1,6 @@
-{{ assets.outputCss('blog-css') }}
-{{ assets.outputJs('blog-js') }}
+{{ assets.outputCss('main-css') }}
+{{ assets.outputJs('main-css') }}
+<script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql"></script>
 
 {{ partial('layouts/objdb') }}
 

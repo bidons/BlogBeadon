@@ -73,6 +73,8 @@ function getPagingViewObject (view_name)
                     data: function (d) {
                         d['columns'] = prepareCondition(d).columns;
 
+                        delete d.search;
+
                         if (d.order[0]) {
                             var col = columns[d.order[0].column].data;
                             d.order = [{'column': col, 'dir': d.order[0].dir}];
@@ -163,10 +165,10 @@ function getPagingViewObject (view_name)
 
                     if (item.is_filter) {
                         if (item.cd[0] == 'select2dynamic') {
-                            v = '<th><select multiple class="' + select2columnsSelector + '"  type="' + item.type + '" placeholder="' + item.title + '" name="input" data-column="' + item.data + '"></select></th>';
+                            v = '<th><select multiple class="' + select2columnsSelector + '"  type="' + item.type + '" name="input" data-column="' + item.data + '"></select></th>';
                         }
                         else if (item.type == 'timestamptz' || item.type == 'date') {
-                            v = '<th><input type="' + item.type + '" class="form-control input-sm" data-column="' + item.data + '" placeholder="' + item.title + '"></div></th>';
+                            v = '<th><input type="' + item.type + '" class="form-control input-sm" data-column="' + item.data + '"></div></th>';
                         }
                         else if (item.cd) {
                             var option = '';
@@ -180,7 +182,7 @@ function getPagingViewObject (view_name)
                                 '<select class="btn btn-default">' + option +
                                 '</select>' +
                                 '</div>' +
-                                '<input type="' + item.type + '" filter-cond="=" class="form-control input-sm" data-column="' + item.data + '" placeholder="' + item.title + '">' +
+                                '<input type="' + item.type + '" filter-cond="=" class="form-control input-sm" data-column="' + item.data + '">' +
                                 '</div></th>';
                         }
                     }
@@ -278,15 +280,19 @@ function getPagingViewObject (view_name)
             $(selectColStamp).daterangepicker({
                 startDate: moment().subtract(29, 'days'),
                 endDate: moment(),
-                locale: {format: 'YYYY.MM.DD'},
                 autoUpdateInput: false,
+                locale: {
+                    format: 'YYYY.MM.DD',
+                    applyLabel: "Применить",
+                    customRangeLabel: "Выбрать интервалы",
+                },
                 ranges: {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    'Сегодня': [moment(), moment().add(1, 'days')],
+                    'Вчера': [moment().subtract(1, 'days'), moment()],
+                    'За последние 7-емь дней': [moment().subtract(6, 'days'), moment().add(1, 'days')],
+                    'За последние 30-ать дней': [moment().subtract(29, 'days'), moment().add(1, 'days')],
+                    'Текущий месяц': [moment().startOf('month'), moment().endOf('month').add(1, 'days')],
+                    'Прошлый месяц': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month').add(1, 'days')]
                 }
             });
 
@@ -303,7 +309,6 @@ function getPagingViewObject (view_name)
 
         function prepareCondition(d) {
             conditionTable['columns'] = [];
-
             var columns = [];
 
             $(idTableSelector + ' [data-column],th input[type=timestamp],' + idTableSelector + ' th input[type=timestamptz],' + idTableSelector + ' th input[type=date]').each(function (data) {
@@ -448,7 +453,6 @@ function getPagingViewObject (view_name)
 $('#modalDynamicInfo').on("show.bs.modal", function(e) {
     var value = ($(e.relatedTarget).attr('id'));
     var info = wrapper.getJsonInfo();
-
 
     if(value) {
         switch (value) {

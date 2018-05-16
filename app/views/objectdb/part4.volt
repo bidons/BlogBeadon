@@ -1,5 +1,10 @@
-{{ assets.outputCss('blog-css') }}
-{{ assets.outputJs('blog-js') }}
+{{ assets.outputCss('blog-dt-css') }}
+{{ assets.outputJs('blog-dt-js') }}
+
+<script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql"></script>
+
+<script type="text/javascript" src="/plugins/highcharts/highstock.js"></script>
+<script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
 
 {{ partial('layouts/objdb') }}
 
@@ -14,7 +19,7 @@
                 </p>
                 <ol>
                     <li>
-                        При материализации можно не волноваться об MVCC, транзакционностью и блокировками
+                        При материализации можно не волноваться об MVCC при работе с таблицей, транзакционностью и блокировками
                     </li>
                     <li>
                         Материализация позволяет нам писать cложные запросы
@@ -36,56 +41,49 @@
         </li>
 
         <li>
-            Создадим обвёртку и материализуем её:
-            Сгенерим существительных  13-ать на 200000-тысч строк в интервале двух лет по дням, рандомно.
+            Создадим обвёртку, cгенерируем существительных 13-ать на 200000-тысч строк в интервале двух лет по дням рандомно.
                  <pre class="prettyprint lang-sql">
 CREATE VIEW vw_gen_materialize as
-WITH cte AS (
+WITH cte AS
+ (
     SELECT
-      generate_series(1, 200000)                                                                                    AS id,
-      md5(
-          (random()) :: TEXT)                                                                                       AS md5,
-      ('{Дятел, Братство, Духовность, Мебель,
-               Любовник, Аристократ, Ковер, Портос,
-               Трещина, Зубки, Бес, Лень, Благоговенье}' :: TEXT []) [(random() * (12) :: DOUBLE PRECISION)] AS series,
+      generate_series(1, 200000)                                                  AS id,
+      md5((random()) :: TEXT)                                                     AS md5,
+      ('{Дятел, Братство, Духовность, Мебель,Любовник, Аристократ, Ковер, Портос,
+               Трещина, Зубки, Бес, Лень, Благоговенье}' :: TEXT [])
+                     [(random() * (12) :: DOUBLE PRECISION)] AS series,
       date((((('now' :: TEXT) :: DATE - '2 years' :: INTERVAL) +
              (trunc((random() * (365) :: DOUBLE PRECISION)) * '1 day' :: INTERVAL)) +
             (trunc((random() * (1) :: DOUBLE PRECISION)) *
-             '1 year' :: INTERVAL)))                                                                                AS action_date
-)
-    SELECT
-      cte.id,
-      cte.md5,
-      cte.series,
-      cte.action_date
+             '1 year' :: INTERVAL)))                                              AS action_date
+ )
+    SELECT cte.id, cte.md5, cte.series, cte.action_date
     FROM cte
     ORDER BY cte.action_date;
         </pre>
         </li>
         <li>
-            Создадим материализованное представление, екземпляр идентичен самой обвёртки, но теперь он статичен и может
-            быть проиндексирован. Опция WITH NO DATA - таблица появится без данных,
-            есть определённая полезность в этом,рестор бекапа не будет выполнять инструкцию "REFRESH MATERIALIZED"
+            Создадим материализованное представление, екземпляр идентичен самой обвёртки, после материализации он статичен и может
+            быть проиндексирован. Опция WITH NO DATA - создание таблицы без данных,
+            есть определённая полезность в этом, рестор бекапа не будет выполнять инструкцию "REFRESH MATERIALIZED"
             <pre class="prettyprint lang-sql">
-                CREATE MATERIALIZED VIEW mv_gen_materialize AS
-                  (
+                CREATE MATERIALIZED VIEW mv_gen_materialize AS (
                     SELECT *
                     FROM vw_gen_materialize
                   ) WITH NO DATA;
-
                 REFRESH MATERIALIZED VIEW mv_gen_materialize;
 
                 CREATE EXTENSION if NOT EXISTS pg_trgm;
 
-                CREATE INDEX mv_gen_materialize_series_trg_idx          ON mv_gen_materialize USING GIN (series gin_trgm_ops);
+                CREATE INDEX mv_gen_materialize_series_trg_idx         ON mv_gen_materialize USING GIN (series gin_trgm_ops);
                 CREATE INDEX mv_gen_materialize_series_action_date_idx ON mv_gen_materialize USING BTREE (action_date);
             </pre>
         </li>
         <li>
-            Поскольку множество статично и его преагрегированное состояние не изменно на момент времени перестроения,
+            Поскольку множество статично и его преагрегированное состояние не изменно после перестроения,
             мы можем процедурно вызывать различные запросы для получения данных для визулизаций, CSV, JSON и тд.
-            К примеру заюзав библиотечку -" <a class="wrapper-blog" href="https://www.highcharts.com/" title="">HighCharts</a>",
-            и заранее подготовив данные можно получить готовую визуализацию.
+            К примеру использовав библиотеку - "<a class="wrapper-blog" href="https://www.highcharts.com/" title="">https://www.highcharts.com/</a>",
+            можно получить готовую визуализацию.
             <pre class="prettyprint lang-sql">
                 REFRESH MATERIALIZED VIEW mv_gen_materialize;
 
@@ -116,13 +114,20 @@ WITH cte AS (
                         WHERE series IS NOT NULL
                         GROUP BY series
                     )
-                    SELECT json_build_array((SELECT json_build_object('title', 'Генерация (сток)', 'type', 'stock', 'chart',
-                                                                      json_agg(
-                                                                          json_build_object('type', 'area', 'name', series, 'data', rs)))
-                                             FROM get_data),
-                                            json_build_object('title', 'Генерация (пирог)', 'type', 'pie', 'chart',
-                                                              (SELECT json_agg(get_pie_data)
-                                                               FROM get_pie_data))
+                    SELECT json_build_array((
+                             SELECT json_build_object(
+                                'title', 'Генерация (сток)',
+                                'type', 'stock',
+                                'chart', json_agg(json_build_object(
+                                            'type', 'area',
+                                            'name', series,
+                                            'data', rs)))
+                             FROM get_data),
+                                            json_build_object(
+                                        'title', 'Генерация (пирог)',
+                                        'type', 'pie',
+                                        'chart',(SELECT json_agg(get_pie_data)
+                                                 FROM get_pie_data))
                     );
 
                             ---Output
@@ -240,15 +245,11 @@ WITH cte AS (
 
         var v =   Highcharts.chart(selector, {
             chart: {
-                backgroundColor: 'transparent',
                 plotShadow: false,
                 type: 'pie'
             },
             title: {
                 text: ''
-            },
-            credits: {
-                enabled: false
             },
             subtitle: {
                 text: data.title
@@ -313,7 +314,6 @@ WITH cte AS (
         wrapper = $('.data-tbl').DataTableWrapperExt(parmsTableWrapper);
 
         renderCharts('vw_gen_materialize');
-
     }
 
     function renderStockChart(d,selector) {
@@ -321,19 +321,12 @@ WITH cte AS (
                 title: {
                     text: d.title
                 },
-                chart: {
-                    backgroundColor: 'transparent',
-                },
-                credits: {
-                    enabled: false
-                },
                 subtitle: {
                     text: ''
                 },
                 rangeSelector: {
                     selected: 0
                 },
-
                 yAxis: {
                     labels: {
                         formatter: function () {
@@ -346,7 +339,6 @@ WITH cte AS (
                         color: 'silver'
                     }]
                 },
-
                 plotOptions: {
                     series: {
                         compare: 'percent',

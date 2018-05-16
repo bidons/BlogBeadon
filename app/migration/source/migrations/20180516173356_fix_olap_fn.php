@@ -2,7 +2,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class ClientDimensionAct extends AbstractMigration
+class FixOlapFn extends AbstractMigration
 {
     /**
      * Change Method.
@@ -28,32 +28,14 @@ class ClientDimensionAct extends AbstractMigration
     public function change()
     {
 $query =<<<'EOD'
-alter table client_dimension alter COLUMN create_time set data TYPE date;
-alter table client_dimension RENAME COLUMN location_natural_world_woe_id to location_id;
-
-insert into client_dimension(create_time, value, client_id, value_id, type_id, location_id,event_2,event_3,event_1)
-select create_time,value,client_id +193170, value_id,type_id,location_id,event_1,event_2,event_3
-from client_dimension
-where create_time < '2017-01-31';
-
-insert into client_dimension(create_time, value, client_id, value_id, type_id, location_id,event_2,event_3,event_1)
-select create_time,value,client_id +193171, value_id,type_id,location_id,event_1,event_2,event_3
-from client_dimension
-where create_time < '2017-01-31';
-
-insert into client_dimension(create_time, value, client_id, value_id, type_id, location_id,event_2,event_3,event_1)
-select create_time,value,client_id +193172, value_id,type_id,location_id,event_1,event_2,event_3
-from client_dimension
-where create_time > '2017-01-21' and create_time < '2017-01-31';
-
 CREATE OR REPLACE FUNCTION public.get_pie_chart_olap(a_agg JSON)
   RETURNS TEXT
 AS
 $BODY$
 DECLARE
-  val_timestart            TIMESTAMP = clock_timestamp();
-  val_value_arr TEXT = (SELECT '(' || string_agg(quote_literal(replace(r :: TEXT, '"', '')), ',') || ')'
-                        FROM jsonb_array_elements(a_agg :: JSONB -> 'value') AS r);
+  val_timestart TIMESTAMP = clock_timestamp();
+  val_value_arr TEXT      = (SELECT '(' || string_agg(quote_literal(replace(r :: TEXT, '"', '')), ',') || ')'
+                             FROM jsonb_array_elements(a_agg :: JSONB -> 'value') AS r);
 
   val_class     TEXT = a_agg ->> 'type_id';
   val_fin       TEXT = (a_agg ->> 'agg');
@@ -96,7 +78,8 @@ WITH cte AS
   EXECUTE val_query
   INTO val_result;
 
-  RETURN json_build_object('data', val_result, 'query', val_query);
+  RETURN json_build_object('data', val_result, 'query', val_query,'time',round(
+      (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4));
 END
 $BODY$
 LANGUAGE plpgsql IMMUTABLE;
@@ -106,6 +89,7 @@ IMMUTABLE
 LANGUAGE plpgsql
 AS $$
 DECLARE
+  val_timestart TIMESTAMP = clock_timestamp();
   val_value_arr TEXT  = (SELECT '(' || string_agg(quote_literal(replace(r::text,'"','')),',') ||')'
                          FROM jsonb_array_elements(a_agg::jsonb -> 'value') AS r);
 
@@ -164,8 +148,8 @@ BEGIN
   )
     SELECT json_build_object(
                     ''data'',jsonb_agg(r),
-                    ''values'',(SELECT array[''id''] 
-                     ||  value 
+                    ''values'',(SELECT array[''id'']
+                     ||  value
                      || array[''total'',''values'']
     FROM get_max_values ORDER BY value))
     from get_data');
@@ -173,7 +157,8 @@ BEGIN
   EXECUTE  val_query
   INTO val_result;
 
-  RETURN val_result || jsonb_build_object('query',val_query);
+  RETURN val_result || jsonb_build_object('query',val_query,'time',round(
+      (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4));
 END
 $$;
 
@@ -183,6 +168,7 @@ IMMUTABLE
 LANGUAGE plpgsql
 AS $$
 DECLARE
+  val_timestart TIMESTAMP = clock_timestamp();
   val_value_arr TEXT = (SELECT '(' || string_agg(quote_literal(replace(r :: TEXT, '"', '')), ',') || ')'
                         FROM jsonb_array_elements(a_agg :: JSONB -> 'value') AS r);
 
@@ -239,10 +225,18 @@ BEGIN
   EXECUTE val_query
   INTO val_result;
 
-  RETURN val_result || jsonb_build_object('query',val_query);
+  RETURN val_result || jsonb_build_object('query',val_query,'time',round(
+      (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_timestart)) :: NUMERIC, 4));
 END
 $$;
 
+update client_dimension
+    set value = 'Два или более (высших)'
+where value ='Две или больше высших';
+
+update client_dimension_guide
+set value ='Два или более (высших)'
+where value = 'Две или больше высших';
 EOD;
 $this->execute($query);
 }

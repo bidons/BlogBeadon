@@ -1,5 +1,8 @@
-{{ assets.outputCss('blog-css') }}
-{{ assets.outputJs('blog-js') }}
+{{ assets.outputCss('blog-dt-css') }}
+<link rel="stylesheet" type="text/css" href="/plugins/vakata/dist/themes/default/style.min.css">
+{{ assets.outputJs('blog-dt-js') }}
+
+<script type="text/javascript" src="/plugins/vakata/dist/jstree.min.js"></script>
 
 {{ partial('layouts/objdb') }}
     <div class="container">
@@ -20,7 +23,7 @@
             <br>
             <p>
                     В качестве примера я накидал лабораторию, слегка переопределив <a class="wrapper-blog" href="https://datatables.net/" title="https://datatables.net/">DataTable</a> для работы с конструктором, и заранее создал дерево проекта.
-                В качестве реляционных примеров будем использовать:
+                    В качестве реляционных примеров будем использовать:
                         -" <a class="wrapper-blog" href="http://www.solarix.ru/sql-dictionary-sdk.shtml" title="Лексику и морфологию Русского языка">Лексику и морфологию Русского языка</a>"
             </p>
              </ul>
@@ -54,23 +57,6 @@
     </div>
 </div>
 <hr>
-    <div class="modal fade" id="modalDynamicInfo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"> </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
     <script>
     var wrapper;
@@ -148,6 +134,8 @@
             wrapper = $('.data-tbl').DataTableWrapperExt(parmsTableWrapper);
         }
     });
+
+
 
     $('#modalDynamicInfo').on("show.bs.modal", function(e) {
         var value = ($(e.relatedTarget).attr('id'));

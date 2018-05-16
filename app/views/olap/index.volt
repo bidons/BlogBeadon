@@ -1,56 +1,64 @@
-{{ assets.outputCss('blog-css') }}
-{{ assets.outputJs('blog-js') }}
+{{ assets.outputCss('main-css') }}
+<link rel="stylesheet" type="text/css" href="/plugins/select2/select2.css">
+<link rel="stylesheet" type="text/css" href="/plugins/select2/select2-bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/plugins/daterangepicker/daterangepicker-bs3.css">
+
+{{ assets.outputJs('main-js') }}
+<script type="text/javascript" src="/plugins/select2/select2.min.js"></script>
+<script type="text/javascript" src="/plugins/daterangepicker/moment.js"></script>
+<script type="text/javascript" src="/plugins/daterangepicker/daterangepicker.js"></script>
+<script type="text/javascript" src="/plugins/highcharts/highstock.js"></script>
+<script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
+<script src="/plugins/proj4/dist/proj4.js"></script>
+<script type="text/javascript" src="/plugins/highcharts/modules/map.js"></script>
 <script src="//code.highcharts.com/mapdata/countries/ua/ua-all.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql"></script>
 
+{{ partial('layouts/olapl') }}
 
-<h2 class="center-wrap">
-    <h2 class="center-wrap">OLAP</h2>
-</h2>
-<div class="container">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="text-center">
-                <img class="rounded-circle" src="/main/img/cube.jpeg" width="300" height="300">
-            </div>
-        </div>
-        <div class="entry-content"></div>
-        {{ partial('layouts/olapl') }}
-    </div>
-</div>
-<hr>
 <div class="container">
     <div class="center-wrap">
-        <h5>ОLAP</h5>
-        <div id='select-parallel'></div>
+        <div style="margin-bottom:16px">
+            <div class="table-info" style="margin-bottom:16px"></div></div>
     </div>
-    <div class ="row center-wrap">
-    <button class="btn btn-light" id="refresh-charts">Обновить</button>
-     <input class="form-control input-sm active" style="width:250"  type="text" data-filter-cond="interval" placeholder="Time...">
-        <select name="type" id="section-agg" style="width:250" class="form-control">
-            <option value = "total">Событие №1  </option>
-            <option value = "event_1">Событие №2</option>
-            <option value = "event_2">Событие №3</option>
-            <option value = "event_3">Событие №4</option>
-        </select>
+    <div class="row">
+        <button type="button" style ="width: 250px" class="btn btn-light" id="refresh-charts">Обновить</button>
+        <div class="col-sm">
+            <div class="btn-group text-center">
+                <input type="text" class="form-control input-sm active"   type="text" data-filter-cond="interval" placeholder="Time...">
+                <select class="form-control" id="section-agg">
+                    <option value="total">Событие №1</option>
+                    <option value="event_1">Событие №2</option>
+                    <option value="event_2">Событие №3</option>
+                    <option value="event_3">Событие №4</option>
+                </select>
 
-        <select name="type" id="section-type" style="width:250" class="form-control">
-            <option value="8">Образование</option>
-            <option value="4">Занятость (тип)</option>
-            <option value="1">Занятость (состояние)</option>
-            <option value="6">Занятость (сотрудники)</option>
-            <option value="5">Образование (детализация)</option>
-            <option value="7">Имущество</option>
-            <option value="10">Cемейное положение</option>
-            <option value="11">Пол</option>
-            <option value="2">Тел. операторы</option>
-            <option value="9">Регионы</option>
-        </select>
+                <select id="section-type" class="form-control">
+                    <option value="8">Образование</option>
+                    <option value="4">Занятость (тип)</option>
+                    <option value="1">Занятость (состояние)</option>
+                    <option value="6">Занятость (сотрудники)</option>
+                    <option value="5">Образование (детализация)</option>
+                    <option value="7">Имущество</option>
+                    <option value="10">Cемейное положение</option>
+                    <option value="11">Пол</option>
+                    <option value="2">Тел. операторы</option>
+                    <option value="9">Регионы</option>
+                </select>
+            </div>
+        </div>
     </div>
 </div>
+
+
+
+<div class="container center-wrap">
+    <select name="type" id="section-value" class="form-control"> </select>
+</div>
 <div class="container-fluid">
-    <div class="row">
-    <select name="type" id="section-value" style="100%" class="form-control"> </select>
-    </div>
+    <br>
+    <br>
+    <br>
     <br>
     <div class="col-12">
         <div id="pie-chart" style="min-width: 600px; height: 750px; max-width: 1500px; margin: 0 auto"></div>
@@ -67,22 +75,37 @@
         <div class="col" id="query-line"></div>
         <div class="col" id="query-geo"></div>
     </div>
-
 </div>
-
-
 <br>
 
 <script>
+
+    /*data = objectInfo.dtObj.o.debug[0].time;
+    ttlf = objectInfo.dtObj.o.debug[2].time;
+    ttl = objectInfo.dtObj.o.debug[1].time;
+
+    $('.table-info').empty();
+    if (data) {
+        $('.table-info').append('<span class="badge badge-secondary" id="datatable-data" data-toggle="modal"  data-target="#modalDynamicInfo">Лимит:' + objectInfo.dtObj.o.debug[0].time + '</span>');
+    }
+
+    if (ttlf) {
+        $('.table-info').append('<span class="badge badge-secondary" id="datatable-f-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего:' + objectInfo.dtObj.o.debug[2].time + '</span>');
+    }
+
+    if (ttl) {
+        $('.table-info').append('<span class="badge badge-secondary" id="datatable-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего с услв.:' + objectInfo.dtObj.o.debug[1].time + '</span>');
+    }*/
+
     $(document).ready(function () {
-        var today = moment().add(1, 'days').format('YYYY.MM.DD');
+        var today = moment().add(1,'days').format('YYYY.MM.DD');
 
         $('[data-filter-cond=interval]').daterangepicker({
             startDate: moment().subtract(29, 'days'),
             endDate: moment(),
             defaultDate: [moment().format('YYYY.MM.DD'), today],
             locale: {
-                format: 'YYYY.MM.DD',
+                format: "YYYY.MM.DD",
                 applyLabel: "Применить",
                 customRangeLabel: "Выбрать интервалы",
             },
@@ -108,10 +131,12 @@
             renderData();
         });
 
-        $("#section-agg").select2().on("select2:select", function (e) {
+        $("#section-agg").select2({ theme: 'bootstrap4'}
+        ).on("select2:select", function (e) {
             renderData();
         });
-        $("#section-type").select2().on("select2:select", function (e) {
+        $("#section-type").select2({ theme: 'bootstrap4'}
+        ).on("select2:select", function (e) {
             getSectionValue();
         });
 
@@ -125,6 +150,7 @@
             }).done(function (data) {
                 $('#section-value').select2({
                     data: JSON.parse(data),
+                    theme: 'bootstrap4',
                     multiple: "multiple",
                     dropdownAutoWidth: true
                 });
@@ -137,6 +163,7 @@
         };
 
         function renderData() {
+            $('.table-info').empty();
             $('#line-chart').empty();
             $('#geo-chart').empty();
             $('#pie-chart').empty();
@@ -149,6 +176,7 @@
             renderPiePercent();
         }
 
+        var queryArr = [];
         function renderPiePercent() {
             $.ajax({
                 type: "GET",
@@ -161,8 +189,8 @@
                 }
             }).done(function (data) {
 
-                $('#query-pie').append('<pre class="prettyprint lang-sql">' + data.query +'</pre>');
-
+                $('.table-info').append('<span class="badge badge-secondary" id="pie-info" data-toggle="modal"  data-target="#modalDynamicInfo">Пирог:' + data.time + '</span>');
+                queryArr.push(data.query);
                 var total = 0, percentage, convertArray = [];
 
                 $.each(data.data, function () {
@@ -228,7 +256,10 @@
                     }
                 }).done(function (data) {
 
-                    $('#query-geo').append('<pre class="prettyprint lang-sql">' + data.query +'</pre>');
+                    $('.table-info').append('<span class="badge badge-secondary" id="geo-info" data-toggle="modal"  data-target="#modalDynamicInfo">Гео:' + data.time + '</span>');
+                    queryArr.push(data.query);
+
+                    /*$('#query-geo').append('<pre class="prettyprint lang-sql">' + data.query +'</pre>');*/
 
                     Highcharts.seriesType('mappie', 'pie', {
                             center: null,
@@ -242,7 +273,8 @@
                             },
                             dataLabels: {
                                 enabled: false
-                            }
+                            },
+
                         },
                         {
                             getCenter: function () {
@@ -337,9 +369,8 @@
                         mapNavigation: {
                             enabled: false
                         },
-                        credits: {
-                            enabled: false
-                        },
+                        allowPointSelect: false,
+
                         yAxis: {
                             minRange: 2300
                         },
@@ -491,7 +522,10 @@
                     'agg': $('#section-agg').val()
                 }
             }).done(function (data) {
-                $('#query-line').append('<pre class="prettyprint lang-sql">' + data.query +'</pre>');
+
+                $('.table-info').append('<span class="badge badge-secondary" id="line-info" data-toggle="modal"  data-target="#modalDynamicInfo">Line:' + data.time + '</span>');
+                queryArr.push(data.query);
+
                 itt = 0;
                 $.each(data.data, function (index, value) {
                     data.data[itt]['color'] = Highcharts.getOptions().colors[itt];
@@ -543,6 +577,26 @@
                 });
             })
         };
+
+        $('#modalDynamicInfo').on("show.bs.modal", function(e) {
+            var value = ($(e.relatedTarget).attr('id'));
+            if(value) {
+                switch (value) {
+                    case 'pie-info':
+                        object = queryArr[0];
+                        break;
+                    case 'geo-info':
+                        object = queryArr[1];
+                        break;
+                    case 'line-info':
+                        object = queryArr[2];
+                        break;
+                    default:
+                }
+
+                $(this).find(".modal-body").html('<pre class="prettyprint lang-sql">'+object+'</pre>');
+            }
+        });
 
     });
 </script>
