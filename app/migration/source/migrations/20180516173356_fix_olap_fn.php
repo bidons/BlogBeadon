@@ -237,6 +237,49 @@ where value ='Две или больше высших';
 update client_dimension_guide
 set value ='Два или более (высших)'
 where value = 'Две или больше высших';
+
+/*drop table if exists cte;
+create table cte as
+  (
+    SELECT
+      create_time,
+      value_id,
+      COUNT(*)                         AS s
+    FROM client_dimension
+    WHERE value_id IN ('6', '4', '-1', '5', '3', '7', '2', '1')
+          AND type_id = 8
+          AND create_time >= '2016-05-01'
+          AND create_time < '2017-04-01'
+    GROUP BY create_time::date, value_id
+    ORDER BY create_time::date, value_id
+  );
+
+    SELECT
+      create_time,
+      value_id,
+      COUNT(*)                         AS s
+    FROM client_dimension
+    WHERE value_id IN ('6', '4', '-1', '5', '3', '7', '2', '1')
+          AND type_id = 8
+          AND create_time >= '2016-05-01'
+          AND create_time < '2017-04-01'
+    GROUP BY create_time::date, value_id
+    ORDER BY create_time::date, value_id
+
+
+SELECT *
+FROM crosstab('select create_time,value_id,s from cte  order by 1',
+              'select unnest(array[6, 4, -1, 5, 3, 7, 2, 1]) as m from cte')
+  AS final_result(create_time date,
+                  "a" INTEGER,
+                  "b" INTEGER,
+                  "3" INTEGER,
+                  "4" INTEGER,
+                  "5" INTEGER,
+                  "6" INTEGER,
+                  "7" INTEGER,
+                  "8" INTEGER);*/
+
 EOD;
 $this->execute($query);
 }

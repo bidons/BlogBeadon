@@ -80,23 +80,6 @@
 
 <script>
 
-    /*data = objectInfo.dtObj.o.debug[0].time;
-    ttlf = objectInfo.dtObj.o.debug[2].time;
-    ttl = objectInfo.dtObj.o.debug[1].time;
-
-    $('.table-info').empty();
-    if (data) {
-        $('.table-info').append('<span class="badge badge-secondary" id="datatable-data" data-toggle="modal"  data-target="#modalDynamicInfo">Лимит:' + objectInfo.dtObj.o.debug[0].time + '</span>');
-    }
-
-    if (ttlf) {
-        $('.table-info').append('<span class="badge badge-secondary" id="datatable-f-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего:' + objectInfo.dtObj.o.debug[2].time + '</span>');
-    }
-
-    if (ttl) {
-        $('.table-info').append('<span class="badge badge-secondary" id="datatable-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего с услв.:' + objectInfo.dtObj.o.debug[1].time + '</span>');
-    }*/
-
     $(document).ready(function () {
         var today = moment().add(1,'days').format('YYYY.MM.DD');
 
@@ -207,9 +190,6 @@
                     title: {
                         text: $('#section-agg').select2('data')[0].text
                     },
-                    credits: {
-                        enabled: false
-                    },
                     subtitle: {
                         text: 'Общее количество: ' + total
                     },
@@ -230,7 +210,7 @@
                                 connectorColor: 'silver'
 
                             },
-                            showInLegend: false
+                            showInLegend: true
                         }
                     },
                     series: [{
@@ -307,7 +287,6 @@
                         });
 
                     var keysdata = data.values;
-
 
                     var data = data.data;
 
