@@ -169,13 +169,13 @@
          "is_orderable": true,                         -- доступно поле для сортировки
          "condition":["=", "!=", "<", ">", "<=", ">="] -- логические операторы для построения условия
          "paging_table_id": 100022 ,                   -- принадлежность в вьюхе
-         "paging_column_type_id": 9                    -- тип колонки (явное приведение к типу чтоб не получить SQL иньекцию) при пострении условия
+         "paging_column_type_id": 9                    -- тип колонки
      }....
 ]
                         </pre>
                 </li>
                 <li>
-                    paging_column_type - сдесь у нас тип колонок (доступные тип для построени условия на стороне бд)
+                    paging_column_type - типы колонок и доступные предикаты (доступные тип для построени условия на стороне бд)
                     <pre class="prettyprint lang-json">
 [
     {
@@ -297,7 +297,7 @@ $$;
 
         </pre>
 
-        Функция доступа к объектам расчёта:
+        Функция доступа, создание запроса, на выходе ответ в JSON-оно подобно виде:
         <pre class="prettyprint lang-sql">
 CREATE OR REPLACE FUNCTION paging_objectdb(a_js JSONB)
   RETURNS SETOF JSONB
@@ -512,7 +512,7 @@ $$;
     </li>
 
     <li>
-        Ф-н и триггер для материлизации полей insert or update paging_column, пихаем в таблицу (paging_table)
+        Ф-н и триггер для материлизации полей insert or update paging_column, создание полей в слабоструктурированно виде JSON,TEXT в таблицу (paging_table)
         <pre class="prettyprint lang-sql">
 
 CREATE OR REPLACE FUNCTION materialize_paging_column(INTEGER)
@@ -523,7 +523,7 @@ AS $$
 UPDATE paging_table
 SET m_prop_column_full = full_data, -- свойства полей (с условиям)
   m_prop_column_small  = small_data, -- свойства полей (без условий)
-  m_column             = cols -- поля для конкатеннации запроса (paging_table_obj
+  m_column             = cols -- поля для конкатеннации запроса поля для "select" (paging_table)
 FROM (SELECT
         jsonb_build_object('columns',
                            jsonb_agg(jsonb_build_object(
@@ -579,13 +579,13 @@ LANGUAGE plpgsql
 AS $$
 DECLARE
 
-  -- Количество
+  -- Количество строк после материализации
   val_m_count         INTEGER;
 
-  -- Время когда производилась материализация выполнения
+  -- Время когда производилась материализация
   val_m_time          TIMESTAMPTZ;
 
-  -- Время материализации
+  -- Время потраченое в мин.(0.0000) материализации
   val_exec_time       NUMERIC;
 
   -- Посчитаное количество
@@ -603,7 +603,7 @@ DECLARE
   -- Ссылка на айдиху сущности
   val_paging_table_id INTEGER;
 
-  -- Являится ли обвёртка материализованой
+  -- Является ли обвёртка материализованной
   val_is_mat          BOOLEAN;
 
   -- Айдиха текущего перестроения
@@ -619,7 +619,7 @@ BEGIN
   WHERE name = a_object
   INTO val_paging_table_id, val_is_mat, val_chart_query;
 
-  -- Генерируем ошибку если не определена обвёртка или не является материализованной
+  -- Генерируем ошибку если обвёртка не является материализованной
   PERFORM message_ex(val_is_mat IS FALSE or val_id_mat_history is null, 'Materialize view not found: "' || a_object || '"', -1);
 
   -- Режим перестроения
@@ -635,7 +635,7 @@ BEGIN
     -- Обновляем представление
     EXECUTE 'REFRESH MATERIALIZED VIEW  ' || replace(a_object, 'vw_', 'mv_');
 
-    -- Если есть запрос выполняем
+    -- Если есть запрос выполняем в поле выполняем (только для JSON результата)
     IF (val_chart_query IS NOT NULL)
     THEN
       EXECUTE val_chart_query
@@ -685,7 +685,7 @@ $$;
 
         </pre>
     </li>
-    <li> Функция материализации
+    <li> Функция для поиска при работе с (select2, полнотекстовый поиск или нет)
     <pre class="prettyprint lang-sql">
 CREATE FUNCTION paging_object_db_srch(JSON)
   RETURNS JSON
@@ -693,36 +693,58 @@ IMMUTABLE
 LANGUAGE plpgsql
 AS $$
 DECLARE
+  -- условие предиката
   srch           TEXT = $1 ->> 'term';
+  -- конструктор вьюха
   objdb          TEXT = $1 ->> 'objdb';
-  col            TEXT = $1 ->> 'col';
 
+  -- поле поиска
+  col            TEXT = $1 ->> 'col';
+  -- тип поля
   col_type       TEXT = $1 ->> 'type';
+
+  -- результат
   rs             JSON;
+
+  -- привожу условие поиска к нижнему регистру
   searchingField TEXT = ' lower(' || col || ')';
 
+  -- запрос для выполнения
   val_query      TEXT;
+
+  -- время выполнения
   val_time_exec  TIMESTAMP = clock_timestamp();
 BEGIN
-  IF (col_type ~ 'text|varchar')
+
+  -- проверяю существует ли объект для поиска
+  IF exists(SELECT TRUE
+            FROM paging_table
+            WHERE name = objdb)
   THEN
-    val_query = concat('select json_agg(', col, ')'
-    , ' from (select ', col, ' from ', objdb, ' where ', searchingField,
-                       'like ', quote_literal('%' || lower(srch) || '%'), ' limit 10) as r;');
-
-    EXECUTE val_query
-    INTO rs;
-
-  ELSEIF (col_type ~ 'int|numeric|decimal|float' AND str2integer(srch) IS NOT NULL)
+     -- создание условия для текстовых типов
+    IF (col_type ~ 'text|char')
     THEN
-
       val_query = concat('select json_agg(', col, ')'
-      , ' from (select ', col, ' from ', objdb, ' where ', col, '=', srch, ' limit 10) as r;');
+      , ' from (select ', col, ' from ', objdb, ' where ', searchingField,
+                         'like ', quote_literal('%' || lower(srch) || '%'), ' limit 10) as r;');
 
       EXECUTE val_query
       INTO rs;
+
+
+    -- создание условие для числовых типов
+    ELSEIF (col_type ~ 'int|numeric|decimal|float' AND str2integer(srch) IS NOT NULL)
+      THEN
+
+        val_query = concat('select json_agg(', col, ')'
+        , ' from (select ', col, ' from ', objdb, ' where ', col, '=', srch, ' limit 10) as r;');
+
+        EXECUTE val_query
+        INTO rs;
+    END IF;
   END IF;
 
+        -- результат
   RETURN json_build_object('rs', rs, 'query', val_query, 'time', round(
       (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_time_exec)) :: NUMERIC, 4));
 END;
@@ -743,7 +765,7 @@ DECLARE
                                  WHERE name = a_vw_view);
 BEGIN
 
-  -- Будем использовать временную таблицу
+  -- использовуем временную таблицу (операция для построения не сложная задача, можно обойтись temp)
   DROP TABLE IF EXISTS temp_paging_col_prop;
 
   -- Запихиваем по условию объекты во временную область (просто таблицы либо обврётки)
@@ -776,7 +798,7 @@ BEGIN
       WHERE pv.schemaname = 'public' AND pv.tablename = a_vw_view
     );
 
-  -- Удалаяем объект "paging_table" если таков существует в пространстве имён
+  -- Удалаяем объект "paging_table" если таков существует в таблице , но его нет в paging_table
   DELETE FROM paging_table
   WHERE id = val_object_table_id
         AND NOT exists(SELECT 1
@@ -835,75 +857,6 @@ BEGIN
                                      FROM paging_table
                                      WHERE name = a_vw_view));
   RETURN '';
-END;
-$$;
-        </pre>
-    </li>
-
-
-    <li> Функция для полнотесктого поиска (SELECT2)
-        <pre class="prettyprint lang-sql">
-CREATE OR REPLACE FUNCTION paging_object_db_srch(JSON)
-  RETURNS JSON
-IMMUTABLE
-LANGUAGE plpgsql
-AS $$
-DECLARE
-  -- Условие поиска (select2)
-  srch           TEXT = $1 ->> 'term';
-  -- Имя обвёртки
-  objdb          TEXT = $1 ->> 'objdb';
-
-  -- Поле к которому обращаемся
-  col            TEXT = $1 ->> 'col';
-
-  -- Тип поля (нужно для проверки типа чтоб избежать SQL иньекцию)
-  col_type       TEXT = $1 ->> 'type';
-
-  -- Результат
-  rs             JSON;
-
-  -- Привожу к нижнему регистру поле поиска
-  searchingField TEXT = ' lower(' || col || ')';
-
-  -- Запрос
-  val_query      TEXT;
-
-  -- Фиксирую метку времени для дебага
-  val_time_exec  TIMESTAMP = clock_timestamp();
-BEGIN
-
-
-  -- На всякий проверяю есть ли такой объект
-  IF exists(SELECT TRUE
-            FROM paging_table
-            WHERE name = objdb)
-  THEN
-
-    -- Если текст то использую нинжний регистр как в условии поиска так и сам поиск
-    IF (col_type ~ 'text|varchar|char')
-    THEN
-      val_query = concat('SELECT json_agg(', col, ')'
-      , ' FROM (SELECT ', col, ' FROM ', objdb, ' where ', searchingField,
-                         'LIKE ', quote_literal('%' || lower(srch) || '%'), ' LIMIT 10) AS r;');
-
-      EXECUTE val_query
-      INTO rs;
-
-    -- Тип поля (нужно для проверки типа чтоб избежать SQL иньекцию и подмену условия)
-    ELSEIF (col_type ~ 'int|numeric|decimal|float' AND str2integer(srch) IS NOT NULL)
-      THEN
-
-        val_query = concat('SELECT json_agg(', col, ')'
-        , ' FROM (SELECT ', col, ' FROM ', objdb, ' WHERE ', col, '=', srch, ' LIMIT 10) AS r;');
-
-        EXECUTE val_query
-        INTO rs;
-    END IF;
-  END IF;
-
-  RETURN json_build_object('rs', rs, 'query', val_query, 'time', round(
-      (EXTRACT(SECOND FROM clock_timestamp()) - EXTRACT(SECOND FROM val_time_exec)) :: NUMERIC, 4));
 END;
 $$;
         </pre>

@@ -18,13 +18,14 @@
             <br>
                  <li>
                       Cмысл заключает вот в чём: - "Если обвернуть запрос во "View" и обращаться к запросу как к обычной таблице, то мы можем получить очень неплохие вкусняхи,
-                            к примеру можно использовать расширения, и по полной метер использовать возможности PostgreSql ltree,dblink,postgres_fdw,file_fdw,Windows function, join lateral, pivot extension etc";.
+                            к примеру можно использовать расширения, и по полной метер использовать возможности PostgreSql ltree,dblink,postgres_fdw,file_fdw,Windows function, join lateral, pivot extension etc".
                  </li>
             <br>
             <p>
-                    В качестве примера я накидал лабораторию, слегка переопределив <a class="wrapper-blog" href="https://datatables.net/" title="https://datatables.net/">DataTable</a> для работы с конструктором, и заранее создал дерево проекта.
+                    В качестве примера будем исползовать лабораторию, слегка переопределив, временные метки выполнения на каждом из этапов
+                формирования запроса буду доступны по клику в модальном окне. Для работы с конструктором, использовать будем <a class="wrapper-blog" href="https://datatables.net/" title="https://datatables.net/">https://datatables.net/</a>.
                     В качестве реляционных примеров будем использовать:
-                        -" <a class="wrapper-blog" href="http://www.solarix.ru/sql-dictionary-sdk.shtml" title="Лексику и морфологию Русского языка">Лексику и морфологию Русского языка</a>"
+                        -<a class="wrapper-blog" href="http://www.solarix.ru/sql-dictionary-sdk.shtml" title="Лексику и морфологию Русского языка">Лексику и морфологию Русского языка</a>
             </p>
              </ul>
         </span>

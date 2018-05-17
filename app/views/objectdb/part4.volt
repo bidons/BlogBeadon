@@ -211,7 +211,6 @@ WITH cte AS
         $.ajax({
             url: "/objectdb/viewchart/" + view_name,
         }).done(function (response) {
-            console.log(response);
             response = JSON.parse(response);
             renderStockChart(response[0],'stock-chart');
             renderPiePercent(response[1],'pie-chart-2');

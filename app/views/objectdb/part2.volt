@@ -10,9 +10,13 @@
         <li>
             <p>Для начала нужно понять как планировщик выполнения запросов PostgreSQL в зависимости от конструкции
                 формирует план запроса и выдаёт результат. Уточню, что это общие принципы будь-то обвёртки либо просто запросы.
+                Хотя эта статья по работе с планироващиком штука не очень простая и заслуживает более детального описания ,
+                пройдёмся по основным механизмам.
             </p>
 
             <p> Есть таблица client и связана с client_phone, создадим обвёртку
+                (не имеет значения это обвёртка или просто запрос с условием) оптимизатор воспринимает
+                само тело ф-н , доступ к изменениям недоступен, только "VIEW"
                 <pre class="prettyprint lang-sql">
                     CREATE VIEW vw_client AS
                         (
@@ -23,13 +27,14 @@
                 </pre>
             </p>
 
-        <li>Выполнем с лимитированным количеством, индекс был использован ровно столько строк сколько и лимитом
+        <li>Выполняем запрос с лимитированным количеством
            <pre class="prettyprint lang-sql">
                  EXPLAIN ANALYSE
                             SELECT *
                             FROM vw_client LIMIT 10;
            </pre>
 <table border="1" style="border-collapse:collapse">
+    <pre>-- индекс был использован ровно столько, сколько строк с лимитом</pre>
 <tr><th>QUERY PLAN</th></tr>
 <tr><td>Limit  (cost=0.42..6.33 rows=10 width=391) (actual time=0.016..0.055 rows=10 loops=1)</td></tr>
 <tr><td>  -&gt;  Nested Loop Left Join  (cost=0.42..102433.00 rows=173450 width=391) (actual time=0.015..0.051 rows=10 loops=1)</td></tr>
@@ -40,7 +45,7 @@
 <tr><td>Execution time: 0.092 ms</td></tr>
 </table>
 
-            <li>Получаем количеством строк, таблица с джойном была проигнорирована
+            <li>Получаем количеством строк
               <pre class="prettyprint lang-sql">
                  EXPLAIN ANALYSE
                             SELECT count(*)
@@ -48,6 +53,7 @@
            </pre>
         </li>
             <table border="1" style="border-collapse:collapse">
+                <pre> Таблица с джойном была проигнорирована, поскольку само связывание не обязательное</pre>
                 <tr><th>QUERY PLAN</th></tr>
                 <tr><td>Aggregate  (cost=6970.12..6970.14 rows=1 width=8) (actual time=78.669..78.670 rows=1 loops=1)</td></tr>
                 <tr><td>  -&gt;  Seq Scan on client c  (cost=0.00..6536.50 rows=173450 width=0) (actual time=0.007..43.830 rows=173813 loops=1)</td></tr>
@@ -55,7 +61,7 @@
                 <tr><td>Execution time: 78.714 ms</td></tr>
             </table>
 
-        <li>Выполним с условием (опять же 10-строк с индексом)</li>
+        <li>Выполним с условием</li>
         <pre class="prettyprint lang-sql">
                 EXPLAIN ANALYSE
                     SELECT *
@@ -64,6 +70,7 @@
                         LIMIT 10;
         </pre>
     <table border="1" style="border-collapse:collapse">
+        <pre> опять же джойн был выполнен только для 10 строк</pre>
     <tr><th>QUERY PLAN</th></tr>
     <tr><td>Limit  (cost=0.42..8.07 rows=10 width=391) (actual time=0.023..0.113 rows=10 loops=1)</td></tr>
     <tr><td>  -&gt;  Nested Loop Left Join  (cost=0.42..60296.58 rows=78841 width=391) (actual time=0.022..0.107 rows=10 loops=1)</td></tr>
@@ -94,17 +101,19 @@
             <tr><td>Execution time: 290.095 ms</td></tr>
         </table>
         <li>
-            Что из этого следует: В не зависимости от количества джойнов и обращений, планировщик будет терзучить только то множество которое будет в результате, и то множество которое будет в условии или при сортировке
-
+            Что из этого следует: В не зависимости от количества не обязательных джойнов и обращений,
+            планировщик будет терзучить только то множество которое будет в результате,
+            а подсчёт строк будет игнорировать связи которых нет в результе если связывание не обязательное (join).
+            Приведём несколько примеров.
               <pre class="prettyprint lang-sql">
-            -- Плохой запрос (для пагинации, джойн так себе затея, обязательная связанность для множества плохо)
+            -- Плохой запрос (для пагинации, джойн так себе затея, обязательная связанность для множества плохо, плохо только для подсчёта общего количества)
             CREATE VIEW vw_client AS (
             SELECT c.id,cp.tel,cp.id as client_phone_id
             FROM client AS c
             JOIN client_phone AS cp ON c.phone_id  =cp.id
             );
 
-            -- Плохой запрос (агрегат )
+            -- Плохой запрос (агрегат),
             CREATE VIEW vw_client AS (
             SELECT c.id,count(*),first(cp.phone_main)
             FROM client AS c
@@ -114,7 +123,7 @@
 
             -- Ничего так запрос (но обращаться к полю region как к условию так и к сортировке плохо)
             CREATE VIEW vw_client AS (
-            SELECT ip2location(c.ip).region,*
+            SELECT ip2location(c.ip).region,с.id
             FROM client AS c
             left JOIN client_phone AS cp ON c.phone_id  =cp.id
             );

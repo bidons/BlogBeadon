@@ -8,11 +8,16 @@
     <ul>
         <li>
             <p>
-                Все объекты будучи созданы в PostgreSQL существуют в общем пространстве имён и реляционно находятся здесь порядок, тип, имя и принадлежность к сущности.
+                Все объекты, будучи созданы в PostgreSQL существуют в общем пространстве имён, ниже два примера где обитают эти объекты (таблицы, и вьюхи),
+                єти связи и будем исползовать для создания обвьёрток
+                (тип, имя и принадлежность к сущности).
             </p>
                   <pre class="prettyprint lang-sql">
                       <span>Вьюхи</span>
-                        SELECT pv.viewname, isc.column_name, t.typname, p.attnum as priority
+                        SELECT pv.viewname, -- имя вьюхи
+                               isc.column_name, -- имя поля
+                               t.typname, -- тип поля
+                               p.attnum, -- порядок
                             FROM pg_views AS pv
                             JOIN information_schema.columns AS isc ON pv.viewname = isc.table_name
                             JOIN pg_attribute AS p ON p.attrelid = isc.table_name :: REGCLASS AND isc.column_name = p.attname
@@ -23,7 +28,10 @@
             <br>
                 <pre class="prettyprint lang-sql">
                     <span>Таблицы</span>
-                    SELECT tablename,column_name, t.typname, p.attnum as priority
+                    SELECT tablename,   -- имя таблицы
+                           column_name, -- имя поля
+                            t.typname,  -- тип поля
+                            p.attnum    -- порядок
                         FROM pg_tables AS pv
                         JOIN information_schema.columns AS isc ON pv.tablename = isc.table_name
                         JOIN pg_attribute AS p ON p.attrelid = isc.table_name :: REGCLASS AND isc.column_name = p.attname
@@ -64,7 +72,6 @@
         <li>
         Получение полей для последующего рендеринга:
         <br>
-
          <pre class="prettyprint lang-sql">
             SELECT json_build_object('columns',json_agg(col))
                 FROM (SELECT
