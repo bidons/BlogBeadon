@@ -18,7 +18,7 @@
             <br>
                  <li>
                       Cмысл заключает вот в чём: - "Если обвернуть запрос во "View" и обращаться к запросу как к обычной таблице, то мы можем получить очень неплохие вкусняхи,
-                            к примеру можно использовать расширения, и по полной юзать возможности PostgreSql ltree,dblink,postgres_fdw,file_fdw,Windows function, join lateral, pivot extension etc";.
+                            к примеру можно использовать расширения, и по полной метер использовать возможности PostgreSql ltree,dblink,postgres_fdw,file_fdw,Windows function, join lateral, pivot extension etc";.
                  </li>
             <br>
             <p>
@@ -134,8 +134,6 @@
             wrapper = $('.data-tbl').DataTableWrapperExt(parmsTableWrapper);
         }
     });
-
-
 
     $('#modalDynamicInfo').on("show.bs.modal", function(e) {
         var value = ($(e.relatedTarget).attr('id'));
