@@ -69,7 +69,7 @@ BEGIN
                  ELSE 'SUM(' || val_agg || ')' END;
   val_query =
         quote_literal(concat('SELECT
-        create_time as "Дата создания",
+        create_time,
         value_id AS value_id,
         ',val_agg, 'AS s
         FROM client_dimension

@@ -567,7 +567,8 @@
                 var columns =[];
 
                 Object.keys(data.data[0]).forEach(function (key) {
-                    columns.push({data:key,title:key});
+
+                    columns.push({data:key,title:(key == 'create_time') ? 'Временная метка': key});
                 });
 
                 $('#table-chart').DataTable({
