@@ -2,12 +2,14 @@
 <link rel="stylesheet" type="text/css" href="/plugins/select2/select2.css">
 <link rel="stylesheet" type="text/css" href="/plugins/select2/select2-bootstrap4.min.css">
 <link rel="stylesheet" type="text/css" href="/plugins/daterangepicker/daterangepicker-bs3.css">
-
+<link rel="stylesheet" type="text/css" href="/plugins/datatables/jquery.dataTables.min.css">
 {{ assets.outputJs('main-js') }}
+
 <script type="text/javascript" src="/plugins/select2/select2.min.js"></script>
 <script type="text/javascript" src="/plugins/daterangepicker/moment.js"></script>
 <script type="text/javascript" src="/plugins/daterangepicker/daterangepicker.js"></script>
 <script type="text/javascript" src="/plugins/highcharts/highstock.js"></script>
+<script type="text/javascript" src="/plugins/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
 <script src="/plugins/proj4/dist/proj4.js"></script>
 <script type="text/javascript" src="/plugins/highcharts/modules/map.js"></script>
@@ -50,8 +52,6 @@
     </div>
 </div>
 
-
-
 <div class="container center-wrap">
     <select name="type" id="section-value" class="form-control"> </select>
 </div>
@@ -67,19 +67,14 @@
         <div id="line-chart" style="min-width: 600px; height: 750px; max-width: 1500px; margin: 0 auto"></div>
     </div>
     <div class="col-12">
-        <div id="geo-chart" style="min-width: 600px; height: 750px; max-width: 1500px; margin: 0 auto"></div>
+        <div id="data-table"></div>
     </div>
-
-    <div class="row">
-        <div class="col" id="query-pie"></div>
-        <div class="col" id="query-line"></div>
-        <div class="col" id="query-geo"></div>
+    <div class="col-12">
+        <div id="geo-chart" style="min-width: 600px; height: 750px; max-width: 1500px; margin: 0 auto"></div>
     </div>
 </div>
 <br>
-
 <script>
-
     $(document).ready(function () {
         var today = moment().add(1,'days').format('YYYY.MM.DD');
 
@@ -147,20 +142,17 @@
 
         function renderData() {
             $('.table-info').empty();
+
             $('#line-chart').empty();
             $('#geo-chart').empty();
             $('#pie-chart').empty();
+            $('#data-table').empty();
 
-            $('#query-pie').empty();
-            $('#query-line').empty();
-            $('#query-geo').empty();
-
-
-            renderPiePercent();
+            renderPie();
         }
 
         var queryArr = [];
-        function renderPiePercent() {
+        function renderPie() {
             $.ajax({
                 type: "GET",
                 url: "/olap/piechart",
@@ -221,7 +213,6 @@
                 renderGeo();
             });
         };
-
         function renderGeo() {
             if ($('#section-type').val() == 9) {
                 renderLine();
@@ -488,7 +479,6 @@
                 });
             }
         }
-
         function renderLine() {
             $.ajax({
                 url: "/olap/linechart",
@@ -500,7 +490,7 @@
                 }
             }).done(function (data) {
 
-                $('.table-info').append('<span class="badge badge-secondary" id="line-info" data-toggle="modal"  data-target="#modalDynamicInfo">Line:' + data.time + '</span>');
+                $('.table-info').append('<span class="badge badge-secondary" id="line-info" data-toggle="modal"  data-target="#modalDynamicInfo">Координаты:' + data.time + '</span>');
                 queryArr.push(data.query);
 
                 itt = 0;
@@ -552,7 +542,68 @@
                     },
                     series: data.data
                 });
+
+                renderTable();
             })
+        };
+
+        function renderTable() {
+            $.ajax({
+                url: "/olap/tablechart",
+                data: {
+                    'value': $('#section-value').val(),
+                    'interval': $('[data-filter-cond=interval]').val(),
+                    'type_id': $('#section-type').val(),
+                    'agg': $('#section-agg').val()
+                }
+            }).done(function (data) {
+                $('.table-info').append('<span class="badge badge-secondary" id="table-info" data-toggle="modal"  data-target="#modalDynamicInfo">Таблица:' + data.time + '</span>');
+                queryArr.push(data.query);
+
+
+                $('#data-table').append('<table id="table-chart" class="table table-striped table-bordered" cellspacing="0" width="100%"></table>');
+
+
+                var columns =[];
+
+                Object.keys(data.data[0]).forEach(function (key) {
+                    columns.push({data:key,title:key});
+                });
+
+                $('#table-chart').DataTable({
+                    data: data.data,
+                    ordering: false,
+                    sortable: false,
+                    info: true,
+                    paging: true,
+                    language:  {
+                        "processing": "Подождите...",
+                        "search": "Поиск:",
+                        "lengthMenu": "Показать _MENU_ записей",
+                        "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
+                        "infoEmpty": "Записи с 0 до 0 из 0 записей",
+                        "infoFiltered": "(отфильтровано из _MAX_ записей)",
+                        "infoPostFix": "",
+                        "loadingRecords": "Загрузка записей...",
+                        "zeroRecords": "Записи отсутствуют.",
+                        "emptyTable": "В таблице отсутствуют данные",
+                        "paginate": {
+                            "first": "Первая",
+                            "previous": "Предыдущая",
+                            "next": "Следующая",
+                            "last": "Последняя"
+                        },
+                        "aria": {
+                            "sortAscending": ": активировать для сортировки столбца по возрастанию",
+                            "sortDescending": ": активировать для сортировки столбца по убыванию"
+                        }
+                    },
+                    lengthChange: false,
+                    searching: false,
+                    columns: columns
+                });
+                queryArr.push(data.query);
+            });
         };
 
         $('#modalDynamicInfo').on("show.bs.modal", function(e) {
@@ -567,6 +618,9 @@
                         break;
                     case 'line-info':
                         object = queryArr[2];
+                        break;
+                    case 'table-info':
+                        object = queryArr[3];
                         break;
                     default:
                 }

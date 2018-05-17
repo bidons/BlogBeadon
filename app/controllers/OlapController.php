@@ -30,6 +30,12 @@ class OlapController extends ControllerBase
         return $this->responseJson($result);
     }
 
+    public function tablechartAction()
+    {
+        $result = $this->modelsManager->exeFnScalar('get_table_chart_olap', [json_encode($_GET)], true);
+        return $this->responseJson($result);
+    }
+
     public function profcategoryAction($argg)
     {
         $query = "with cte as(

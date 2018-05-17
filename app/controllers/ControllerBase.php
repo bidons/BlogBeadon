@@ -38,7 +38,6 @@ class ControllerBase extends Controller
             ->addCss("blog/css/blog.css")
             ->addCss("plugins/select2/select2.css")
             ->addCss("plugins/daterangepicker/daterangepicker-bs3.css");
-            /*->addCss("plugins/vakata/dist/themes/default/style.min.css");*/
         $js
             ->addJs("main/js/jquery.js")
             ->addJs("plugins/bootstrap/dist/js/bootstrap.js")
@@ -47,10 +46,6 @@ class ControllerBase extends Controller
             ->addJs("plugins/select2/select2.min.js")
             ->addJs("plugins/daterangepicker/moment.js")
             ->addJs("plugins/daterangepicker/daterangepicker.js");
-            /*->addJs("plugins/vakata/dist/jstree.min.js");*/
-            /*->addJs("plugins/proj4/dist/proj4.js")*/
-            /*->addJs("plugins/highcharts/highstock.js")
-            ->addJs("plugins/highcharts/modules/map.js");*/
     }
 
     public function responseJson($data, $code = 200)

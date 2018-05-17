@@ -45,6 +45,7 @@ function getPagingViewObject (view_name)
             id = parseInt(Math.random() * 1000000000);
             element.attr('id', id);
         }
+
         var idTable = id + '-datatable';
         var idTableSelector = "#" + idTable;
         var select2columnsSelector = 'select-' + idTable;
@@ -143,7 +144,6 @@ function getPagingViewObject (view_name)
 
                 if (options.externalOpt.dtFilters)
                     addFilter(col);
-
             };
 
             options.dataTableOpt['createdRow'] = function (row, data, index) {
@@ -273,9 +273,6 @@ function getPagingViewObject (view_name)
             });
 
             var selectColStamp = idTableSelector + ' th input[type=timestamp],' + idTableSelector + ' th input[type=timestamptz],' + idTableSelector + ' th input[type=date]';
-
-            var start = moment().subtract(29, 'days').format('YYYY.MM.DD');
-            var end = moment().format('YYYY.MM.DD');
 
             $(selectColStamp).daterangepicker({
                 startDate: moment().subtract(29, 'days'),
