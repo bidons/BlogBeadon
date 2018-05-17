@@ -239,8 +239,6 @@
                     $('.table-info').append('<span class="badge badge-secondary" id="geo-info" data-toggle="modal"  data-target="#modalDynamicInfo">Гео:' + data.time + '</span>');
                     queryArr.push(data.query);
 
-                    /*$('#query-geo').append('<pre class="prettyprint lang-sql">' + data.query +'</pre>');*/
-
                     Highcharts.seriesType('mappie', 'pie', {
                             center: null,
                             clip: true,
