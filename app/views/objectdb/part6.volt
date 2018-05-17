@@ -112,10 +112,11 @@ and name = 'definition';
             <button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>
         </div>
     </div>
-
-    <div class="data-tbl"></div>
-
 </div>
+<div class="container-fluid">
+    <div class="data-tbl"></div>
+</div>
+
 <script>
 
     RebuildReport();
