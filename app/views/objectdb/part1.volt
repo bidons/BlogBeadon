@@ -46,20 +46,6 @@
             </div>
 
             <div class="col-md-12 center-wrap">
-                <div style="margin-bottom:16px">
-            <span class="badge badge-secondary" id="datatable-data" data-toggle="modal"
-                  data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="datatable-f-ttl" data-toggle="modal"
-                          data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="datatable-ttl" data-toggle="modal"
-                          data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="select2-query" data-toggle="modal"
-                          data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="response-json" data-toggle="modal"
-                          data-target="#modalDynamicInfo">Response:1</span>
-                    <span class="badge badge-secondary" id="request-json" data-toggle="modal"
-                          data-target="#modalDynamicInfo">Request:1</span>
-                </div>
                 <label class="radio-inline"><input type="radio" view-name="paging_table" checked
                                                    name="paging-table-first">paging_table</label>
                 <label class="radio-inline"><input type="radio" view-name="paging_column_type"
@@ -133,7 +119,6 @@
     RebuildReport(getPagingViewObject('paging_table'))
 
     function RebuildReport(node){
-        console.log(node);
         var parmsTableWrapper = {
             externalOpt: {
                 urlDataTable: '/objectdb/showdata',
