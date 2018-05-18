@@ -11,10 +11,7 @@ class ObjectdbController extends ControllerBase
     {
         parent::initialize();
         $this -> table_condition = $_GET;
-
         $this->view->setVar('projectTree',projectTree('objectdb'));
-
-
     }
 
     public function indexAction(){}
@@ -28,10 +25,10 @@ class ObjectdbController extends ControllerBase
     public function viewChartAction($viewname)
     {
         $this->view->setRenderLevel(\Phalcon\Mvc\View::LEVEL_ACTION_VIEW);
-        $query = "select pt.m_chart_json_data
-                   from paging_table as p
-                    left join paging_table_materialize_info as pt on p.last_paging_table_materialize_info_id = pt.id 
-                   where name = '$viewname'";
+        $query = "SELECT pt.m_chart_json_data
+                  FROM paging_table as p
+                  LEFT JOIN paging_table_materialize_info as pt on p.last_paging_table_materialize_info_id = pt.id 
+                  where name = '$viewname'";
 
         $result = $this->modelsManager->exeQrScalar($query);
         return $result;

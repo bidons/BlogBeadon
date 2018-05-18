@@ -2,7 +2,7 @@
 <link rel="stylesheet" type="text/css" href="/plugins/select2/select2.css">
 <link rel="stylesheet" type="text/css" href="/plugins/select2/select2-bootstrap4.min.css">
 <link rel="stylesheet" type="text/css" href="/plugins/daterangepicker/daterangepicker-bs3.css">
-<link rel="stylesheet" type="text/css" href="/plugins/datatables/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="/plugins/datatables/dataTables.bootstrap4.min.css">
 {{ assets.outputJs('main-js') }}
 
 <script type="text/javascript" src="/plugins/select2/select2.min.js"></script>
@@ -10,6 +10,8 @@
 <script type="text/javascript" src="/plugins/daterangepicker/daterangepicker.js"></script>
 <script type="text/javascript" src="/plugins/highcharts/highstock.js"></script>
 <script type="text/javascript" src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+
 <script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
 <script src="/plugins/proj4/dist/proj4.js"></script>
 <script type="text/javascript" src="/plugins/highcharts/modules/map.js"></script>

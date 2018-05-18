@@ -111,9 +111,7 @@
 <script>
 
     $('[name=paging-table-first]').click(function () {
-        var v = $(this).attr('view-name');
-
-        RebuildReport(getPagingViewObject(v))
+        RebuildReport(getPagingViewObject($(this).attr('view-name')))
     });
 
     RebuildReport(getPagingViewObject('paging_table'))

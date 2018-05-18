@@ -25,10 +25,11 @@
 <div class="row">
     <div class="col-md-12">
         <div class="center-wrap">
-                <pre>
+    <pre>
 Материал представляет собой иллюстрацию работы различных механизмов,
 где основой акцент делается на описание реляционных механизмов PostgreSQL.
-                </pre>
+    </pre>
+
             {#<div id="container" style="min-width: 600px; height: 750px; max-width: 1500px; margin: 0 auto"></div>#}
         </div>
         <div class="text-center">
@@ -36,7 +37,6 @@
         </div>
     </div>
 </div>
-
 
 
 <style>

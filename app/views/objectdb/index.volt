@@ -1,10 +1,29 @@
 {{ assets.outputCss('blog-dt-css') }}
 <link rel="stylesheet" type="text/css" href="/plugins/vakata/dist/themes/default/style.min.css">
+{#<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jstree-bootstrap-theme@1.0.1/dist/themes/proton/style.min.css">#}
+
 {{ assets.outputJs('blog-dt-js') }}
 
-<script type="text/javascript" src="/plugins/vakata/dist/jstree.min.js"></script>
+
+
+{#<script type="text/javascript" src="/plugins/vakata/dist/jstree.min.js"></script>#}
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/jstree-bootstrap-theme@1.0.1/dist/jstree.min.js"></script>
 
 {{ partial('layouts/objdb') }}
+
+<style>
+    .list-group-item
+    {
+        background-color: #e2e2de;
+        /*background: url('/main/img/concrete_seamless.png')*/
+    };
+
+    .list-group-item:hover {
+        background-color: yellow;
+    }
+
+</style>
+
     <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -30,20 +49,21 @@
         </span>
         </div>
     </div>
+    </div>
     <hr>
+<div class="container-fluid">
     <div class="row">
-        <div class="col-md-4">
-            <input class="search-input form-control" placeholder="Поиск">
-            <div id = "db_object_tree"></div>
+        <div class="col">
+            <div class="list-group" id="list-group-table"></div>
         </div>
-        <div class="col-md-8">
+        <div class="col-sm-9">
             <div class="center-wrap">
+                <pre><h1 class="view_name"></h1></pre>
                 <div style="margin-bottom:16px">
                     <div class="table-info" style="margin-bottom:16px"> </div>
                     <span class="badge badge-secondary" id="response-json"  data-toggle="modal"  data-target="#modalDynamicInfo">Ответ:1</span>
                     <span class="badge badge-secondary" id="request-json"   data-toggle="modal"  data-target="#modalDynamicInfo">Запрос:1</span>
-                    <div class="table-info-select" style="margin-bottom:16px">
-                    </div>
+                    <div class="table-info-select"> </div>
                 </div>
                 <div class="btn-group">
                         <div class="input-group-btn">
@@ -57,49 +77,30 @@
     </div>
 </div>
 <hr>
+
+
 </div>
     <script>
     var wrapper;
     var definitionSql ='';
 
+    nodeObjects.forEach(function (item, i, data){
+        if(item.visible != false) {
+            $('#list-group-table').append(
+                '<li name="' + item.view_name + '" class="list-group-item d-flex list-group-item list-group-item-action justify-content-between align-items-center sm">' +
+                '<small> ' + item.text + '</small>' +
+                '<span class="badge badge-primary badge-pill">' + item.count + '</span>' +
+                '</li>');
+        }
+    });
+
     $(document).ready(function () {
-        var ReportTree = $('#db_object_tree').jstree({
-            'core': {
-                'data':nodeObjects
-            }, plugins: ["search","types"],
-            "types" : {
-                "default" : {
-                    "icon" : "glyphicon glyphicon-asterisk"
-                },
-                "file" : {
-                    "icon" : "glyphicon glyphicon-asterisk",
-                    "valid_children" : []
-                }
-            },
+        $(".list-group-item").click(function(){
+           var v= $(this).attr('name');
+            RebuildReport(getPagingViewObject(v));
         });
 
-        $(".search-input").keyup(function () {
-            var searchString = $(this).val();
-            ReportTree.jstree('search', searchString);
-        });
-
-        $('#db_object_tree').bind("click.jstree", function (event,data) {
-            var tree = $(this).jstree();
-
-            var node = tree.get_node(event.target);
-            if(node.original.parent != '#') {
-                definitionSql  = node.original.view;
-                RebuildReport(node.original);
-            };
-        });
-
-        ReportTree.bind('ready.jstree', function(e, data) {
-            $(this).jstree('open_all');
-            $(this).jstree(true).select_node(100009);
-            node = ($(this).jstree(true).get_node('100009')).original;
-            definitionSql  = node.view;
-            RebuildReport(node);
-        });
+        RebuildReport(getPagingViewObject('vw_conjunction'));
 
         function RebuildReport(node){
             $('#select2-query').text('');
@@ -119,19 +120,21 @@
                 },
                 dataTableOpt:
                     {
+                        scrollx: true,
                         pagingType: 'simple_numbers',
                         lengthMenu: [[5,10],[5,10]],
-                        displayLength: 5,
+                        displayLength: 30,
                         serverSide:true,
                         processing: true,
                         searching: false,
                         bFilter : false,
                         bLengthChange: false,
-                        pageLength: 5,
-                        dom: '<"top"flp>rt<"bottom"i><"clear"><"bottom"p>',
+                        pageLength: 30,
+                        dom: '<"top"flp>rt<"top"i><"clear"><"centered"p>'
                     },
             };
             wrapper = $('.data-tbl').DataTableWrapperExt(parmsTableWrapper);
+            $('.view_name').text(node.text);
         }
     });
 

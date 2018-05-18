@@ -34,14 +34,15 @@ class ControllerBase extends Controller
 
         $css
             ->addCss("plugins/bootstrap/dist/css/bootstrap.css")
-            ->addCss("plugins/datatables/jquery.dataTables.min.css")
+            ->addCss("plugins/datatables/dataTables.bootstrap4.min.css")
             ->addCss("blog/css/blog.css")
             ->addCss("plugins/select2/select2.css")
             ->addCss("plugins/daterangepicker/daterangepicker-bs3.css");
         $js
             ->addJs("main/js/jquery.js")
             ->addJs("plugins/bootstrap/dist/js/bootstrap.js")
-            ->addJs("plugins/datatables/jquery.dataTables.min.js")
+            ->addJs("https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js")
+            ->addJs("plugins/datatables/dataTables.bootstrap4.min.js")
             ->addJs("main/js/DataTableWrapperExt.js")
             ->addJs("plugins/select2/select2.min.js")
             ->addJs("plugins/daterangepicker/moment.js")
@@ -53,8 +54,6 @@ class ControllerBase extends Controller
         $this->view->disable();
 
         $this->response->setJsonContent($data);
-
         return $this->response;
     }
-
 }
