@@ -1,13 +1,10 @@
 {{ assets.outputCss('blog-dt-css') }}
-<link rel="stylesheet" type="text/css" href="/plugins/vakata/dist/themes/default/style.min.css">
+{#<link rel="stylesheet" type="text/css" href="/plugins/vakata/dist/themes/default/style.min.css">#}
 {#<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jstree-bootstrap-theme@1.0.1/dist/themes/proton/style.min.css">#}
 
 {{ assets.outputJs('blog-dt-js') }}
 
 
-
-{#<script type="text/javascript" src="/plugins/vakata/dist/jstree.min.js"></script>#}
-<script type="text/javascript" src="//cdn.jsdelivr.net/npm/jstree-bootstrap-theme@1.0.1/dist/jstree.min.js"></script>
 
 {{ partial('layouts/objdb') }}
 
@@ -52,32 +49,38 @@
     </div>
     <hr>
 <div class="container-fluid">
-    <div class="row">
+    <div class="col">
+
+        <div class="center-wrap">
+            <pre><h1 class="view_name"></h1></pre>
+
+                <div class="table-info"> </div>
+                <span class="badge badge-secondary" id="response-json"  data-toggle="modal"  data-target="#modalDynamicInfo">Ответ:1</span>
+                <span class="badge badge-secondary" id="request-json"   data-toggle="modal"  data-target="#modalDynamicInfo">Запрос:1</span>
+                <div class="table-info-select"> </div>
+
+            <div class="btn-group">
+                <div class="input-group-btn">
+                    <button class="btn btn-default" onclick="wrapper.getDataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter">Поиск</span> </button>
+                    <button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>
+                    <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">SQL</span></button>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="row">
         <div class="col">
             <div class="list-group" id="list-group-table"></div>
         </div>
         <div class="col-sm-9">
-            <div class="center-wrap">
-                <pre><h1 class="view_name"></h1></pre>
-                <div style="margin-bottom:16px">
-                    <div class="table-info" style="margin-bottom:16px"> </div>
-                    <span class="badge badge-secondary" id="response-json"  data-toggle="modal"  data-target="#modalDynamicInfo">Ответ:1</span>
-                    <span class="badge badge-secondary" id="request-json"   data-toggle="modal"  data-target="#modalDynamicInfo">Запрос:1</span>
-                    <div class="table-info-select"> </div>
-                </div>
-                <div class="btn-group">
-                        <div class="input-group-btn">
-                            <button class="btn btn-default" onclick="wrapper.getDataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter">Поиск</span> </button>
-                            <button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>
-                            <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">SQL</span></button>
-                        </div>
-                </div>
+
             <div class="data-tbl"> </div>
         </div>
     </div>
+
 </div>
 <hr>
-
 
 </div>
     <script>
@@ -129,11 +132,13 @@
                         searching: false,
                         bFilter : false,
                         bLengthChange: false,
-                        pageLength: 30,
+                        pageLength: 20,
                         dom: '<"top"flp>rt<"top"i><"clear"><"centered"p>'
                     },
             };
+
             wrapper = $('.data-tbl').DataTableWrapperExt(parmsTableWrapper);
+
             $('.view_name').text(node.text);
         }
     });

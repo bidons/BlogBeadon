@@ -29,8 +29,6 @@
 Материал представляет собой иллюстрацию работы различных механизмов,
 где основой акцент делается на описание реляционных механизмов PostgreSQL.
     </pre>
-
-            {#<div id="container" style="min-width: 600px; height: 750px; max-width: 1500px; margin: 0 auto"></div>#}
         </div>
         <div class="text-center">
             <img class="img-fluid img-thumbnail" src="/main/img/slide-3.jpg"  alt="">
