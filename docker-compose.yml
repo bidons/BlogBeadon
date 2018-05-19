@@ -96,7 +96,7 @@ services:
     #image: phalconphp/nginx:1.10
     container_name: phalcon.compose.blog.nginx
     ports:
-      - "80:80"
+      - "82:80"
       - "444:443"
     depends_on:
         - php

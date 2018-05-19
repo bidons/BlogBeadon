@@ -122,15 +122,15 @@ function getPagingViewObject (view_name)
 
                 $('.table-info').empty();
                 if (data) {
-                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-data" data-toggle="modal"  data-target="#modalDynamicInfo">Лимит:' + objectInfo.dtObj.o.debug[0].time + '</span>');
+                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-data" data-toggle="modal"  data-target="#modalDynamicInfo">Лимит (sql):' + objectInfo.dtObj.o.debug[0].time + '</span>');
                 }
 
                 if (ttlf) {
-                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-f-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего:' + objectInfo.dtObj.o.debug[2].time + '</span>');
+                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего (sql):' + objectInfo.dtObj.o.debug[2].time + '</span>');
                 }
 
                 if (ttl) {
-                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего с услв.:' + objectInfo.dtObj.o.debug[1].time + '</span>');
+                    $('.table-info').append('<span class="badge badge-secondary" id="datatable-f-ttl" data-toggle="modal"  data-target="#modalDynamicInfo">Всего с условием. (sql):' + objectInfo.dtObj.o.debug[1].time + '</span>');
                 }
             };
             // Add initComplete

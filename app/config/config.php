@@ -21,6 +21,13 @@ return new Config(
             "baseUri"        => "/",
             "logDir"         => "/var/www/phalcon/logs/"
         ],
+        'redisCache' => [
+            'host' => "redis",
+            'port' => 6379,
+            'persistent' => false,
+            'index' => 0,
+            'statsKey' => 'beadon-cache-keys'
+        ],
     ]
 );
 

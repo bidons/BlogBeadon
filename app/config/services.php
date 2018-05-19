@@ -8,6 +8,8 @@ use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
 use Phalcon\Mvc\Model\Metadata\Memory as MetaDataAdapter;
 use Phalcon\Session\Adapter\Files as SessionAdapter;
 use Phalcon\Mvc\View\Engine\Php as PhpViewEngine;
+use Phalcon\Cache\Backend\Redis;
+use Phalcon\Cache\Frontend\Data as FrontData;
 
 /**
  * The FactoryDefault Dependency Injector automatically registers the right
@@ -124,3 +126,16 @@ $di->set(
         return $session;
     }
 );
+
+$di->set('cache', function () use ($config) {
+    $frontCache = new FrontData([
+        "lifetime" => 172800
+    ]);
+
+    $cache = new Redis (
+        $frontCache,
+        $config->get('redisCache')->toArray()
+    );
+
+    return $cache;
+});
