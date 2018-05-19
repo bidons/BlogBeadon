@@ -1,23 +1,13 @@
 {{ assets.outputCss('blog-dt-css') }}
-{#<link rel="stylesheet" type="text/css" href="/plugins/vakata/dist/themes/default/style.min.css">#}
-{#<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jstree-bootstrap-theme@1.0.1/dist/themes/proton/style.min.css">#}
-
 {{ assets.outputJs('blog-dt-js') }}
-
-
 
 {{ partial('layouts/objdb') }}
 
 <style>
-    .list-group-item
-    {
+    .list-group-item {
         background-color: #e2e2de;
         /*background: url('/main/img/concrete_seamless.png')*/
     };
-
-    .list-group-item:hover {
-        background-color: yellow;
-    }
 
 </style>
 
