@@ -41,7 +41,7 @@ class ControllerBase extends Controller
         $js
             ->addJs("main/js/jquery.js")
             ->addJs("plugins/bootstrap/dist/js/bootstrap.js")
-            ->addJs("https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js")
+            ->addJs("plugins/datatables/jquery.dataTables.min.js")
             ->addJs("plugins/datatables/dataTables.bootstrap4.min.js")
             ->addJs("main/js/DataTableWrapperExt.js")
             ->addJs("plugins/select2/select2.min.js")
