@@ -153,25 +153,12 @@ WITH cte AS
 </div>
 
 <div class="col-md-12 center-wrap">
-    <div style="margin-bottom:16px">
-            <span class="badge badge-secondary" id="datatable-data" data-toggle="modal"
-                  data-target="#modalDynamicInfo"></span>
-        <span class="badge badge-secondary" id="datatable-f-ttl" data-toggle="modal"
-              data-target="#modalDynamicInfo"></span>
-        <span class="badge badge-secondary" id="datatable-ttl" data-toggle="modal"
-              data-target="#modalDynamicInfo"></span>
-        <span class="badge badge-secondary" id="select2-query" data-toggle="modal"
-              data-target="#modalDynamicInfo"></span>
-        <span class="badge badge-secondary" id="response-json" data-toggle="modal"
-              data-target="#modalDynamicInfo">Response:1</span>
-        <span class="badge badge-secondary" id="request-json" data-toggle="modal"
-              data-target="#modalDynamicInfo">Request:1</span>
-    </div>
+
     <div class="btn-group">
         <div class="input-group-btn">
-            <button class="btn btn-default" onclick="wrapper.getDataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter">Поиск</span> </button>
-            <button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>
-            <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">View-Sql</span></button>
+            {#<button class="btn btn-default" onclick="wrapper.getDataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter">Поиск</span> </button>#}
+            {#<button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>#}
+            <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">View (Sql)</span></button>
         </div>
     </div>
 
