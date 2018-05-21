@@ -10,34 +10,33 @@
             <p>
                 Все объекты, будучи созданы в PostgreSQL существуют в общем пространстве имён, ниже два примера где обитают эти объекты (таблицы, и вьюхи),
                 єти связи и будем исползовать для создания обвьёрток
-                (тип, имя и принадлежность к сущности).
+                (тип, имя и принадлежность сущности, и порядок отображения).
             </p>
                   <pre class="prettyprint lang-sql">
-                      <span>Вьюхи</span>
-                        SELECT pv.viewname, -- имя вьюхи
-                               isc.column_name, -- имя поля
-                               t.typname, -- тип поля
-                               p.attnum, -- порядок
-                            FROM pg_views AS pv
-                            JOIN information_schema.columns AS isc ON pv.viewname = isc.table_name
-                            JOIN pg_attribute AS p ON p.attrelid = isc.table_name :: REGCLASS AND isc.column_name = p.attname
-                            JOIN pg_type AS t ON p.atttypid = t.oid
-                            WHERE pv.schemaname = 'public';
+    <span>Вьюхи</span>
+    SELECT pv.viewname,     -- имя вьюхи
+           isc.column_name, -- имя поля
+           t.typname,       -- тип поля
+           p.attnum,        -- порядок
+    FROM pg_views AS pv
+    JOIN information_schema.columns AS isc ON pv.viewname = isc.table_name
+    JOIN pg_attribute AS p ON p.attrelid = isc.table_name :: REGCLASS AND isc.column_name = p.attname
+    JOIN pg_type AS t ON p.atttypid = t.oid
+    WHERE pv.schemaname = 'public';
                   </pre>
 
             <br>
                 <pre class="prettyprint lang-sql">
-                    <span>Таблицы</span>
-                    SELECT tablename,   -- имя таблицы
-                           column_name, -- имя поля
-                            t.typname,  -- тип поля
-                            p.attnum    -- порядок
-                        FROM pg_tables AS pv
-                        JOIN information_schema.columns AS isc ON pv.tablename = isc.table_name
-                        JOIN pg_attribute AS p ON p.attrelid = isc.table_name :: REGCLASS AND isc.column_name = p.attname
-                        JOIN pg_type AS t ON p.atttypid = t.oid
-                        WHERE pv.schemaname = 'public';
-                    </pre>
+    <span>Таблицы</span>
+    SELECT pv.tablename,   -- имя таблицы
+           isc.column_name, -- имя поля
+           t.typname,   -- тип поля
+           p.attnum     -- порядок
+    FROM pg_tables AS pv
+    JOIN information_schema.columns AS isc ON pv.tablename = isc.table_name
+    JOIN pg_attribute AS p ON p.attrelid = isc.table_name :: REGCLASS AND isc.column_name = p.attname
+    JOIN pg_type AS t ON p.atttypid = t.oid
+    WHERE pv.schemaname = 'public';</pre>
             <br>
         <li>
             Простенькая табличка для примера
@@ -59,51 +58,48 @@
         Получение полей для последующего рендеринга:
         <br>
          <pre class="prettyprint lang-sql">
-            SELECT json_build_object('columns',json_agg(col))
-                FROM (SELECT
-                        pc.name                     AS data,
-                        coalesce(pc.title, pc.name) AS title,
-                        pct.name                    AS type,
-                        pc.is_orderable             AS orderable,
-                        pc.is_visible               AS visible,
-                        pc.is_primary               AS primary
-                FROM paging_column AS pc
-                  JOIN paging_table AS pt ON pt.id = pc.paging_table_id
-                  JOIN paging_column_type AS pct ON pct.id = pc.paging_column_type_id
-                  WHERE pt.name = 'paging_table') as col;
+    SELECT json_build_object('columns',json_agg(col))
+    FROM (SELECT pc.name                     AS data,
+                 coalesce(pc.title, pc.name) AS title,
+                 pct.name                    AS type,
+                 pc.is_orderable             AS orderable,
+                 pc.is_visible               AS visible,
+                 pc.is_primary               AS primary
+          FROM paging_column AS pc
+          JOIN paging_table AS pt ON pt.id = pc.paging_table_id
+          JOIN paging_column_type AS pct ON pct.id = pc.paging_column_type_id
+          WHERE pt.name = 'paging_table') as col;
          </pre>
         </li>
 
         <li>
             Собираем запрос для рендеринга строк:
         <pre class="prettyprint lang-sql">
-             SELECT
-                 'WITH CTE AS (' || concat_ws(' ','SELECT',string_agg(pc.name,',' ORDER BY pc.priority),'FROM', pt.name, 'limit',10,'OFFSET',0) || ') SELECT json_agg(cte) FROM cte;' as l_query,
+    SELECT
+          'WITH CTE AS (' || concat_ws(' ', 'SELECT', string_agg(pc.name, ',' ORDER BY pc.priority), 'FROM', pt.name, 'limit', 10, 'OFFSET', 0) || ') SELECT json_agg(cte) FROM cte;' as l_query,
                   concat_ws(' ','SELECT','count(*)',' FROM', pt.name) as ttl_query
-                FROM paging_column AS pc
-                  JOIN paging_table AS pt ON pt.id = pc.paging_table_id
-                  JOIN paging_column_type AS pct ON pct.id = pc.paging_column_type_id
-                  where pt.name = 'paging_table'
-                GROUP BY pt.name;
+    FROM paging_column AS pc
+    JOIN paging_table AS pt ON pt.id = pc.paging_table_id
+    JOIN paging_column_type AS pct ON pct.id = pc.paging_column_type_id
+    WHERE pt.name = 'paging_table'
+    GROUP BY pt.name;
         </pre>
         </li>
-
         <li>
             На выходе имеем два запроса, этого достаточно чтоб отрендерить данные, управлять порядком, видимостью, переводом-названиями полей.
         </li>
 
         <pre class="prettyprint lang-sql">
-        WITH CTE AS
-            (
-                SELECT id, name, descr
-                FROM paging_table
-                LIMIT 10 OFFSET 0
+    WITH CTE AS (
+            SELECT id, name, descr
+            FROM paging_table
+            LIMIT 10 OFFSET 0
             )
             SELECT json_agg(cte)
             FROM cte;
 
-        SELCT count(*)
-        FROM paging_table;
+    SELCT count(*)
+    FROM paging_table;
         </pre>
     </ul>
 </div>
