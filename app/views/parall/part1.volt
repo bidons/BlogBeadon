@@ -1,77 +1,92 @@
-{{ assets.outputCss('blog-css') }}
-{{ assets.outputJs('blog-js') }}
+{{ assets.outputCss('main-css') }}
+{{ assets.outputJs('main-js') }}
+
+<style>
+
+    /*.parcoords{
+        background: url('/main/img/concrete_seamless.png');
+        background-repeat: repeat;
+        background-position: 0 0;
+        background-color: #e2e2de;
+    }
+*/
+    .parcoords > canvas {
+        font: 14px sans-serif;
+        position: absolute;
+    }
+    .parcoords > canvas {
+        pointer-events: none;
+    }
+    .parcoords text.label {
+        cursor: default;
+    }
+    .parcoords rect.background:hover {
+        fill: rgba(120,120,120,0.2);
+    }
+    .parcoords canvas {
+        opacity: 1;
+        transition: opacity 0.3s;
+        -moz-transition: opacity 0.3s;
+        -webkit-transition: opacity 0.3s;
+        -o-transition: opacity 0.3s;
+    }
+    .parcoords canvas.faded {
+        opacity: 0.25;
+    }
+    .parcoords {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        background-color: white;
+    }
+</style>
+
+
+<link rel="stylesheet" type="text/css" href="https://syntagmatic.github.io/parallel-coordinates/d3.parcoords.css">
+
+
+<script src="/plugins/d3/d3.min.js"></script>
+<script src="/plugins/d3/d3.parcoords.js"></script>
+
+{{ partial('layouts/paralll') }}
 
 <div class="container">
-    {#<div class="row">#}
-        <div class="col-sm-12">
-                <div class="col-sm-5">
-                        <select name="type" id="book-section" disabled =true >
-                            <option value="10000">Библия</option>
-                        </select>
-                </div>
-                    <div class="col-sm-5">
-                        <select name="type" id="section-type">
-                            <option>--Все объекты в секции--</option>
-                            <option value="10001">Старый завет</option>
-                            <option value="10002">Новый завет</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-5">
-                        <select name="subtype" id="book">
-                            <option>--Все книги--</option>
-                        </select>
-                    </div>
-        </div>
-    {#</div>#}
+    <div class="row">
+    <div id="example-progressive" class="parcoords" style="width:1000px;height:400px"></div>
+    </div>
 </div>
 
 <script>
+    $(document).ready(function () {
 
-    var Select2Cascade = ( function(window, $) {
-        function Select2Cascade(parent, child, url, select2Options) {
-            var afterActions = [];
-            var options = select2Options || {};
+        var colors = d3.scale.category20b();
 
-            this.then = function(callback) {
-                afterActions.push(callback);
-                return this;
-            };
+        d3.csv('/parallel/nutrients.csv', function (data) {
 
-            parent.select2(select2Options).on("change", function (e) {
-                child.prop("disabled", true);
+            /*var colorgen = d3.scale.ordinal()
+                .range(["#a6cee3","#1f78b4","#b2df8a","#33a02c",
+                    "#fb9a99","#e31a1c","#fdbf6f","#ff7f00",
+                    "#cab2d6","#6a3d9a","#ffff99","#b15928"]);*/
 
-                var _this = this;
-                $.getJSON(url.replace(':parentId:', $(this).val()), function(items) {
+            var color = function(d) { return colors(d.group); };
 
-                    var newOptions = '<option value="">-- Все книги --</option>';
-                    for(var id in items) {
-                        console.log(items[id]);
-                        newOptions += '<option value="'+ items[id].id +'">'+ items[id].text +'</option>';
-                    }
 
-                    child.select2('destroy').html(newOptions).prop("disabled", false)
-                            .select2(options);
+            var parcoords = d3.parcoords()("#example-progressive")
+                .data(data)
+                .hideAxis(["name"])
+                .color(color)
+                .alpha(0.25)
+                .composite("darken")
+                .margin({top: 24, left: 150, bottom: 12, right: 0})
+                .mode("queue")
+                .render()
+                .brushMode("1D-axes");  // enable brushing
 
-                    afterActions.forEach(function (callback) {
-                        callback(parent, child, items);
-                    });
-                });
-            });
-        }
-        return Select2Cascade;
-
-    })( window, $);
-
-    $(document).ready(function() {
-        var select2Options = { width: 'resolve',theme: "bootstrap4"};
-        var apiUrl = '/parall/book/:parentId:';
-
-        $('select').select2(select2Options);
-        var cascadLoading = new Select2Cascade($('#section-type'), $('#book'), apiUrl, select2Options);
-        cascadLoading.then( function(parent, child, items) {
-            // Dump response data
-            console.log(items);
-        });
+            parcoords.svg.selectAll("text")
+                .style("font", "10px sans-serif");
+        })
     });
-
 </script>

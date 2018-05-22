@@ -21,9 +21,10 @@ function projectTree($node)
               array("href"=>"/objectdb/part4","name"=> "Пагинаторы: Materialize View","sname"=>"Materialize View"),
               array("href"=>"/objectdb/part5","name"=> "Пагинаторы: Исходники","sname"=>"Исходники"),
               array("href"=>"/objectdb/part6","name"=> "Пагинаторы: Пример конструктора","sname"=>"Пример конструктора")),
-        'olap' => array(array("href"=>"/olap/index","name"=>"OLAP: Введение","sname"=>"Введение"),
-                        array("href"=>"/olap/part1","name"=>"OLAP: Создание (в разработке)","sname"=>"Создание (в разработке)")),
-        'parall' => array(array("href"=>"/parall/index","name"=>"Параллельные кординаты: Введение (в разработке)","sname"=>"Введение (в разработке)")));
+        'olap' =>   array(array("href"=>"/olap/index","name"=>"OLAP: Введение","sname"=>"Введение"),
+                          array("href"=>"/olap/part1","name"=>"OLAP: Создание (в разработке)","sname"=>"Создание (в разработке)")),
+        'parall' => array(array("href"=>"/parall/index","name"=>"Параллельные кординаты: Введение (в разработке)","sname"=>"Введение")));
+                          /*array("href"=>"/parall/part1","name"=>"Параллельные кординаты: Создание (в разработке)","sname"=>"Создание (в разработке)")));*/
     if ($node){
         return $data[$node];
     }

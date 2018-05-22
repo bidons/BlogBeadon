@@ -3,6 +3,10 @@ function initParallel(path_csv,colors) {
         height = d3.max([document.body.clientHeight-540, 400])
 
 
+
+
+
+
     var m = [60, 0, 10, 0],
         w = width - m[1] - m[3],
         h = height - m[0] - m[2],

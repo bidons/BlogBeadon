@@ -134,38 +134,4 @@
         }
     });
 
-    $('#modalDynamicInfo').on("show.bs.modal", function(e) {
-        var value = ($(e.relatedTarget).attr('id'));
-        var info = wrapper.getJsonInfo();
-
-        if(value) {
-            switch (value) {
-                case 'datatable-data':
-                    object = info['dtObj'].o.debug[0].data;
-                    break;
-                case 'datatable-f-ttl':
-                    object = info['dtObj'].o.debug[1].recordsFiltered;
-                    break;
-                case 'datatable-ttl':
-                    object = info['dtObj'].o.debug[2].recordsTotal;
-                    break;
-                case 'select2-query':
-                    object = info['s2obj'];
-                    break;
-                case 'response-json':
-                    object = info['dtObj'].o;
-                    break;
-                case 'request-json':
-                    object = info['dtObj'].i;
-                    break;
-                case 'sql-view':
-                    object = definitionSql;
-                    break;
-                default:
-            }
-            $(this).find(".modal-body").html('<pre><code class="json">' + syntaxHighlight(object) + '</code> </pre>');
-        }
-    });
-
-
 </script>

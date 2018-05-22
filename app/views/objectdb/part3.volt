@@ -46,27 +46,22 @@
 
         <div class="col-md-12 center-wrap">
             <div style="margin-bottom:16px">
-            <span class="badge badge-secondary" id="datatable-data" data-toggle="modal"
-                  data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="datatable-f-ttl" data-toggle="modal"
-                          data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="datatable-ttl" data-toggle="modal"
-                          data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="select2-query" data-toggle="modal"
-                          data-target="#modalDynamicInfo"></span>
-                    <span class="badge badge-secondary" id="response-json" data-toggle="modal"
-                          data-target="#modalDynamicInfo">Response:1</span>
-                    <span class="badge badge-secondary" id="request-json" data-toggle="modal"
-                          data-target="#modalDynamicInfo">Request:1</span>
-            </div>
-            <div class="btn-group">
-                <div class="input-group-btn">
-                    <button class="btn btn-default" onclick="wrapper.getDataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter">Поиск</span> </button>
-                    <button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>
-                    <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">View-Sql</span></button>
+                <div class="center-wrap">
+                    <pre><h1 class="view_name"></h1></pre>
+
+                    <div class="table-info"> </div>
+                    <span class="badge badge-secondary" id="response-json"  data-toggle="modal"  data-target="#modalDynamicInfo">Ответ (json)</span>
+                    <span class="badge badge-secondary" id="request-json"   data-toggle="modal"  data-target="#modalDynamicInfo">Запрос (json)</span>
+                    <div class="table-info-select"> </div>
+
+                    <div class="btn-group">
+                        <div class="input-group-btn">
+                            {#<button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>#}
+                            <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">View (sql)</span></button>
+                        </div>
+                    </div>
                 </div>
             </div>
-
             <div class="data-tbl"></div>
         </div>
     </li>
@@ -126,40 +121,40 @@
                 },
         };
         wrapper = $('.data-tbl').DataTableWrapperExt(parmsTableWrapper);
+        $('.view_name').text(node.text);
+        $('#modalDynamicInfo').on("show.bs.modal", function(e) {
+            var value = ($(e.relatedTarget).attr('id'));
+            var info = wrapper.getJsonInfo();
+
+            if(value) {
+                switch (value) {
+                    case 'datatable-data':
+                        object = info['dtObj'].o.debug[0].data;
+                        break;
+                    case 'datatable-f-ttl':
+                        object = info['dtObj'].o.debug[1].recordsFiltered;
+                        break;
+                    case 'datatable-ttl':
+                        object = info['dtObj'].o.debug[2].recordsTotal;
+                        break;
+                    case 'select2-query':
+                        object = info['s2obj'];
+                        break;
+                    case 'response-json':
+                        object = info['dtObj'].o;
+                        break;
+                    case 'request-json':
+                        object = info['dtObj'].i;
+                        break;
+                    case 'sql-view':
+                        object = definitionSql;
+                        break;
+                    default:
+                }
+                $(this).find(".modal-body").html('<pre><code class="json">' + syntaxHighlight(object) + '</code> </pre>');
+            }
+        });
     }
 
-    $('#modalDynamicInfo').on("show.bs.modal", function(e) {
-        var value = ($(e.relatedTarget).attr('id'));
-        var info = wrapper.getJsonInfo();
 
-
-        if(value) {
-            switch (value) {
-                case 'datatable-data':
-                    object = info['dtObj'].o.debug.query[0];
-                    break;
-                case 'datatable-f-ttl':
-                    object = info['dtObj'].o.debug.query[1];
-                    break;
-                case 'datatable-ttl':
-                    object = info['dtObj'].o.debug.query[2];
-                    break;
-                case 'select2-query':
-                    object = info['s2obj'];
-                    break;
-                case 'response-json':
-                    object = info['dtObj'].o;
-                    break;
-                case 'request-json':
-                    object = info['dtObj'].i;
-                    break;
-                case 'sql-view':
-                    object = definitionSql;
-                    break;
-                default:
-            }
-
-            $(this).find(".modal-body").html('<pre><code class="json">' + syntaxHighlight(object) + '</code> </pre>');
-        }
-    });
 </script>

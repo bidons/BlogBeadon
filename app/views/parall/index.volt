@@ -109,10 +109,10 @@
 </div>
 <br>
 
-<div id="container-chart">
-</div>
+<div id="container-chart"></div>
 
-<script src="/parallel/d3.v2.js"></script>
+
+<script src="/plugins/d3/d3.min.js"></script>
 <script src="/parallel/underscore.js"></script>
 <script src="/parallel/parallel.js"></script>
 
@@ -354,7 +354,7 @@
                     }
 
                     child.select2('destroy').html(newOptions).prop("disabled", false)
-                            .select2(options);
+                        .select2(options);
 
                     afterActions.forEach(function (callback) {
                         callback(parent, child, items);
@@ -362,7 +362,6 @@
                 });
             });
         }
-
         return Select2Cascade;
 
     })(window, $);
