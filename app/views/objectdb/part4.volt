@@ -154,11 +154,21 @@ WITH cte AS
 
 <div class="col-md-12 center-wrap">
 
-    <div class="btn-group">
-        <div class="input-group-btn">
-            {#<button class="btn btn-default" onclick="wrapper.getDataTable().ajax.reload()"> <span class="glyphicon glyphicon-filter">Поиск</span> </button>#}
-            {#<button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>#}
-            <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">View (Sql)</span></button>
+    <div class="col">
+
+        <div class="center-wrap">
+            <pre><h1 class="view_name"></h1></pre>
+
+            <div class="table-info"> </div>
+            <span class="badge badge-secondary" id="response-json"  data-toggle="modal"  data-target="#modalDynamicInfo">Ответ (json)</span>
+            <span class="badge badge-secondary" id="request-json"   data-toggle="modal"  data-target="#modalDynamicInfo">Запрос (json)</span>
+            <div class="table-info-select"> </div>
+
+            <div class="btn-group">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default" id="sql-view"data-toggle="modal"  data-target="#modalDynamicInfo"><span class="glyphicon glyphicon-remove-circle">View (sql)</span></button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -329,13 +339,11 @@ WITH cte AS
                         showInNavigator: true
                     }
                 },
-
                 tooltip: {
                     pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
                     valueDecimals: 0,
                     split: true
                 },
-
                 series: d.chart
             });
     };
@@ -343,6 +351,8 @@ WITH cte AS
     $('#modalDynamicInfo').on("show.bs.modal", function(e) {
         var value = ($(e.relatedTarget).attr('id'));
         var info = wrapper.getJsonInfo();
+
+        console.log(info);
 
 
         if(value) {
