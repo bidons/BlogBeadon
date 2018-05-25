@@ -1,6 +1,6 @@
 
 nodeObjects =
-   [{"id":100022,"parent":"#","count": 200000,"text":"Материализация (сущ.)","view_name":"vw_gen_materialize","col":{"columns": [{"cd": ["=", "!=", "<", ">", "<=", ">="], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "md5", "type": "text", "title": "md5", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "series", "type": "text", "title": "series", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["between", "not between", "in"], "cdi": null, "data": "action_date", "type": "timestamptz", "title": "action_date", "primary": false, "visible": true, "is_filter": true, "orderable": true}]},"icon":"unknown","view":" WITH cte AS (\n         SELECT generate_series(1, 200000) AS id,\n            md5((random())::text) AS md5,\n            ('{Дятел,Братство,Духовность,Мебель,Любовник,Аристократ,Ковер,Портос,Трещина,Зубки,Бес,Лень,Благоговенье}'::text[])[(random() * (12)::double precision)] AS series,\n            date((((('now'::text)::date - '2 years'::interval) + (trunc((random() * (365)::double precision)) * '1 day'::interval)) + (trunc((random() * (1)::double precision)) * '1 year'::interval))) AS action_date\n        )\n SELECT cte.id,\n    cte.md5,\n    cte.series,\n    (cte.action_date)::timestamp with time zone AS action_date\n   FROM cte\n  ORDER BY ((cte.action_date)::timestamp with time zone);"},
+   [{"id":100022,"parent":"#","count": 200000,"text":"Материализация","view_name":"vw_gen_materialize","col":{"columns": [{"cd": ["=", "!=", "<", ">", "<=", ">="], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "md5", "type": "text", "title": "md5", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["=", "~", "!=", "in"], "cdi": null, "data": "series", "type": "text", "title": "series", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["between", "not between", "in"], "cdi": null, "data": "action_date", "type": "timestamptz", "title": "action_date", "primary": false, "visible": true, "is_filter": true, "orderable": true}]},"icon":"unknown","view":" WITH cte AS (\n         SELECT generate_series(1, 200000) AS id,\n            md5((random())::text) AS md5,\n            ('{Дятел,Братство,Духовность,Мебель,Любовник,Аристократ,Ковер,Портос,Трещина,Зубки,Бес,Лень,Благоговенье}'::text[])[(random() * (12)::double precision)] AS series,\n            date((((('now'::text)::date - '2 years'::interval) + (trunc((random() * (365)::double precision)) * '1 day'::interval)) + (trunc((random() * (1)::double precision)) * '1 year'::interval))) AS action_date\n        )\n SELECT cte.id,\n    cte.md5,\n    cte.series,\n    (cte.action_date)::timestamp with time zone AS action_date\n   FROM cte\n  ORDER BY ((cte.action_date)::timestamp with time zone);"},
     {"id":100010,"parent":"#","count": 1865,"text":"Наречие","view_name":"vw_adverb","col":{"columns": [{"cd": ["select2dynamic"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "name", "type": "varchar", "title": "name", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "uname", "type": "varchar", "title": "uname", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "freq", "type": "int4", "title": "freq", "primary": false, "visible": true, "is_filter": true, "orderable": true}]},"icon":"unknown","view":" SELECT sg.id,\n    sg.name,\n    sg.uname,\n    sg.freq\n   FROM sg_entry sg\n  WHERE (sg.id_class = 21);"},
     {"id":100009,"parent":"#","count": 75,"text":"Союз","view_name":"vw_conjunction","col":{"columns": [{"cd": ["select2dynamic"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "name", "type": "varchar", "title": "name", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "uname", "type": "varchar", "title": "uname", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "freq", "type": "int4", "title": "freq", "primary": false, "visible": true, "is_filter": true, "orderable": true}]},"icon":"unknown","view":" SELECT sg.id,\n    sg.name,\n    sg.uname,\n    sg.freq\n   FROM sg_entry sg\n  WHERE (sg.id_class = 20);"},
     {"id":100008,"parent":"#","count": 73,"text":"Безлич. глагол","view_name":"vw_impersonal_verb","col":{"columns": [{"cd": ["select2dynamic"], "cdi": null, "data": "id", "type": "int4", "title": "id", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "name", "type": "varchar", "title": "name", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "uname", "type": "varchar", "title": "uname", "primary": false, "visible": true, "is_filter": true, "orderable": true}, {"cd": ["select2dynamic"], "cdi": null, "data": "freq", "type": "int4", "title": "freq", "primary": false, "visible": true, "is_filter": true, "orderable": true}]},"icon":"unknown","view":" SELECT sg.id,\n    sg.name,\n    sg.uname,\n    sg.freq\n   FROM sg_entry sg\n  WHERE (sg.id_class = 16);"},
@@ -472,37 +472,3 @@ function syntaxHighlight(json) {
     });
 }
 
-/*
-$('#modalDynamicInfo').on("show.bs.modal", function(e) {
-    var value = ($(e.relatedTarget).attr('id'));
-    var info = wrapper.getJsonInfo();
-
-    if(value) {
-        switch (value) {
-            case 'datatable-data':
-                object = info['dtObj'].o.debug.query[0];
-                break;
-            case 'datatable-f-ttl':
-                object = info['dtObj'].o.debug.query[1];
-                break;
-            case 'datatable-ttl':
-                object = info['dtObj'].o.debug.query[2];
-                break;
-            case 'select2-query':
-                object = info['s2obj'];
-                break;
-            case 'response-json':
-                object = info['dtObj'].o;
-                break;
-            case 'request-json':
-                object = info['dtObj'].i;
-                break;
-            case 'sql-view':
-                object = definitionSql;
-                break;
-            default:
-        }
-
-        $(this).find(".modal-body").html('<pre><code class="json">' + object + '</code> </pre>');
-    }
-});*/

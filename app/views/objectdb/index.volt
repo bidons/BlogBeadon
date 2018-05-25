@@ -2,7 +2,7 @@
 {{ assets.outputJs('blog-dt-js') }}
 
 {{ partial('layouts/objdb') }}
-
+<script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql"></script>
 <style>
     .list-group-item {
         background-color: #e2e2de;
@@ -87,12 +87,13 @@
     });
 
     $(document).ready(function () {
+
+        RebuildReport(getPagingViewObject('vw_conjunction'));
+
         $(".list-group-item").click(function(){
            var v= $(this).attr('name');
             RebuildReport(getPagingViewObject(v));
         });
-
-        RebuildReport(getPagingViewObject('vw_conjunction'));
 
         function RebuildReport(node){
             $('#select2-query').text('');
@@ -132,6 +133,40 @@
 
             $('.view_name').text(node.text);
         }
+
+        $('#modalDynamicInfo').on("show.bs.modal", function(e) {
+            var value = ($(e.relatedTarget).attr('id'));
+            var info = wrapper.getJsonInfo();
+
+            if(value) {
+                switch (value) {
+                    case 'datatable-data':
+                        object = info['dtObj'].o.debug[0].data;
+                        break;
+                    case 'datatable-f-ttl':
+                        object = info['dtObj'].o.debug[1].recordsFiltered;
+                        break;
+                    case 'datatable-ttl':
+                        object = info['dtObj'].o.debug[2].recordsTotal;
+                        break;
+                    case 'select2-query':
+                        object = info['s2obj'];
+                        break;
+                    case 'response-json':
+                        object = info['dtObj'].o;
+                        break;
+                    case 'request-json':
+                        object = info['dtObj'].i;
+                        break;
+                    case 'sql-view':
+                        object = definitionSql;
+                        break;
+                    default:
+                }
+
+                $(this).find(".modal-body").html('<pre class="prettyprint lang-sql">' + syntaxHighlight(object) + '</pre>');
+            }
+        });
     });
 
 </script>
