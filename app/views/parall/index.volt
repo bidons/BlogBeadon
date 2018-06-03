@@ -199,6 +199,9 @@
 
         $.each(data.data, function () {
             total += this.y;
+        });
+
+        $.each(data.data, function () {
             convertArray.push({name: this.name.toUpperCase() + ' (' + this.y + ')', y: (this.y / total * 100)});
         });
 
