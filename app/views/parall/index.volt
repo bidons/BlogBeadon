@@ -38,13 +38,8 @@
  511163 - слова попавшие в анализ
  23636  - уникальных слов (форм образований)
         </h6></pre>
-
-
             </div><div class="col">
-                <div id="tessstt">
-
-                </div>
-
+                <div id="tessstt"></div>
             </div>
         </div>
 
@@ -307,7 +302,7 @@
         }
     };
 
-    createRadioBt();
+    /*createRadioBt();*/
 
     function createRadioBt() {
         $.each(item, function (key, value) {
@@ -320,7 +315,7 @@
         });
     };
 
-    prepareData('bible_part_of_speech_main');
+    prepareData('bible_part_of_speech');
 
     function prepareData(parallId) {
         d3.select('#chart').selectAll('svg').remove();
