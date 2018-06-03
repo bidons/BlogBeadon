@@ -24,12 +24,13 @@
             <br>
                  <li>
                       Cмысл заключает вот в чём: - "Если обвернуть запрос во "View" и обращаться к запросу как к обычной таблице, то мы можем получить очень неплохие вкусняхи,
-                            к примеру можно использовать расширения, и по полной мере использовать возможности PostgreSql ltree,dblink,postgres_fdw,file_fdw,Windows function, join lateral, pivot extension etc".
+                            к примеру можно использовать расширения, и по полной мере использовать возможности PostgreSql ltree, dblink, postgres_fdw, file_fdw, Windows function, join lateral, pivot extension etc".
                  </li>
             <br>
             <p>
-                В качестве примера будем использовать таблицы с выводм информации для каждого созданного запроса,
-                информация по работе буду доступны по клику чуть выше навигационной панели с кнопками. Для работы с конструктором, использовать будем <a class="wrapper-blog" href="https://datatables.net/" title="https://datatables.net/">https://datatables.net/</a>.
+                В качестве примера будем использовать таблицы,
+                информация по работе будет доступна по клику чуть выше навигационной панели с кнопками.
+                Для работы с конструктором, использовать будем <a class="wrapper-blog" href="https://datatables.net/" title="https://datatables.net/">https://datatables.net/</a>.
                     В качестве реляционных примеров будем использовать <a class="wrapper-blog" href="http://www.solarix.ru/sql-dictionary-sdk.shtml" title="Лексику и морфологию Русского языка">Лексику и морфологию Русского языка</a>
             </p>
              </ul>
@@ -43,12 +44,10 @@
 
         <div class="center-wrap">
             <pre><h1 class="view_name"></h1></pre>
-
                 <div class="table-info"> </div>
                 <span class="badge badge-secondary" id="response-json"  data-toggle="modal"  data-target="#modalDynamicInfo">Ответ (json)</span>
                 <span class="badge badge-secondary" id="request-json"   data-toggle="modal"  data-target="#modalDynamicInfo">Запрос (json)</span>
                 <div class="table-info-select"> </div>
-
             <div class="btn-group">
                 <div class="input-group-btn">
                     {#<button type="button" class="btn btn-default" onclick="wrapper.clearFilter()"> <span class="glyphicon glyphicon-remove-circle">Очистка</span> </button>#}
@@ -57,17 +56,14 @@
             </div>
         </div>
         </div>
-
         <div class="row">
         <div class="col">
             <div class="list-group" id="list-group-table"></div>
         </div>
         <div class="col-sm-9">
-
             <div class="data-tbl"> </div>
         </div>
     </div>
-
 </div>
 <hr>
 

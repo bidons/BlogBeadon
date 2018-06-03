@@ -1,11 +1,9 @@
 {{ assets.outputCss('main-css') }}
 {{ assets.outputJs('main-js') }}
 
-
 {{ partial('layouts/olapl') }}
 
 <div class="container">
-
 </div>
 
 <div class="container center-wrap">
@@ -519,7 +517,6 @@
 
                 $('#data-table').append('<table id="table-chart" class="table table-striped table-bordered" cellspacing="0" width="100%"></table>');
 
-
                 var columns =[];
 
                 Object.keys(data.data[0]).forEach(function (key) {
@@ -585,7 +582,6 @@
                 $(this).find(".modal-body").html('<pre class="prettyprint lang-sql">'+object+'</pre>');
             }
         });
-
     });
 </script>
 

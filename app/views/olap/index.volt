@@ -39,9 +39,9 @@
 
                 <select id="section-type" class="form-control">
                     <option value="8">Образование</option>
-                    <option value="4">Занятость (тип)</option>
-                    <option value="1">Занятость (состояние)</option>
-                    <option value="6">Занятость (сотрудники)</option>
+                    {#<option value="4">Занятость (тип)</option>#}
+                    {#<option value="1">Занятость (состояние)</option>#}
+                    {#<option value="6">Занятость (сотрудники)</option>#}
                     <option value="5">Образование (детализация)</option>
                     <option value="7">Имущество</option>
                     <option value="10">Cемейное положение</option>

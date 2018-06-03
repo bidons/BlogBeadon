@@ -25,5 +25,5 @@
             {{ content() }}
     </div>
 </body>
-{#
-{{ partial('layouts/footer') }}#}
+
+{{ partial('layouts/footer') }}
