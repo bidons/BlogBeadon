@@ -39,9 +39,9 @@
 
                 <select id="section-type" class="form-control">
                     <option value="8">Образование</option>
-                    {#<option value="4">Занятость (тип)</option>#}
-                    {#<option value="1">Занятость (состояние)</option>#}
-                    {#<option value="6">Занятость (сотрудники)</option>#}
+                    <option value="4">Ремёсла (тип)</option>
+                    <option value="1">Ремёсла (состояние)</option>
+                    <option value="6">Ремёсла (сотрудники)</option>
                     <option value="5">Образование (детализация)</option>
                     <option value="7">Имущество</option>
                     <option value="10">Cемейное положение</option>
@@ -143,6 +143,7 @@
         };
 
         function renderData() {
+            queryArr = []
             $('.table-info').empty();
 
             $('#line-chart').empty();
@@ -172,8 +173,13 @@
 
                 $.each(data.data, function () {
                     total += this.y;
+                });
+
+                $.each(data.data, function () {
                     convertArray.push({name: this.name + ' (' + this.y + ')', y: (this.y / total * 100)});
                 });
+
+                console.log()
 
                 Highcharts.chart('pie-chart', {
                     chart: {
@@ -611,6 +617,8 @@
 
         $('#modalDynamicInfo').on("show.bs.modal", function(e) {
             var value = ($(e.relatedTarget).attr('id'));
+
+            console.log(queryArr[0]);
             if(value) {
                 switch (value) {
                     case 'pie-info':
