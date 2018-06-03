@@ -64,6 +64,24 @@ UPDATE client_dimension
        when value = 'Финансы, страхование, консалтинг' then 'Кожевенное' else value end
 where type_id = 4;
 
+
+update client_dimension_guide
+    set value = 'Cреднее'
+  where type_id = 8 and value = 'Высшее';
+
+update client_dimension_guide
+    set value = 'Высшее'
+  where type_id = 8 and value = 'Cреднее';
+
+
+update client_dimension
+    set value = 'Cреднее'
+  where type_id = 8 and value = 'Высшее';
+
+update client_dimension
+    set value = 'Высшее'
+  where type_id = 8 and value = 'Cреднее';
+
 EOD;
         $this->execute($query);
     }
