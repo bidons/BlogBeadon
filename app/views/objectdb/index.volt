@@ -3,13 +3,6 @@
 
 {{ partial('layouts/objdb') }}
 <script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql"></script>
-<style>
-    .list-group-item {
-        background-color: #e2e2de;
-        /*background: url('/main/img/concrete_seamless.png')*/
-    };
-
-</style>
 
     <div class="container">
     <div class="row">

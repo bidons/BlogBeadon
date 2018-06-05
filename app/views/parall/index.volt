@@ -9,9 +9,9 @@
 <script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
 
 <style>
-    #chart-pie-word-by-section,#chart-pie-part-of-speech {
+    #chart-pie-word-by-section {
         min-width: 200px;
-        max-width: 900px;
+        max-width: 700px;
         margin: 0 auto
     }
 </style>
