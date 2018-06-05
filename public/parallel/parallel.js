@@ -1,12 +1,7 @@
 function initParallel(path_csv,colors) {
     var width = document.body.clientWidth,
         height = d3.max([document.body.clientHeight-540, 400])
-
-
-
-
-
-
+    
     var m = [60, 0, 10, 0],
         w = width - m[1] - m[3],
         h = height - m[0] - m[2],
@@ -53,7 +48,7 @@ function initParallel(path_csv,colors) {
     background.lineWidth = 1.7;
 
 // SVG for ticks, labels, and interactions
-    var svg = d3.select("svg")
+    var svg = d3.select("#chart svg")
         .attr("width", w + m[1] + m[3])
         .attr("height", h + m[0] + m[2])
         .append("svg:g")

@@ -3,8 +3,18 @@
 
 <link rel="stylesheet" type="text/css" href="/plugins/select2/select2.css">
 <script type="text/javascript" src="/plugins/select2/select2.min.js"></script>
-<script type="text/javascript" src="/plugins/highcharts/highstock.js"></script>
+{#<script type="text/javascript" src="/plugins/highcharts/highstock.js"></script>#}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/sunburst.js"></script>
 <script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
+
+<style>
+    #chart-pie-word-by-section,#chart-pie-part-of-speech {
+        min-width: 200px;
+        max-width: 900px;
+        margin: 0 auto
+    }
+</style>
 
 {{ partial('layouts/paralll') }}
 
@@ -14,71 +24,68 @@
            анализе различных преагрегированных состояний, одним словом "паралельные координаты" в этой статье это способ визуализации статистических данных в виде параллельных координат
            где координаты в плоскости X,Y расположеные параллельно друг другу. Будем анализировать книгу "Библию"
            используя части речи и формо-образующие слова. Некоторые лингвисты-антропологи считают, что религия – это языковой вирус, который переписывает нервные окончания в мозгу, притупляет критическое мышление
-              (True Detective), может получится немного приблизится к разгадке разложив книгу на книгу на морфологические группы
+              (True Detective), может получится немного приблизится к разгадке разложив книгу на книгу на морфологические группы.
+            Заранее спасибо Javascript (D3), и ребятам которые поделились инструментами
+            <a class="wrapper-blog" href="http://bl.ocks.org/syntagmatic/3150059" title="">http://bl.ocks.org/syntagmatic/3150059</a>
+            и <a class="wrapper-blog" href="https://www.highcharts.com/" title="">https://www.highcharts.com/</a>
           </pre>
         </p>
     </li>
     <li>
         Для анализа будем использовать базу русского языка в количестве 140000-тысч слов частей речи и их форм образований.
         Библия предварительно была нормализована. Анализ проводился на точное совпадение.
-
-        <div class="row">
-            <div class="col col-lg-5">
-
+            <div class="col">
                 <pre>
 
-
-
-
-                    {#Что мы имеем:#}
-    <h6>
- 140000 - cлов в арсенале
- 37089  - страниц в книге
- 593991 - слов в книге
- 511163 - слова попавшие в анализ
- 23636  - уникальных слов (форм образований)
-        </h6></pre>
-            </div><div class="col">
-                <div id="tessstt"></div>
+                140000 - cлов в арсенале
+                37089  - страниц в книге
+                593991 - слов в книге
+                511163 - слова попавшие в анализ
+                24104  - уникальных слов (форм образований)
+                </pre>
             </div>
-        </div>
-
-
-            </p>
-    </li>
-    <li>
-        Координаты X (агрегаты):<p>
-            Поскольку время создания каждой книги в "Библии" вызывает массу споров,
-            временные интервалы использовать не получится да и статистической ценности в єтом очень мало.
-            В качестве осей X у нас будет лимитированное количество по 5000 тысяч страниц
-            (old-старый завет, new - новый завет), в шкале количество найденых одинаковых слов,
-            затемнение лининии плотность слов в координате, можно перемещатся по оси X выделяя мышкой интересующие фрагменты в разных плоскостях координат.
         </p>
     </li>
-    <li>
-        Координаты Y (категории):
-        <p> Категория части речи, можно включать отключать</p>
-    </li>
-    <li>
-        Множество DIM (слова и их формы образования)<p>
-            В качестве множества используем уникальные слова, можно пользоваться поиском (вывод первых пять, поиск
-            полнотекстовый)
-    </li>
-    <li>
-        Ниже пироги, топ 20-ацать слов в категории по частоте использования, можно перемещатся по дереву (* - не
-        каноническая), и смотреть результат в каждой из секций.
-        Заранее спасибо Javascript (D3), и ребятам которые поделились инструментами
-        <a class="wrapper-blog" href="http://bl.ocks.org/syntagmatic/3150059" title="">http://bl.ocks.org/syntagmatic/3150059</a>
-        и <a class="wrapper-blog" href="https://www.highcharts.com/" title="">https://www.highcharts.com/</a>
-    </li>
 </div>
+<div class="container-fluid">
+            <div class="col">
+                <div id="chart-pie-part-of-speech"></div>
+            </div>
+            <div class="col">
+                    <div id="chart-pie-word-by-section"></div>
+            </div>
+</div>
+    <div class="center-wrap">
+        <div id="chart-pie-word-by-section"></div>
+        </div>
 
 <link rel="stylesheet" type="text/css" href="/parallel/parallel.css"/>
 <hr>
+<div class="container">
+    <h5 class="center-wrap">Параллельные координаты</h5>
+        <li>
+            Координаты X (агрегаты):<p>
+                Поскольку время создания каждой книги в "Библии" вызывает массу споров,
+                временные интервалы использовать не получится да и статистической ценности в єтом очень мало.
+                В качестве осей X у нас будет лимитированное количество по 5000 тысяч страниц
+                (old-старый завет, new - новый завет), в шкале количество найденых одинаковых слов,
+                затемнение лининии плотность слов в координате, можно перемещатся по оси X выделяя мышкой интересующие фрагменты в разных плоскостях координат.
+            </p>
+        </li>
+        <li>
+            Координаты Y (категории):
+            <p> Категория части речи, можно включать отключать</p>
+        </li>
+        <li>
+            Множество DIM (слова и их формы образования)<p>
+                В качестве множества используем уникальные слова, можно пользоваться поиском (вывод первых пять, поиск
+                полнотекстовый)
+        </li>
+</div>
+
 <parall>
     <div id="row">
         <div class="center-wrap">
-            <h5>Параллельные координаты</h5>
             <div id='select-parallel'></div>
         </div>
         <div id="header">
@@ -107,7 +114,7 @@
 
 <div class="container">
     <div class="center-wrap">
-        <h5>Топ 20-ацать слов в категории по частоте использования</h5>
+        <h5>Топ двадцать слов в категориям по частоте использования</h5>
         <div id='select-parallel'></div>
     </div>
     <button id="refresh-bible-pie" onclick="renderPie()">Обновить</button>
@@ -126,17 +133,40 @@
 <br>
 
 <div id="container-chart">
-
 </div>
-
 
 <script src="/plugins/d3/d3.min.js"></script>
 <script src="/parallel/underscore.js"></script>
 <script src="/parallel/parallel.js"></script>
 
-
-
 <script>
+    var dataBibleWordsPieSunBurst = [{"id": "10000", "name": "Библия", "parent": ""},
+        {"id": "10001", "name": "Старый завет", "parent": "10000",'color':'#1aadce'},
+        {"id": "10002", "name": "Новый завет", "parent": "10000"},
+        {"id": "10003", "name": "Каноническая", "parent": "10001"},
+        {"id": "10004", "name": "Не каноническая", "parent": "10001"},
+        {"id": "2", "name": "Книга Товита *", "value": 3956, "parent": "10004"},
+        {"id": "6", "name": "Третья книга Маккавейская *", "value": 3932, "parent": "10004"}, {"id": "7", "name": "Первая книга Маккавейская *", "value": 13265, "parent": "10004"}, {"id": "14", "name": "Книга премудрости Иисуса, сына Сирахова *", "value": 15832, "parent": "10004"}, {"id": "15", "name": "Третья книга Ездры *", "value": 11709, "parent": "10004"}, {"id": "27", "name": "Вторая книга Ездры *", "value": 5789, "parent": "10004"}, {"id": "42", "name": "Вторая книга Маккавейская *", "value": 8972, "parent": "10004"}, {"id": "48", "name": "Книга Соломона *", "value": 5613, "parent": "10004"}, {"id": "50", "name": "Книга Варуха *", "value": 1877, "parent": "10004"}, {"id": "56", "name": "Книга Иудифи *", "value": 6121, "parent": "10004"}, {"id": "58", "name": "Послание Иеремии *", "value": 1025, "parent": "10004"}, {"id": "3", "name": "Бытие", "value": 21848, "parent": "10003"}, {"id": "4", "name": "Книга Исаии", "value": 18848, "parent": "10003"}, {"id": "9", "name": "Книга Малахии", "value": 1004, "parent": "10003"}, {"id": "13", "name": "Книга Ионы", "value": 793, "parent": "10003"}, {"id": "16", "name": "Второзаконие", "value": 16346, "parent": "10003"}, {"id": "18", "name": "Левит", "value": 12716, "parent": "10003"}, {"id": "19", "name": "Третья книга Царств", "value": 13101, "parent": "10003"}, {"id": "20", "name": "Книга Аввакума", "value": 804, "parent": "10003"}, {"id": "21", "name": "Книга Софонии", "value": 802, "parent": "10003"}, {"id": "24", "name": "Вторая книга Царств", "value": 11021, "parent": "10003"}, {"id": "28", "name": "Книга Аггея", "value": 598, "parent": "10003"}, {"id": "29", "name": "Книга Есфири", "value": 3099, "parent": "10003"}, {"id": "30", "name": "Книга пророка Авдия", "value": 345, "parent": "10003"}, {"id": "31", "name": "Первая книга Паралипоменон", "value": 9199, "parent": "10003"}, {"id": "32", "name": "Книга Иеремии", "value": 22888, "parent": "10003"}, {"id": "33", "name": "Первая книга Ездры", "value": 3669, "parent": "10003"}, {"id": "34", "name": "Книга Осии", "value": 2745, "parent": "10003"}, {"id": "36", "name": "Книга Михея", "value": 1658, "parent": "10003"}, {"id": "37", "name": "Книга Захарии", "value": 3317, "parent": "10003"}, {"id": "38", "name": "Книга Наума", "value": 643, "parent": "10003"}, {"id": "39", "name": "Псалтирь", "value": 23954, "parent": "10003"}, {"id": "40", "name": "Четвёртая книга Царств", "value": 11818, "parent": "10003"}, {"id": "41", "name": "Книга Руфи", "value": 1456, "parent": "10003"}, {"id": "45", "name": "Первая книга Царств", "value": 13757, "parent": "10003"}, {"id": "47", "name": "Книга Иова", "value": 10829, "parent": "10003"}, {"id": "51", "name": "Книга Иоиля", "value": 1060, "parent": "10003"}, {"id": "53", "name": "Книга Иезекииля", "value": 21310, "parent": "10003"}, {"id": "54", "name": "Песнь песней Соломона", "value": 1418, "parent": "10003"}, {"id": "57", "name": "Притчи Соломона", "value": 8384, "parent": "10003"}, {"id": "59", "name": "Книга Иисуса Навина", "value": 9716, "parent": "10003"}, {"id": "63", "name": "Книга Судей израилевых", "value": 9853, "parent": "10003"}, {"id": "64", "name": "Плач Иеремии", "value": 1866, "parent": "10003"}, {"id": "66", "name": "Книга Даниила", "value": 8712, "parent": "10003"}, {"id": "68", "name": "Вторая книга Паралипоменон", "value": 13615, "parent": "10003"}, {"id": "69", "name": "Книга Неемии", "value": 5148, "parent": "10003"}, {"id": "70", "name": "Исход", "value": 17450, "parent": "10003"}, {"id": "71", "name": "Книга Екклезиаста", "value": 3320, "parent": "10003"}, {"id": "76", "name": "Книга Амоса", "value": 2241, "parent": "10003"}, {"id": "77", "name": "Числа", "value": 16407, "parent": "10003"}, {"id": "1", "name": "Послание Иакова", "value": 1372, "parent": "10002"}, {"id": "5", "name": "3-е послание Иоанна", "value": 189, "parent": "10002"}, {"id": "8", "name": "Послание Иуды", "value": 342, "parent": "10002"}, {"id": "10", "name": "Послание к Филиппийцам", "value": 1342, "parent": "10002"}, {"id": "11", "name": "1-е послание к Тимофею", "value": 1348, "parent": "10002"}, {"id": "12", "name": "Послание к Ефесянам", "value": 1753, "parent": "10002"}, {"id": "17", "name": "Послание к Колоссянам", "value": 1152, "parent": "10002"}, {"id": "22", "name": "Евангелие от Иоанна", "value": 12046, "parent": "10002"}, {"id": "23", "name": "Послание к Евреям", "value": 3897, "parent": "10002"}, {"id": "25", "name": "Послание к Галатам", "value": 1816, "parent": "10002"}, {"id": "26", "name": "Послание к Филимону", "value": 309, "parent": "10002"}, {"id": "35", "name": "2-е послание к Фессалоникийцам", "value": 656, "parent": "10002"}, {"id": "43", "name": "Послание к Титу", "value": 528, "parent": "10002"}, {"id": "44", "name": "1-е послание Петра", "value": 1368, "parent": "10002"}, {"id": "46", "name": "2-е послание к Коринфянам", "value": 3640, "parent": "10002"}, {"id": "49", "name": "2-е послание к Тимофею", "value": 959, "parent": "10002"}, {"id": "52", "name": "Деяния святых апостолов", "value": 14157, "parent": "10002"}, {"id": "60", "name": "Евангелие от Луки", "value": 14930, "parent": "10002"}, {"id": "61", "name": "1-е послание к Коринфянам", "value": 5370, "parent": "10002"}, {"id": "62", "name": "Послание к Римлянам", "value": 5365, "parent": "10002"}, {"id": "65", "name": "2-е послание Иоанна", "value": 197, "parent": "10002"}, {"id": "67", "name": "Евангелие от Марка", "value": 8695, "parent": "10002"}, {"id": "72", "name": "Евангелие от Матфея", "value": 13766, "parent": "10002"}, {"id": "73", "name": "1-е послание Иоанна", "value": 1543, "parent": "10002"}, {"id": "74", "name": "2-е послание Петра", "value": 860, "parent": "10002"}, {"id": "75", "name": "1-е послание к Фессалоникийцам", "value": 1194, "parent": "10002"}, {"id": "55", "name": "Откровение Иоанна Богослова", "value": 6520, "parent": "10002"}];
+
+    var dataBiblePartOfSpeech =
+    {
+        "data": [{"y": 19039, "name": "НАРЕЧИЕ"}, {
+            "y": 44645,
+            "name": "ПРЕДЛОГ"
+        }, {"y": 32479, "name": "ЧАСТИЦА"}, {"y": 69163, "name": "ПРИЛАГАТЕЛЬНОЕ"}, {
+            "y": 9792,
+            "name": "ИНФИНИТИВ"
+        }, {"y": 12666, "name": "МЕСТОИМ_СУЩ"}, {"y": 572, "name": "БЕЗЛИЧ_ГЛАГОЛ"}, {
+            "y": 5386,
+            "name": "ЧИСЛИТЕЛЬНОЕ"
+        }, {"y": 138929, "name": "СУЩЕСТВИТЕЛЬНОЕ"}, {"y": 4515, "name": "ДЕЕПРИЧАСТИЕ"}, {
+            "y": 256,
+            "name": "ПОСЛЕЛОГ"
+        }, {"y": 73970, "name": "ГЛАГОЛ"}, {"y": 709, "name": "ВВОДНОЕ"}, {"y": 47591, "name": "СОЮЗ"}, {
+            "y": 51451,
+            "name": "МЕСТОИМЕНИЕ"
+        }], "title": "Доля частей речи", "subtitle": "Библия"
+    };
 
     function renderPie() {
         var b = parseInt($('#book :selected').val());
@@ -156,12 +186,12 @@
             return;
         };
     }
+
     function runRenderPercent(book_id) {
         $("#container-chart").empty();
         $.ajax({
             url: "/parall/biblepie/" + book_id,
         }).done(function (response) {
-            /*response = JSON.parse(response);*/
             var itt =0;
             val = '';
             $.each(JSON.parse(response), function (key, value) {
@@ -221,7 +251,7 @@
             },
             plotOptions: {
                 pie: {
-                    size: '70%',
+                    size: '100%',
                     allowPointSelect: true,
                     cursor: 'pointer',
                     dataLabels: {
@@ -302,7 +332,7 @@
         }
     };
 
-    /*createRadioBt();*/
+    createRadioBt();
 
     function createRadioBt() {
         $.each(item, function (key, value) {
@@ -315,11 +345,11 @@
         });
     };
 
-    prepareData('bible_part_of_speech');
+    prepareData('bible_part_of_speech_main');
 
     function prepareData(parallId) {
         d3.select('#chart').selectAll('svg').remove();
-        d3.select("svg").empty();
+        /*d3.select("svg").empty();*/
 
         $('#chart').empty();
         $('#legend').empty();
@@ -357,6 +387,75 @@
         initParallel(item[parallId].csv, item[parallId].yaxis);
     }
 
+    function renderPieSunBurst(data,selector) {
+        Highcharts.chart(selector, {
+
+            chart: {
+                height: '100%',
+                backgroundColor: 'transparent',
+            },
+
+            title: {
+                text: 'Плотность слов в разрезе трудов'
+            },
+            subtitle: {
+                text: 'Библия'
+            },
+            series: [{
+                type: "sunburst",
+                data: data,
+                allowDrillToNode: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    format: '{point.name}',
+                    filter: {
+                        property: 'innerArcLength',
+                        operator: '>',
+                        value: 0
+                    }
+                },
+                levels: [{
+                    level: 1,
+                    levelIsConstant: false,
+
+                    /*levelSize:2,*/
+                    dataLabels: {
+                        rotationMode: 'parallel',
+                        filter: {
+                            property: 'outerArcLength',
+                            operator: '>',
+                            value: 0
+                        }
+                    }
+                }, {
+                    level: 2,
+                    colorByPoint: true,
+                    dataLabels: {
+                        rotationMode: 'parallel'
+                    }
+                },
+                    {
+                        level: 3,
+                        colorVariation: {
+                            key: 'brightness',
+                            to: -0.5
+                        }
+                    }, {
+                        level: 4,
+                        colorVariation: {
+                            key: 'brightness',
+                            to: 0.5
+                        }
+                    }]
+
+            }],
+            tooltip: {
+                headerFormat: "",
+                pointFormat: '<b>{point.name}</b><b> ({point.value})</b>'
+            }
+        });
+    }
+
     var Select2Cascade = (function (window, $) {
         function Select2Cascade(parent, child, url, select2Options) {
             var afterActions = [];
@@ -387,31 +486,11 @@
             });
         }
         return Select2Cascade;
-
     })(window, $);
     $(document).ready(function () {
 
-        var v =
-            {
-                "data": [{"y": 19039, "name": "НАРЕЧИЕ"}, {
-                    "y": 44645,
-                    "name": "ПРЕДЛОГ"
-                }, {"y": 32479, "name": "ЧАСТИЦА"}, {"y": 69163, "name": "ПРИЛАГАТЕЛЬНОЕ"}, {
-                    "y": 9792,
-                    "name": "ИНФИНИТИВ"
-                }, {"y": 12666, "name": "МЕСТОИМ_СУЩ"}, {"y": 572, "name": "БЕЗЛИЧ_ГЛАГОЛ"}, {
-                    "y": 5386,
-                    "name": "ЧИСЛИТЕЛЬНОЕ"
-                }, {"y": 138929, "name": "СУЩЕСТВИТЕЛЬНОЕ"}, {"y": 4515, "name": "ДЕЕПРИЧАСТИЕ"}, {
-                    "y": 256,
-                    "name": "ПОСЛЕЛОГ"
-                }, {"y": 73970, "name": "ГЛАГОЛ"}, {"y": 709, "name": "ВВОДНОЕ"}, {"y": 47591, "name": "СОЮЗ"}, {
-                    "y": 51451,
-                    "name": "МЕСТОИМЕНИЕ"
-                }], "title": "Доля частей речи", "subtitle": "Библия"
-            };
-
-        renderPiePercent(v, 'tessstt');
+        renderPiePercent(dataBiblePartOfSpeech, 'chart-pie-part-of-speech');
+        renderPieSunBurst(dataBibleWordsPieSunBurst,'chart-pie-word-by-section');
 
         var select2Options = {};
         var apiUrl = '/parall/book/:parentId:';

@@ -27,9 +27,13 @@ class ParallController extends ControllerBase
         return $result;
     }
 
-    public function part1Action()
+/*    public function part1Action()
     {
     }
+
+    public function part2Action()
+    {
+    }*/
 
     public function bookAction($bible_tree_id)
     {

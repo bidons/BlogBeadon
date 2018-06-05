@@ -186,6 +186,11 @@
                         plotShadow: false,
                         type: 'pie',
                         backgroundColor: 'transparent',
+                        events: {
+                            redraw: function(event) {
+                                alert ('Chart loaded');
+                            }
+                        }
                     },
                     title: {
                         text: $('#section-agg').select2('data')[0].text

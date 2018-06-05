@@ -87,9 +87,7 @@ parall h3 small {
     color: #888;
     font-weight: normal;
 }
-parall p {
-    margin: 0.6em 0;
-}
+
 parall small {
     line-height: 1.2em;
 }
