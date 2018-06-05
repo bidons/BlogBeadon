@@ -114,7 +114,7 @@
 
 <div class="container">
     <div class="center-wrap">
-        <h5>Топ двадцать слов в категориям по частоте использования</h5>
+        <h5>Топ двадцать слов в категориях по частоте использования</h5>
         <div id='select-parallel'></div>
     </div>
     <button id="refresh-bible-pie" onclick="renderPie()">Обновить</button>
