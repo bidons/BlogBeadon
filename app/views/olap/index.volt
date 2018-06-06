@@ -179,18 +179,11 @@
                     convertArray.push({name: this.name + ' (' + this.y + ')', y: (this.y / total * 100)});
                 });
 
-                console.log()
-
                 Highcharts.chart('pie-chart', {
                     chart: {
                         plotShadow: false,
                         type: 'pie',
                         backgroundColor: 'transparent',
-                        events: {
-                            redraw: function(event) {
-                                alert ('Chart loaded');
-                            }
-                        }
                     },
                     title: {
                         text: $('#section-agg').select2('data')[0].text
