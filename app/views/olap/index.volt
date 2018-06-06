@@ -16,7 +16,7 @@
 <script src="/plugins/proj4/dist/proj4.js"></script>
 <script type="text/javascript" src="/plugins/highcharts/modules/map.js"></script>
 <script src="//code.highcharts.com/mapdata/countries/ua/ua-all.js"></script>
-<script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql"></script>
+{#<script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql"></script>#}
 
 {{ partial('layouts/olapl') }}
 
@@ -145,7 +145,6 @@
         function renderData() {
             queryArr = []
             $('.table-info').empty();
-
             $('#line-chart').empty();
             $('#geo-chart').empty();
             $('#pie-chart').empty();

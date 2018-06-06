@@ -7,12 +7,33 @@
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/sunburst.js"></script>
 <script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
-
 <style>
     #chart-pie-word-by-section {
         min-width: 200px;
         max-width: 700px;
         margin: 0 auto
+    }
+</style>
+<style>
+
+
+    #chart-conjunction,
+    #chart-introductory,
+    #chart-pronoun,
+    #chart-participle,
+    #chart-numeral,
+    #chart-noun,
+    #chart-pronoun-noun,
+    #chart-particles,
+    #chart-infinitive,
+    #chart-verb,
+    #chart-pretext,
+    #chart-adjective,
+    #chart-impersional-verb,
+    #chart-adverb,
+    #chart-post-position
+    {
+         width:400px; height: 400px;
     }
 </style>
 
@@ -34,22 +55,35 @@
     <li>
         Для анализа будем использовать базу русского языка в количестве 140000-тысч слов частей речи и их форм образований.
         Библия предварительно была нормализована. Анализ проводился на точное совпадение.
-            <div class="col">
+        <div class="row">
+        <div class="col-4">
                 <pre>
 
-                140000 - cлов в арсенале
-                37089  - страниц в книге
-                593991 - слов в книге
-                511163 - слова попавшие в анализ
-                24104  - уникальных слов (форм образований)
+
+
+
+
+
+
+
+
+140000 - cлов в арсенале
+37089  - страниц в книге
+593991 - слов в книге
+511163 - слова попавшие в анализ
+24104  - уникальных слов
                 </pre>
             </div>
+          <div class="col-8">
+              <div id="chart-pie-part-of-speech"></div>
+          </div>
+        </div>
         </p>
     </li>
 </div>
 <div class="container-fluid">
             <div class="col">
-                <div id="chart-pie-part-of-speech"></div>
+
             </div>
             <div class="col">
                     <div id="chart-pie-word-by-section"></div>
@@ -133,6 +167,31 @@
 <br>
 
 <div id="container-chart">
+    <div class="row">
+        <div class="col"><div id="chart-conjunction"></div></div>
+        <div class="col"><div id="chart-introductory"></div></div>
+        <div class="col"><div id="chart-pronoun"></div> </div>
+    </div>
+    <div class="row">
+        <div class="col"><div id="chart-participle"></div></div>
+        <div class="col"><div id="chart-numeral"></div></div>
+        <div class="col"><div id="chart-noun"></div> </div>
+    </div>
+    <div class="row">
+        <div class="col"><div id="chart-pronoun-noun"></div></div>
+        <div class="col"><div id="chart-particles"></div></div>
+        <div class="col"><div id="chart-infinitive"></div> </div>
+    </div>
+    <div class="row">
+        <div class="col"><div id="chart-verb"></div></div>
+        <div class="col"><div id="chart-pretext"></div></div>
+        <div class="col"><div id="chart-adjective"></div> </div>
+    </div>
+    <div class="row">
+        <div class="col"><div id="chart-impersional-verb"></div></div>
+        <div class="col"><div id="chart-adverb"></div></div>
+        <div class="col"><div id="chart-post-position"></div> </div>
+    </div>
 </div>
 
 <script src="/plugins/d3/d3.min.js"></script>
@@ -188,34 +247,40 @@
     }
 
     function runRenderPercent(book_id) {
-        $("#container-chart").empty();
         $.ajax({
             url: "/parall/biblepie/" + book_id,
         }).done(function (response) {
             var itt =0;
             val = '';
-            $.each(JSON.parse(response), function (key, value) {
-                if (key == 'pie_word_by_part_of_speech') {
-                    $.each(value, function (key, value2) {
-                        itt++;
-                        if (itt & 1) {
-                            val = value2;
-                        }
-                        else {
-                            var fr = 'pie_word_by_part_of_speech_' + (itt - 1);
-                            var tw = 'pie_word_by_part_of_speech_' + (itt);
 
-                            $("#container-chart").append('<div class="row"><div class="col"><div id="' + fr + '"></div></div><div class="col"><div id="' + tw + '"></div></div></div>');
+            var data = JSON.parse(response).pie_word_by_part_of_speech;
 
-                            renderPiePercent(val, fr);
-                            renderPiePercent(value2, tw);
-                        }
-                    });
+            $.each(data, function (key, value) {
+                var title = value.title;
+                var selector;
+                
+                if(title) {
+                    switch(title)
+                    {
+                    case 'СОЮЗ': selector = 'chart-conjunction'; break;
+                    case 'ВВОДНОЕ': selector = 'chart-introductory'; break;
+                    case 'МЕСТОИМЕНИЕ': selector = 'chart-pronoun'; break;
+                    case 'ДЕЕПРИЧАСТИЕ': selector = 'chart-participle'; break;
+                    case 'ЧИСЛИТЕЛЬНОЕ': selector = 'chart-numeral'; break;
+                    case 'СУЩЕСТВИТЕЛЬНОЕ': selector = 'chart-noun'; break;
+                    case 'МЕСТОИМ_СУЩ': selector = 'chart-pronoun-noun'; break;
+                    case 'ЧАСТИЦА': selector = 'chart-particles'; break;
+                    case 'ИНФИНИТИВ': selector = 'chart-infinitive'; break;
+                    case 'ГЛАГОЛ': selector = 'chart-verb'; break;
+                    case 'ПРЕДЛОГ': selector = 'chart-pretext'; break;
+                    case 'ПРИЛАГАТЕЛЬНОЕ': selector = 'chart-adjective'; break;
+                    case 'БЕЗЛИЧ_ГЛАГОЛ': selector = 'chart-impersional-verb'; break;
+                    case 'НАРЕЧИЕ': selector = 'chart-adverb'; break;
+                    case 'ПОСЛЕЛОГ': selector = 'chart-post-position'; break;
+                        default:
+                    }
                 }
-                else {
-                    itt++;
-                    val = value;
-                 }
+                renderPiePercent(value, selector);
             });
         })
     };
@@ -251,8 +316,8 @@
             },
             plotOptions: {
                 pie: {
-                    size: '100%',
-                    allowPointSelect: true,
+                    size: '55%',
+                    allowPointSelect: false,
                     cursor: 'pointer',
                     dataLabels: {
                         enabled: true,
@@ -263,6 +328,7 @@
                         connectorColor: 'silver'
 
                     },
+                    animation: false,
                     showInLegend: false
                 }
             },
@@ -345,8 +411,6 @@
         });
     };
 
-    prepareData('bible_part_of_speech_main');
-
     function prepareData(parallId) {
         d3.select('#chart').selectAll('svg').remove();
         /*d3.select("svg").empty();*/
@@ -400,6 +464,11 @@
             },
             subtitle: {
                 text: 'Библия'
+            },
+            plotOptions: {
+                series: {
+                    animation: false
+                }
             },
             series: [{
                 type: "sunburst",
@@ -487,10 +556,11 @@
         }
         return Select2Cascade;
     })(window, $);
+
+
+
     $(document).ready(function () {
 
-        renderPiePercent(dataBiblePartOfSpeech, 'chart-pie-part-of-speech');
-        renderPieSunBurst(dataBibleWordsPieSunBurst,'chart-pie-word-by-section');
 
         var select2Options = {};
         var apiUrl = '/parall/book/:parentId:';
@@ -500,9 +570,21 @@
         cascadLoading.then(function (parent, child, items) {
         });
 
-        runRenderPercent(10000);
-    });
+        prepareData('bible_part_of_speech_main');
 
+        renderPiePercent(dataBiblePartOfSpeech, 'chart-pie-part-of-speech');
+        renderPieSunBurst(dataBibleWordsPieSunBurst,'chart-pie-word-by-section');
+
+        var flag = true
+        setInterval(function() {
+            if(flag) {
+                runRenderPercent(10000)
+                flag = false;
+            };
+        }, 1000);
+
+
+    });
 
 </script>
 
