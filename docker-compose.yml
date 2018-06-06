@@ -10,20 +10,35 @@ services:
       - ./logs:/var/log/phalcon
     tty: true
 
+ # postgres:
+ #   restart: always
+ #   build: containers/postgres
+ #   container_name: phalcon.compose.blog.postgres
+ #   working_dir: /var/www/phalcon
+ #   ports:
+ #     - "5435:5432"
+ #   volumes:
+ #     - .:/var/www/phalcon
+ #     - postgres:/var/lib/postgresql/data
+ #     - ./conf/postgres/log:/var/log/postgresql
+ #   environment:
+ #     POSTGRES_PASSWORD: ''
+ #     PGDATA: /var/lib/postgresql/data/pgdata
+
   postgres:
-    restart: always
-    build: containers/postgres
-    container_name: phalcon.compose.blog.postgres
-    working_dir: /var/www/phalcon
-    ports:
-      - "5435:5432"
-    volumes:
-      - .:/var/www/phalcon
-      - postgres:/var/lib/postgresql/data
-      - ./conf/postgres/log:/var/log/postgresql
-    environment:
-      POSTGRES_PASSWORD: ''
-      PGDATA: /var/lib/postgresql/data/pgdata
+      restart: always
+      build: containers/postgres
+      container_name: phalcon.compose.blog.postgres
+      working_dir: /var/www/phalcon
+      ports:
+        - "5435:5432"
+      volumes:
+        - .:/var/www/phalcon
+        - postgres:/var/lib/postgresql/data
+        - ./conf/postgres/log:/var/log/postgresql
+      environment:
+        POSTGRES_PASSWORD: ''
+        PGDATA: /var/lib/postgresql/data/pgdata
 
   #  memcached:
   #  restart: always

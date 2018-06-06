@@ -17,3 +17,4 @@ app/migration/phinx.yml
 scripts_rev
 app/migration/dump/*.*
 composer.phar
+db.dump
