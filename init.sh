@@ -28,8 +28,8 @@ option=$1
 array=''
 
 bi() {
-    docker-compose exec php bower install --allow-root
-    docker-compose exec php chmod -R 777 /var/www/phalcon/public/components
+    docker exec php bower install --allow-root
+    docker exec php chmod -R 777 /var/www/phalcon/public/components
 }
 
 start() {
