@@ -1,9 +1,6 @@
 {{ assets.outputCss('main-css') }}
 {{ assets.outputJs('main-js') }}
 
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
-<script src="https://code.highcharts.com/modules/wordcloud.js"></script>
 
 <div class="container">
 <div class="col-md-12">

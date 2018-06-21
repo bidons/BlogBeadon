@@ -1,0 +1,21 @@
+{
+  "name": "beadon",
+  "authors": [
+    "Phursin Victor <@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "jquery-form": "~3.46.0",
+    "jquery": "~2.1.1",
+    "bootstrap": "~4.0.0",
+    "font-awesome": "~4.7.0",
+    "moment": "~2.15.2",
+    "select2": "~4.0.3",
+    "highcharts": "^5.0.14",
+    "proj4": "^2.4.4",
+    "jstree":"*",
+    "d3":"*",
+    "bootstrap-daterangepicker":"*",
+    "datatable":"*"
+  }
+}

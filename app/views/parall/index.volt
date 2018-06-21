@@ -1,9 +1,8 @@
 {{ assets.outputCss('main-css') }}
 {{ assets.outputJs('main-js') }}
 
-<link rel="stylesheet" type="text/css" href="/plugins/select2/select2.css">
-<script type="text/javascript" src="/plugins/select2/select2.min.js"></script>
-{#<script type="text/javascript" src="/plugins/highcharts/highstock.js"></script>#}
+<link rel="stylesheet" type="text/css" href="/components/select2/dist/css/select2.min.css">
+<script type="text/javascript" src="/components/select2/dist/js/select2.min.js"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/sunburst.js"></script>
 <script type="text/javascript" src="/main/js/highstockWrapper.js"></script>

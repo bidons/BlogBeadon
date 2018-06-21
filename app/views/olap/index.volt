@@ -1,22 +1,24 @@
 {{ assets.outputCss('main-css') }}
-<link rel="stylesheet" type="text/css" href="/plugins/select2/select2.css">
-<link rel="stylesheet" type="text/css" href="/plugins/select2/select2-bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="/plugins/daterangepicker/daterangepicker-bs3.css">
-<link rel="stylesheet" type="text/css" href="/plugins/datatables/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="/components/select2/dist/css/select2.css">
+{#<link rel="stylesheet" type="text/css" href="/plugins/select2/select2-bootstrap4.min.css">#}
+<link rel="stylesheet" type="text/css" href="/components/bootstrap-daterangepicker/daterangepicker.css">
+<link rel="stylesheet" type="text/css" href="/comonents/datatable/media/css/dataTables.bootstrap4.min.css">
 {{ assets.outputJs('main-js') }}
 
-<script type="text/javascript" src="/plugins/select2/select2.min.js"></script>
-<script type="text/javascript" src="/plugins/daterangepicker/moment.js"></script>
-<script type="text/javascript" src="/plugins/daterangepicker/daterangepicker.js"></script>
-<script type="text/javascript" src="/plugins/highcharts/highstock.js"></script>
-<script type="text/javascript" src="/plugins/datatables/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="/components/select2/dist/js/select2.min.js"></script>
+<script type="text/javascript" src="/components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="/components/moment/moment.js"></script>
+<script type="text/javascript" src="/components/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script type="text/javascript" src="/components/highcharts/highstock.js"></script>
+<script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
+<script type="text/javascript" src="/components/datatable/media/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/components/datatable/media/js/dataTables.bootstrap4.min.js"></script>
 
 <script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
-<script src="/plugins/proj4/dist/proj4.js"></script>
-<script type="text/javascript" src="/plugins/highcharts/modules/map.js"></script>
+<script src="/components/proj4/dist/proj4.js"></script>
+<script type="text/javascript" src="/components/highcharts/modules/map.js"></script>
 <script src="//code.highcharts.com/mapdata/countries/ua/ua-all.js"></script>
-{#<script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql"></script>#}
 
 {{ partial('layouts/olapl') }}
 
@@ -87,6 +89,7 @@
             locale: {
                 format: "YYYY.MM.DD",
                 applyLabel: "Применить",
+                "cancelLabel": "Отмена",
                 customRangeLabel: "Выбрать интервалы",
             },
             autoUpdateInput: true,
@@ -130,7 +133,6 @@
             }).done(function (data) {
                 $('#section-value').select2({
                     data: JSON.parse(data),
-                    theme: 'bootstrap4',
                     multiple: "multiple",
                     dropdownAutoWidth: true
                 });
@@ -143,7 +145,8 @@
         };
 
         function renderData() {
-            queryArr = []
+            queryArr = [];
+
             $('.table-info').empty();
             $('#line-chart').empty();
             $('#geo-chart').empty();
@@ -479,7 +482,6 @@
                         }
                     });
                     chart.redraw();
-
                     renderLine();
                 });
             }
@@ -494,7 +496,6 @@
                     'agg': $('#section-agg').val()
                 }
             }).done(function (data) {
-
                 $('.table-info').append('<span class="badge badge-secondary" id="line-info" data-toggle="modal"  data-target="#modalDynamicInfo">Координаты:' + data.time + '</span>');
                 queryArr.push(data.query);
 
@@ -547,7 +548,6 @@
                     },
                     series: data.data
                 });
-
                 renderTable();
             })
         };
@@ -565,14 +565,11 @@
                 $('.table-info').append('<span class="badge badge-secondary" id="table-info" data-toggle="modal"  data-target="#modalDynamicInfo">Таблица:' + data.time + '</span>');
                 queryArr.push(data.query);
 
-
                 $('#data-table').append('<table id="table-chart" class="table table-striped table-bordered" cellspacing="0" width="100%"></table>');
-
 
                 var columns =[];
 
                 Object.keys(data.data[0]).forEach(function (key) {
-
                     columns.push({data:key,title:(key == 'create_time') ? 'Временная метка': key});
                 });
 
@@ -613,6 +610,8 @@
         };
 
         $('#modalDynamicInfo').on("show.bs.modal", function(e) {
+
+            console.log(123123);
             var value = ($(e.relatedTarget).attr('id'));
 
             console.log(queryArr[0]);
@@ -632,12 +631,8 @@
                         break;
                     default:
                 }
-
                 $(this).find(".modal-body").html('<pre class="prettyprint lang-sql">'+object+'</pre>');
             }
         });
-
     });
 </script>
-
-

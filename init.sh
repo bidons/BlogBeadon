@@ -12,6 +12,8 @@ commands[10]="cr,remove all containers,php"
 commands[11]="dc,Docker clean everything"
 commands[12]="cd,Create images"
 commands[15]="pgb,Run postgresql backups (daily_mode =  (12.00hh) => pg_dump',hourly_mode = (everyhour only main table with exclude table))"
+commands[16]="bi,bower install,php"
+
 
 options[0]="-h ,this help"
 options[1]="--help,this help"
@@ -24,6 +26,11 @@ comand=$1
 option=$1
 
 array=''
+
+bi() {
+    docker-compose exec php bower install --allow-root
+    docker-compose exec php chmod -R 777 /var/www/phalcon/public/components
+}
 
 start() {
     docker-compose up -d

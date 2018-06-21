@@ -21,10 +21,10 @@ class ControllerBase extends Controller
         $mainCss = $this->assets->collection("main-css");
         $mainJs = $this->assets->collection("main-js");
 
-        $mainCss->addCss("plugins/bootstrap/dist/css/bootstrap.css")
+        $mainCss->addCss("components/bootstrap/dist/css/bootstrap.min.css")
             ->addCss("blog/css/blog.css");
-        $mainJs->addJs("main/js/jquery.js")
-            ->addJs("plugins/bootstrap/dist/js/bootstrap.js");
+        $mainJs->addJs("components/jquery/dist/jquery.min.js");
+            /*->addJs("components/bootstrap/dist/js/bootstrap.js");*/
     }
 
     protected function addAssetsDt()
@@ -33,20 +33,20 @@ class ControllerBase extends Controller
         $js =   $this->assets->collection("blog-dt-js");
 
         $css
-            ->addCss("plugins/bootstrap/dist/css/bootstrap.css")
-            ->addCss("plugins/datatables/dataTables.bootstrap4.min.css")
+            ->addCss("components/bootstrap/dist/css/bootstrap.min.css")
+            ->addCss("components/datatable/media/css/dataTables.bootstrap4.min.css")
             ->addCss("blog/css/blog.css")
-            ->addCss("plugins/select2/select2.css")
-            ->addCss("plugins/daterangepicker/daterangepicker-bs3.css");
+            ->addCss("components/select2/dist/css/select2.min.css")
+            ->addCss("components/bootstrap-daterangepicker/daterangepicker.css");
         $js
-            ->addJs("main/js/jquery.js")
-            ->addJs("plugins/bootstrap/dist/js/bootstrap.js")
-            ->addJs("plugins/datatables/jquery.dataTables.min.js")
-            ->addJs("plugins/datatables/dataTables.bootstrap4.min.js")
+            ->addJs("components/jquery/dist/jquery.min.js")
+            ->addJs("components/datatable/media/js/jquery.dataTables.min.js")
+            ->addJs("components/datatable/media/js/dataTables.bootstrap4.min.js")
             ->addJs("main/js/DataTableWrapperExt.js")
-            ->addJs("plugins/select2/select2.min.js")
-            ->addJs("plugins/daterangepicker/moment.js")
-            ->addJs("plugins/daterangepicker/daterangepicker.js");
+            ->addJs("components/select2/dist/js/select2.min.js")
+            ->addJs("components/moment/moment.js")
+            ->addJs("components/bootstrap-daterangepicker/daterangepicker.js")
+            ->addJs("components/bootstrap/dist/js/bootstrap.min.js");
     }
 
     public function responseJson($data, $code = 200)

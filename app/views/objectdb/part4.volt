@@ -3,7 +3,7 @@
 
 <script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?lang=sql"></script>
 
-<script type="text/javascript" src="/plugins/highcharts/highstock.js"></script>
+<script type="text/javascript" src="/components/highcharts/highstock.js"></script>
 <script type="text/javascript" src="/main/js/highstockWrapper.js"></script>
 
 {{ partial('layouts/objdb') }}
