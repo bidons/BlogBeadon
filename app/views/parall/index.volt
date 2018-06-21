@@ -229,7 +229,7 @@
     </div>
 </div>
 
-<script src="/components/d3/d3.min.js"></script>
+<script src="/parallel/d3.v2.js"></script>
 <script src="/parallel/underscore.js"></script>
 <script src="/parallel/parallel.js"></script>
 
