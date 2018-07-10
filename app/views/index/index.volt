@@ -33,7 +33,6 @@
     </div>
 </div>
 
-
 <style>
     .highcharts-point-hover {
         stroke: rgb(204, 248, 243);

@@ -151,17 +151,17 @@
 </parall>
 <hr>
 
-<div class="container">
+
     <div class="center-wrap">
         <h5>Топ двадцать слов в категориях по частоте использования</h5>
-        <div id='select-parallel'></div>
     </div>
-    <button id="refresh-bible-pie" onclick="renderPie()">Обновить</button>
-    <select name="type" id="book-section" style="width:300" disabled=true class="form-control">
+    {#<button id="refresh-bible-pie" onclick="renderPie()">Обновить</button>#}
+    {#<select name="type" id="book-section" style="width:300" disabled=true class="form-control">
         <option value="10000">Библия</option>
-    </select>
+    </select>#}
+<div class="center-wrap">
     <select name="type" id="section-type" style="width:300" class="form-control">
-        <option>--Все объекты в секции--</option>
+        <option>Библия (вся)</option>
         <option value="10001">Старый завет</option>
         <option value="10002">Новый завет</option>
     </select>
@@ -458,10 +458,10 @@
         var s = parseInt($('#book-section :selected').val());
 
         if (b) {
+            console.log(b)
             runRenderPercent(b);
             return;
-        }
-        ;
+        };
         if (bs) {
             runRenderPercent(bs);
             return;
@@ -793,6 +793,14 @@
             };
 
             parent.select2(select2Options).on("change", function (e) {
+
+                if(!parseInt($(this).val()))
+                {
+                    child.prop("disabled", true);
+                    runRenderPercent(10000);
+
+                        return;
+                };
                 child.prop("disabled", true);
 
                 var _this = this;
@@ -823,7 +831,14 @@
         $('select').select2(select2Options);
         var cascadLoading = new Select2Cascade($('#section-type'), $('#book'), apiUrl, select2Options);
         cascadLoading.then(function (parent, child, items) {
+            renderPie();
         });
+
+        $('#book').on('select2:select', function (e) {
+            renderPie();
+        });
+
+
 
         prepareData('bible_part_of_speech_main');
 

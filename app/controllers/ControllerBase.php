@@ -22,9 +22,9 @@ class ControllerBase extends Controller
         $mainJs = $this->assets->collection("main-js");
 
         $mainCss->addCss("components/bootstrap/dist/css/bootstrap.min.css")
-            ->addCss("blog/css/blog.css");
-        $mainJs->addJs("components/jquery/dist/jquery.min.js");
-            /*->addJs("components/bootstrap/dist/js/bootstrap.js");*/
+                ->addCss("blog/css/blog.css");
+        $mainJs ->addJs("components/jquery/dist/jquery.min.js")
+                ->addJs("components/bootstrap/dist/js/bootstrap.min.js");
     }
 
     protected function addAssetsDt()
