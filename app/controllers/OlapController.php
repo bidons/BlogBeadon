@@ -10,7 +10,7 @@ class OlapController extends ControllerBase
         $this->view->setVar('projectTree',projectTree('olap'));
     }
     public function indexAction() {}
-    /*public function part1Action() {}*/
+    public function part1Action() {}
 
     public function piechartAction()
     {

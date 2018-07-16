@@ -582,6 +582,7 @@
                         }
                     });
                     chart.redraw();
+
                     renderLine();
                 });
             }
