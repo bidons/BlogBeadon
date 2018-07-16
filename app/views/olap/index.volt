@@ -3,6 +3,7 @@
 {#<link rel="stylesheet" type="text/css" href="/plugins/select2/select2-bootstrap4.min.css">#}
 <link rel="stylesheet" type="text/css" href="/components/bootstrap-daterangepicker/daterangepicker.css">
 <link rel="stylesheet" type="text/css" href="/comonents/datatable/media/css/dataTables.bootstrap4.min.css">
+<link type="text/css" rel="stylesheet" href="/parallel/d3.relationshipgraph.min.css">
 {{ assets.outputJs('main-js') }}
 
 <script type="text/javascript" src="/components/select2/dist/js/select2.min.js"></script>
@@ -20,38 +21,103 @@
 <script type="text/javascript" src="/components/highcharts/modules/map.js"></script>
 <script src="//code.highcharts.com/mapdata/countries/ua/ua-all.js"></script>
 
+{#<script src="/components/d3/d3.js"></script>#}
+<script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<script src="/parallel/d3.relationshipgraph.js"></script>
+
 {{ partial('layouts/olapl') }}
 
+<style>
+    th { font-size: 12px; }
+    td { font-size: 12px; }
+
+    .relationshipGraph-tip {
+        font-weight: 700;
+        font-family: Helvetica, sans-serif;
+        font-size: 9pt;
+        line-height: 1;
+        padding: 12px;
+        background: #FFFFFF;
+        color: #e7e7e7;
+        border-radius: 6px;
+        z-index: 50;
+        max-width: 350px;
+        max-height: 300px
+    }
+
+</style>
+
 <div class="container">
+
+    <li> Цель материала показать принципы построения OLAP кубов с реляционными примерами. Материал будет интересен
+        в первую очередь людям которые захотят "связать свою жизнь" c
+        <a class="wrapper-blog" href="https://ru.wikipedia.org/wiki/Business_Intelligence" title="">
+            Business Intelligence
+        </a>
+    </li>
+    <li>
+        Цель материала показать принципы построения OLAP кубов с реляционными примерами. Материал будет интересен в первую очередь людям которые захотят "связать свою жизнь" c Business Intelligence
+        Все реляционные базы данных без исключения призваны по своей сути составить отношение-связь между объектами,
+        что позволяет получить связанность объектов и контролировать консистентность и целостность данных.
+        Для статистического анализа реляционный подход не совсем подходит,
+        возникают сложности с выборками, скоростью и анализом, реляционная алгебра очевидна для архитектора баз данных,
+        но не для человека который работает с статистическими данными,
+        отсюда появилась необходимость создавать сущности которые содержать преагрегированное состояние для быстрой выборки и анализа и сама концепция OLAP.
+    </li>
+    <li>
+        Вики статья:
+        <a class="wrapper-blog" href="https://ru.wikipedia.org/wiki/OLAP" title="">
+            OLAP (англ. online analytical processing, интерактивная аналитическая обработка) — технология обработки данных, заключающаяся в подготовке суммарной (агрегированной) информации на основе больших массивов данных, структурированных по многомерному принципу</a>
+        </p>
+    </li>
+
+    <div class="col-12 center-wrap">
+<pre>И так что мы имеем:
+1) Измерения (Категории и справочники категорий)
+</pre>
+
+                <div id="graph"></div>
+<pre>2) Измерения время (Интервальные дневные промежутки 2016-11-29 - 2018-05-03)
+3) агрегат   (событие №1)
+4) агрегат   (событие №2)
+5) агрегат   (событие №3)</pre>
+
+</div>
     <div class="center-wrap">
         <div style="margin-bottom:16px">
             <div class="table-info" style="margin-bottom:16px"></div></div>
     </div>
-    <div class="row">
-        <button type="button" style ="width: 250px" class="btn btn-light" id="refresh-charts">Обновить</button>
-        <div class="col-sm">
-            <div class="btn-group text-center">
-                <input type="text" class="form-control input-sm active"   type="text" data-filter-cond="interval" placeholder="Time...">
-                <select class="form-control" id="section-agg">
-                    <option value="total">Событие №1</option>
-                    <option value="event_1">Событие №2</option>
-                    <option value="event_2">Событие №3</option>
-                    <option value="event_3">Событие №4</option>
-                </select>
 
-                <select id="section-type" class="form-control">
-                    <option value="8">Образование</option>
-                    <option value="4">Ремёсла (тип)</option>
-                    <option value="1">Ремёсла (состояние)</option>
-                    <option value="6">Ремёсла (сотрудники)</option>
-                    <option value="5">Образование (детализация)</option>
-                    <option value="7">Имущество</option>
-                    <option value="10">Cемейное положение</option>
-                    <option value="11">Пол</option>
-                    <option value="2">Тел. операторы</option>
-                    <option value="9">Регионы</option>
-                </select>
-            </div>
+    <div class="center-wrap">
+        <div class="btn-group text-center">
+
+            <button type="button" style ="width: 250px" class="btn btn" style="width:300"  id="refresh-charts">Обновить</button>
+            <input type="text" class="form-control input-sm active"  style="width:300"  type="text" data-filter-cond="interval" placeholder="Time...">
+        </div>
+    </div>
+
+    </br>
+    <div class="center-wrap">
+        <div class="btn-group text-center">
+            <select class="form-control" id="section-agg">
+                {#<option value="total">Событие №1 (агрегат)   </option>#}
+                <option value="event_1">Событие №1 (агрегат) </option>
+                <option value="event_2">Событие №2 (агрегат) </option>
+                <option value="event_3">Событие №3 (агрегат) </option>
+            </select>
+
+            <select id="section-type" class="form-control">
+                <option value="4">Ремёсла (тип)</option>
+                <option value="8">Образование</option>
+                <option value="1">Ремёсла (состояние)</option>
+                <option value="6">Ремёсла (сотрудники)</option>
+                <option value="5">Образование (детализация)</option>
+                <option value="7">Имущество</option>
+                <option value="10">Cемейное положение</option>
+                <option value="11">Пол</option>
+                <option value="2">Тел. операторы</option>
+                <option value="9">Регионы</option>
+            </select>
         </div>
     </div>
 </div>
@@ -65,7 +131,7 @@
     <br>
     <br>
     <div class="col-12">
-        <div id="pie-chart" style="min-width: 600px; height: 750px; max-width: 1500px; margin: 0 auto"></div>
+        <div id="pie-chart" style="min-width: 400px; height: 750px; max-width: 1500px; margin: 0 auto"></div>
     </div>
     <div class="col-12">
         <div id="line-chart" style="min-width: 600px; height: 750px; max-width: 1500px; margin: 0 auto"></div>
@@ -80,11 +146,328 @@
 <br>
 <script>
     $(document).ready(function () {
+        var json1 = [
+            {
+                "Movie 23123": "Avatar",
+                "parent": "20th Century Fox",
+                "value": "$2,787,965,087",
+                "Year": "2009"
+            },
+            {
+                "Movie Title": "Titanic",
+                "parent": "20th Century Fox",
+                "value": "$2,186,772,302",
+                "Year": "1997"
+            },
+            {
+                "Movie Title": "Star Wars: The Force Awakens",
+                "parent": "Walt Disney Studios",
+                "value": "$2,066,247,462",
+                "Year": "2015"
+            },
+            {
+                "Movie Title": "Jurassic World",
+                "parent": "Universal Pictures",
+                "value": "$1,670,400,637",
+                "Year": "2015"
+            },
+            {
+                "Movie Title": "The Avengers",
+                "parent": "Walt Disney Studios",
+                "value": "$1,519,557,910",
+                "Year": "2012"
+            },
+            {
+                "Movie Title": "Furious 7",
+                "parent": "Universal Pictures",
+                "value": "$1,516,045,911",
+                "Year": "2015"
+            },
+            {
+                "Movie Title": "Avengers: Age of Ultron",
+                "parent": "Walt Disney Studios",
+                "value": "$1,405,413,868",
+                "Year": "2015"
+            },
+            {
+                "Movie Title": "Harry Potter and the Deathly Hallows -- Part 2",
+                "parent": "Warner Bros. Pictures",
+                "value": "$1,341,511,219",
+                "Year": "2011"
+            },
+            {
+                "Movie Title": "Frozen",
+                "parent": "Walt Disney Studios",
+                "value": "$1,287,000,000",
+                "Year": "2013"
+            },
+            {
+                "Movie Title": "Iron Man 3",
+                "parent": "Walt Disney Studios",
+                "value": "$1,215,439,994",
+                "Year": "2013"
+            },
+            {
+                "Movie Title": "Minions",
+                "parent": "Universal Pictures",
+                "value": "$1,159,398,397",
+                "Year": "2015"
+            },
+            {
+                "Movie Title": "Transformers: Dark of the Moon",
+                "parent": "Paramount Pictures",
+                "value": "$1,123,794,079",
+                "Year": "2011"
+            },
+            {
+                "Movie Title": "The Lord of the Rings: The Return of the King",
+                "parent": "New Line Cinema",
+                "value": "$1,119,929,521",
+                "Year": "2003"
+            },
+            {
+                "Movie Title": "Skyfall",
+                "parent": "Columbia Pictures",
+                "value": "$1,108,561,013",
+                "Year": "2012"
+            },
+            {
+                "Movie Title": "Transformers: Age of Extinction",
+                "parent": "Universal Pictures",
+                "value": "$1,104,054,072",
+                "Year": "2014"
+            },
+            {
+                "Movie Title": "The Dark Knight Rises",
+                "parent": "Warner Bros. Pictures",
+                "value": "$1,084,939,099",
+                "Year": "2012"
+            },
+            {
+                "Movie Title": "Pirates of the Caribbean: Dead Man's Chest",
+                "parent": "Walt Disney Studios",
+                "value": "$1,066,179,725",
+                "Year": "2006"
+            },
+            {
+                "Movie Title": "Toy Story 3",
+                "parent": "Walt Disney Studios",
+                "value": "$1,063,171,911",
+                "Year": "2010"
+            },
+            {
+                "Movie Title": "Pirates of the Caribbean: On Stranger Ties",
+                "parent": "Walt Disney Studios",
+                "value": "$1,045,713,802",
+                "Year": "2011"
+            },
+            {
+                "Movie Title": "Jurassic Park",
+                "parent": "Universal Pictures",
+                "value": "$1,029,939,903",
+                "Year": "1993"
+            },
+            {
+                "Movie Title": "Star Wars: Episode I -- The Phantom Menace",
+                "parent": "20th Century Fox",
+                "value": "$1,027,044,677",
+                "Year": "1999"
+            },
+            {
+                "Movie Title": "Alice in Wonderland",
+                "parent": "Walt Disney Studios",
+                "value": "$1,025,467,110",
+                "Year": "2010"
+            },
+            {
+                "Movie Title": "The Hobbit: An Unexpected Journey",
+                "parent": "Warner Bros. Pictures",
+                "value": "$1,021,103,568",
+                "Year": "2012"
+            },
+            {
+                "Movie Title": "The Dark Knight",
+                "parent": "Warner Bros. Pictures",
+                "value": "$1,004,558,444",
+                "Year": "2008"
+            },
+            {
+                "Movie Title": "The Lion King",
+                "parent": "Walt Disney Studios",
+                "value": "$987,483,777",
+                "Year": "1994"
+            },
+            {
+                "Movie Title": "Harry Potter and the Philosopher's Stone",
+                "parent": "Warner Bros. Pictures",
+                "value": "$974,755,371",
+                "Year": "2001"
+            },
+            {
+                "Movie Title": "Despicable Me 2",
+                "parent": "Universal Pictures",
+                "value": "$970,761,885",
+                "Year": "2013"
+            },
+            {
+                "Movie Title": "Zootopia",
+                "parent": "Walt Disney Studios",
+                "value": "$969,831,439",
+                "Year": "2016"
+            },
+            {
+                "Movie Title": "Pirates of the Caribbean: At World's End",
+                "parent": "Walt Disney Studios",
+                "value": "$963,420,425",
+                "Year": "2007"
+            },
+            {
+                "Movie Title": "Harry Potter and the Deathly Hallows -- Part 1",
+                "parent": "Warner Bros. Pictures",
+                "value": "$960,283,305",
+                "Year": "2010"
+            },
+            {
+                "Movie Title": "The Hobbit: The Desolation of Smaug",
+                "parent": "Warner Bros. Pictures",
+                "value": "$958,366,855",
+                "Year": "2013"
+            }
+            ,
+            {
+                "Movie Title": "The Hobbit: The Battle of the Five Armies",
+                "parent": "Warner Bros. Pictures",
+                "value": "$956,892,078",
+                "Year": "2014"
+            },
+            {
+                "Movie Title": "Captain America: Civil War",
+                "parent": "Walt Disney Studios",
+                "value": "$940,892,078",
+                "Year": "2016"
+            },
+            {
+                "Movie Title": "Harry Potter and the Order of the Phoenix",
+                "parent": "Warner Bros. Pictures",
+                "value": "$939,885,929",
+                "Year": "2007"
+            },
+            {
+                "Movie Title": "Finding Nemo",
+                "parent": "Walt Disney Studios",
+                "value": "$936,743,261",
+                "Year": "2003"
+            },
+            {
+                "Movie Title": "Harry Potter and the Half-Blood Prince",
+                "parent": "Warner Bros. Pictures",
+                "value": "$934,416,487",
+                "Year": "2009"
+            },
+            {
+                "Movie Title": "The Lord of the Rings: The Two Towers",
+                "parent": "New Line Cinema",
+                "value": "$926,047,111",
+                "Year": "2002"
+            },
+            {
+                "Movie Title": "Shrek 2",
+                "parent": "Walt Disney Studios",
+                "value": "$919,838,758",
+                "Year": "2004"
+            },
+            {
+                "Movie Title": "Harry Potter and the Goblet of Fire",
+                "parent": "Warner Bros. Pictures",
+                "value": "$896,911,078",
+                "Year": "2005"
+            },
+            {
+                "Movie Title": "Spider-Man 3",
+                "parent": "Columbia Pictures",
+                "value": "$890,871,626",
+                "Year": "2007"
+            },
+            {
+                "Movie Title": "Ice Age: dawn of the Dinosaurs",
+                "parent": "20th Century Fox",
+                "value": "$886,686,817",
+                "Year": "2009"
+            },
+            {
+                "Movie Title": "Spectre",
+                "parent": "Columbia Pictures",
+                "value": "$880,674,609",
+                "Year": "2015"
+            },
+            {
+                "Movie Title": "Harry Potter and the Chamber of Secrets",
+                "parent": "Warner Bros. Pictures",
+                "value": "$878,979,634",
+                "Year": "2002"
+            },
+            {
+                "Movie Title": "Ice Age: Continental Drift",
+                "parent": "20th Century Fox",
+                "value": "$877,244,782",
+                "Year": "2012"
+            },
+            {
+                "Movie Title": "The Lord of the Rings: The Fellowship of the Rings",
+                "parent": "New Line Cinema",
+                "value": "$871,530,324",
+                "Year": "2001"
+            },
+            {
+                "Movie Title": "Batman v Superman: Dawn of Justice",
+                "parent": "Warner Bros. Pictures",
+                "value": "$868,814,243",
+                "Year": "2016"
+            },
+            {
+                "Movie Title": "The Hunger Games: Catching Fire",
+                "parent": "Lionsgate Films",
+                "value": "$865,011,746",
+                "Year": "2013"
+            },
+            {
+                "Movie Title": "Inside Out",
+                "parent": "Walt Disney Studios",
+                "value": "$857,427,711",
+                "Year": "2015"
+            },
+            {
+                "Movie Title": "Star Wars: Episode III -- Revenge of the Sith",
+                "parent": "20th Century Fox",
+                "value": "$848,754,768",
+                "Year": "2005"
+            },
+            {
+                "Movie Title": "Transformers: Revenge of the Fallen",
+                "parent": "Universal Pictures",
+                "value": "$836,303,693",
+                "Year": "2009"
+            }
+        ];
+
+        var json1 = [{"Категория измерения:" : "Безработный", "parent" : "Ремёсла (состояние)", "value" : 7796}, {"Категория измерения:" : "Неполная занятость", "parent" : "Ремёсла (состояние)", "value" : 12500}, {"Категория измерения:" : "Полная занятость", "parent" : "Ремёсла (состояние)", "value" : 88361}, {"Категория измерения:" : "Студент", "parent" : "Ремёсла (состояние)", "value" : 6675}, {"Категория измерения:" : "Самозанятость", "parent" : "Ремёсла (состояние)", "value" : 16454}, {"Категория измерения:" : "Не определено", "parent" : "Ремёсла (состояние)", "value" : 64079}, {"Категория измерения:" : "Пенсионер", "parent" : "Ремёсла (состояние)", "value" : 3963}, {"Категория измерения:" : "Киевстар (Beeline +38068)", "parent" : "Тел. операторы", "value" : 19942}, {"Категория измерения:" : "life(+38063)", "parent" : "Тел. операторы", "value" : 18900}, {"Категория измерения:" : "Не определено", "parent" : "Тел. операторы", "value" : 327}, {"Категория измерения:" : "МТС(+38099)", "parent" : "Тел. операторы", "value" : 18317}, {"Категория измерения:" : "МТС(+38095)", "parent" : "Тел. операторы", "value" : 18540}, {"Категория измерения:" : "life(+38073)", "parent" : "Тел. операторы", "value" : 8216}, {"Категория измерения:" : "МТС(+38066)", "parent" : "Тел. операторы", "value" : 20531}, {"Категория измерения:" : "life(+38093)", "parent" : "Тел. операторы", "value" : 15454}, {"Категория измерения:" : "PEOPLEnet(+38092)", "parent" : "Тел. операторы", "value" : 1}, {"Категория измерения:" : "МТС(+38050)", "parent" : "Тел. операторы", "value" : 15112}, {"Категория измерения:" : "Utel(+38091)", "parent" : "Тел. операторы", "value" : 62}, {"Категория измерения:" : "Интертелеком(+38094)", "parent" : "Тел. операторы", "value" : 89}, {"Категория измерения:" : "Киевстар(+38067)", "parent" : "Тел. операторы", "value" : 12280}, {"Категория измерения:" : "Киевстар(+38096)", "parent" : "Тел. операторы", "value" : 17259}, {"Категория измерения:" : "Киевстар(+38097)", "parent" : "Тел. операторы", "value" : 17749}, {"Категория измерения:" : "Киевстар(+38098)", "parent" : "Тел. операторы", "value" : 17049}, {"Категория измерения:" : "Прядильное", "parent" : "Ремёсла (тип)", "value" : 19272}, {"Категория измерения:" : "Не определено", "parent" : "Ремёсла (тип)", "value" : 82514}, {"Категория измерения:" : "Кожевенное", "parent" : "Ремёсла (тип)", "value" : 2183}, {"Категория измерения:" : "Ювелирное", "parent" : "Ремёсла (тип)", "value" : 7403}, {"Категория измерения:" : "Печное", "parent" : "Ремёсла (тип)", "value" : 28760}, {"Категория измерения:" : "Cапожное", "parent" : "Ремёсла (тип)", "value" : 13167}, {"Категория измерения:" : "Пекарное", "parent" : "Ремёсла (тип)", "value" : 1311}, {"Категория измерения:" : "Скорняжное", "parent" : "Ремёсла (тип)", "value" : 18907}, {"Категория измерения:" : "Ткацкое", "parent" : "Ремёсла (тип)", "value" : 3382}, {"Категория измерения:" : "Портняжное дело", "parent" : "Ремёсла (тип)", "value" : 3230}, {"Категория измерения:" : "Столярное ремесло", "parent" : "Ремёсла (тип)", "value" : 1753}, {"Категория измерения:" : "Плотницкое дело", "parent" : "Ремёсла (тип)", "value" : 3950}, {"Категория измерения:" : "Гончарное производство", "parent" : "Ремёсла (тип)", "value" : 7082}, {"Категория измерения:" : "Кузнечное дело", "parent" : "Ремёсла (тип)", "value" : 6914}, {"Категория измерения:" : "Другой", "parent" : "Образование (детализация)", "value" : 5423}, {"Категория измерения:" : "Точные науки", "parent" : "Образование (детализация)", "value" : 1813}, {"Категория измерения:" : "Не определено", "parent" : "Образование (детализация)", "value" : 147523}, {"Категория измерения:" : "Строительство", "parent" : "Образование (детализация)", "value" : 2145}, {"Категория измерения:" : "Экономика и предпринимательство", "parent" : "Образование (детализация)", "value" : 14250}, {"Категория измерения:" : "Пищевая и легкая промышленность", "parent" : "Образование (детализация)", "value" : 1755}, {"Категория измерения:" : "Технические науки", "parent" : "Образование (детализация)", "value" : 9719}, {"Категория измерения:" : "Природоведческие науки", "parent" : "Образование (детализация)", "value" : 1383}, {"Категория измерения:" : "Гуманитарные науки", "parent" : "Образование (детализация)", "value" : 6603}, {"Категория измерения:" : "Медицина", "parent" : "Образование (детализация)", "value" : 2055}, {"Категория измерения:" : "Право", "parent" : "Образование (детализация)", "value" : 5760}, {"Категория измерения:" : "Военное дело", "parent" : "Образование (детализация)", "value" : 1399}, {"Категория измерения:" : "50-100 человек", "parent" : "Ремёсла (сотрудники)", "value" : 13388}, {"Категория измерения:" : "Не определено", "parent" : "Ремёсла (сотрудники)", "value" : 82521}, {"Категория измерения:" : "до 5-ти человек", "parent" : "Ремёсла (сотрудники)", "value" : 28871}, {"Категория измерения:" : "20-50 человек", "parent" : "Ремёсла (сотрудники)", "value" : 14758}, {"Категория измерения:" : "Більше 500 человек", "parent" : "Ремёсла (сотрудники)", "value" : 22947}, {"Категория измерения:" : "5-20 человек", "parent" : "Ремёсла (сотрудники)", "value" : 21989}, {"Категория измерения:" : "100-500 человек", "parent" : "Ремёсла (сотрудники)", "value" : 15354}, {"Категория измерения:" : "Депозити", "parent" : "Имущество", "value" : 1777}, {"Категория измерения:" : "Ценные бумаги", "parent" : "Имущество", "value" : 1074}, {"Категория измерения:" : "Несколько видов имущества", "parent" : "Имущество", "value" : 6936}, {"Категория измерения:" : "Не определено", "parent" : "Имущество", "value" : 64079}, {"Категория измерения:" : "Недвижимое имущество (будинок, квартира итд)", "parent" : "Имущество", "value" : 61206}, {"Категория измерения:" : "Движимое имущество (авто, катер итд)", "parent" : "Имущество", "value" : 9226}, {"Категория измерения:" : "Отсутствует", "parent" : "Имущество", "value" : 55530}, {"Категория измерения:" : "Среднее специальное", "parent" : "Образование", "value" : 56956}, {"Категория измерения:" : "Научная степень", "parent" : "Образование", "value" : 301}, {"Категория измерения:" : "Не полное высшее", "parent" : "Образование", "value" : 18483}, {"Категория измерения:" : "Неполное среднее", "parent" : "Образование", "value" : 2503}, {"Категория измерения:" : "Два или более (высших)", "parent" : "Образование", "value" : 1406}, {"Категория измерения:" : "Не определено", "parent" : "Образование", "value" : 64079}, {"Категория измерения:" : "Высшее", "parent" : "Образование", "value" : 23983}, {"Категория измерения:" : "Среднее", "parent" : "Образование", "value" : 32117}, {"Категория измерения:" : "Сумская", "parent" : "Регионы", "value" : 4382}, {"Категория измерения:" : "Житомирская", "parent" : "Регионы", "value" : 4132}, {"Категория измерения:" : "Донецкая", "parent" : "Регионы", "value" : 5992}, {"Категория измерения:" : "Днепропетровская", "parent" : "Регионы", "value" : 19767}, {"Категория измерения:" : "Волынская", "parent" : "Регионы", "value" : 2574}, {"Категория измерения:" : "Винницкая", "parent" : "Регионы", "value" : 4398}, {"Категория измерения:" : "Севастополь", "parent" : "Регионы", "value" : 13}, {"Категория измерения:" : "Ровенская", "parent" : "Регионы", "value" : 2846}, {"Категория измерения:" : "Республика Крым", "parent" : "Регионы", "value" : 98}, {"Категория измерения:" : "Тернопольская", "parent" : "Регионы", "value" : 1436}, {"Категория измерения:" : "Полтавская", "parent" : "Регионы", "value" : 6109}, {"Категория измерения:" : "Харьковская", "parent" : "Регионы", "value" : 8808}, {"Категория измерения:" : "Херсонская", "parent" : "Регионы", "value" : 4972}, {"Категория измерения:" : "Хмельницкая", "parent" : "Регионы", "value" : 3702}, {"Категория измерения:" : "Одесская", "parent" : "Регионы", "value" : 7558}, {"Категория измерения:" : "Черкасская", "parent" : "Регионы", "value" : 4548}, {"Категория измерения:" : "Черниговская", "parent" : "Регионы", "value" : 3663}, {"Категория измерения:" : "Черновицкая", "parent" : "Регионы", "value" : 2019}, {"Категория измерения:" : "Николаевская", "parent" : "Регионы", "value" : 5490}, {"Категория измерения:" : "Львовская", "parent" : "Регионы", "value" : 5511}, {"Категория измерения:" : "Луганская", "parent" : "Регионы", "value" : 1774}, {"Категория измерения:" : "Кировоградская", "parent" : "Регионы", "value" : 4744}, {"Категория измерения:" : "Не определено", "parent" : "Регионы", "value" : 64080}, {"Категория измерения:" : "Киевская", "parent" : "Регионы", "value" : 8287}, {"Категория измерения:" : "Киев", "parent" : "Регионы", "value" : 9714}, {"Категория измерения:" : "Ивано-Франковская", "parent" : "Регионы", "value" : 2445}, {"Категория измерения:" : "Запорожская", "parent" : "Регионы", "value" : 8633}, {"Категория измерения:" : "Закарпатская", "parent" : "Регионы", "value" : 2133}, {"Категория измерения:" : "Разведен/Разведена", "parent" : "Cемейное положение", "value" : 12143}, {"Категория измерения:" : "Не определено", "parent" : "Cемейное положение", "value" : 64079}, {"Категория измерения:" : "Замужем/Женат", "parent" : "Cемейное положение", "value" : 41903}, {"Категория измерения:" : "В гражданском браке", "parent" : "Cемейное положение", "value" : 13343}, {"Категория измерения:" : "Вдовец/Вдова", "parent" : "Cемейное положение", "value" : 2078}, {"Категория измерения:" : "Не замужем/Не женат", "parent" : "Cемейное положение", "value" : 66282}, {"Категория измерения:" : "Женщина", "parent" : "Пол", "value" : 66601}, {"Категория измерения:" : "Мужчина", "parent" : "Пол", "value" : 105341}, {"Категория измерения:" : "Не определено", "parent" : "Пол", "value" : 27886}];
+
+        var graph = d3.select('#graph').relationshipGraph({
+            'maxChildCount': 28,
+            'valueKeyName': 'Worldwide Gross',
+            'thresholds': [0,0,0],
+            showTooltips: true
+        });
+
+        graph.data(json1);
+
+        var interval = null;
+
         var today = moment().add(1,'days').format('YYYY.MM.DD');
 
         $('[data-filter-cond=interval]').daterangepicker({
-            startDate: moment().subtract(29, 'days'),
-            endDate: moment(),
+            minDate:"2016.11.29",
+            maxDate:"2018.05.03",
             defaultDate: [moment().format('YYYY.MM.DD'), today],
             locale: {
                 format: "YYYY.MM.DD",
@@ -114,11 +497,12 @@
             renderData();
         });
 
-        $("#section-agg").select2({ theme: 'bootstrap4'}
+        $("#section-agg").select2({}
         ).on("select2:select", function (e) {
             renderData();
         });
-        $("#section-type").select2({ theme: 'bootstrap4'}
+
+        $("#section-type").select2({}
         ).on("select2:select", function (e) {
             getSectionValue();
         });
@@ -251,7 +635,6 @@
                             dataLabels: {
                                 enabled: false
                             },
-
                         },
                         {
                             getCenter: function () {
@@ -486,6 +869,7 @@
                 });
             }
         }
+
         function renderLine() {
             $.ajax({
                 url: "/olap/linechart",
@@ -579,6 +963,7 @@
                     sortable: false,
                     info: true,
                     paging: true,
+                    responsive: true,
                     language:  {
                         "processing": "Подождите...",
                         "search": "Поиск:",

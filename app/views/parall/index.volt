@@ -14,8 +14,6 @@
     }
 </style>
 <style>
-
-
     #chart-conjunction,
     #chart-introductory,
     #chart-pronoun,
@@ -150,7 +148,6 @@
     </div>
 </parall>
 <hr>
-
 
     <div class="center-wrap">
         <h5>Топ двадцать слов в категориях по частоте использования</h5>
