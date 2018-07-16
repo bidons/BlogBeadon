@@ -173,7 +173,7 @@
 
         var graph = d3.select('#graph').relationshipGraph({
             'maxChildCount': 28,
-            'thresholds': [-1,1,0],
+            'thresholds': [1,1,1],
             showTooltips: true
         });
 

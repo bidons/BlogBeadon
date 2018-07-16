@@ -71,7 +71,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             return d3.select(node);
         };
-
+        /*rgb(135, 138, 135)*/
+        
         /**
          * Given a shape on the screen, will return an SVGPoint for the directions:
          *     north, south, east, west, northeast, southeast, northwest, southwest
@@ -735,6 +736,7 @@ var RelationshipGraph = function () {
                 previousParent = parent;
 
                 if (thresholds.length === 0) {
+                    
                     element.color = 0;
                 } else {
                     // Figure out the color based on the threshold.
@@ -754,7 +756,11 @@ var RelationshipGraph = function () {
 
                     var thresholdIndex = compare(value, thresholds);
 
+
+
                     element.color = thresholdIndex === -1 ? 0 : thresholdIndex;
+
+                    element.color = 1;
                 }
             }
 
