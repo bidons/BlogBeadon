@@ -3,6 +3,16 @@
 
 {{ partial('layouts/olapl') }}
 
-<div class="container">
-</div>
 
+<div class="container">
+    <li>
+         Структура бд...
+
+    </li>
+    <li>
+        Создание датасэта с измерениями....
+    </li>
+    <li>
+        Денормализация .....
+    </li>
+</div>
